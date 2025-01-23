@@ -40,10 +40,10 @@ python3 -m http.server
 ### Building a system app
 All system apps are already built when running the main build script, but it is possible to build apps separately anyway for debugging purposes.
 
-First install the required dependencies:
+First install the required dependencies (these are installed for you when you run `./build.sh --install-dev`):
 
 ```bash
-sudo apt install clang lld
+sudo apt install clang lld xxd
 ```
 
 Then run (where `$name` is the name of the app's source directory, such as `test`):

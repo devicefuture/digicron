@@ -10,6 +10,8 @@ for appPath in apps/*/; do
 done
 
 if [ "$1" == "--install-dev" ]; then
+    sudo apt-get install clang lld xxd
+
     if ! [ -x "$(command -v pio)" ]; then
         echo "Installing PlatformIO..."
 
