@@ -10,6 +10,9 @@ class CounterScreen : public dc::ui::Screen {
     public:
         void update() override;
         void handleEvent(dc::ui::Event event) override;
+
+    protected:
+        int _value = 0;
 };
 
 #endif

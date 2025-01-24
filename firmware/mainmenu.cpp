@@ -4,13 +4,11 @@
 #include "proc.h"
 #include "ui.h"
 #include "input.h"
-
-#include "test/build/app.wasm.h"
+#include "apps.h"
 
 proc::Process mainMenu::mainMenuProcess;
 mainMenu::MainMenuScreen mainMenu::mainMenuScreen;
 mainMenu::AppsMenuScreen mainMenu::appsMenuScreen;
-proc::Process* mainMenu::primaryAppProcess = nullptr;
 
 class TestPopup : public ui::Popup {
     public:
@@ -63,35 +61,25 @@ void mainMenu::MainMenuScreen::handleEvent(ui::Event event) {
 mainMenu::AppsMenuScreen::AppsMenuScreen() : ui::ContextualMenu("APPS") {
     ownerProcess = &mainMenuProcess;
     permanence = ui::ScreenPermanence::CLOSE_ON_HOME;
+}
 
-    items.push(new String("Alarms"));
-    items.push(new String("Timer"));
-    items.push(new String("Stopwch"));
-    items.push(new String("Counter"));
-    items.push(new String("Fitness"));
-    items.push(new String("atto"));
-    items.push(new String("Calc"));
-    items.push(new String("Cronogotchi"));
+void mainMenu::AppsMenuScreen::open(bool urgent) {
+    apps::registry.start();
+    items.empty();
+
+    while (auto app = apps::registry.next()) {
+        items.push(new String(app->getDisplayName()));
+    }
+
+    ui::ContextualMenu::open(urgent);
 }
 
 void mainMenu::AppsMenuScreen::handleEvent(ui::Event event) {
     if (event.type == ui::EventType::ITEM_SELECT) {
-        if (primaryAppProcess) {
-            primaryAppProcess->stop();
+        apps::App* app = apps::registry[event.data.index];
+
+        if (app) {
+            app->launch();
         }
-
-        auto process = new proc::WasmProcess((char*)apps_test_build_app_wasm, apps_test_build_app_wasm_len);
-
-        process->onStop = [](proc::Process* process) {
-            if (primaryAppProcess == process) {
-                primaryAppProcess = nullptr;
-            }
-
-            delete process;
-
-            Serial.println("WASM process deleted");
-        };
-
-        primaryAppProcess = process;
     }
 }

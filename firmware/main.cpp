@@ -19,6 +19,7 @@
 #include "input.h"
 #include "home.h"
 #include "proc.h"
+#include "systemapps.h"
 
 #define BACK_BTN_PIN 6
 #define HOME_BTN_PIN 5
@@ -53,6 +54,7 @@ void setup() {
     timing::init();
     display::init();
     input::init();
+    systemApps::init();
 
     ui::currentScreen = testScreen;
 

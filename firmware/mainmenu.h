@@ -6,7 +6,6 @@
 
 namespace mainMenu {
     extern proc::Process mainMenuProcess;
-    extern proc::Process* primaryAppProcess;
 
     class MainMenuScreen : public ui::Menu {
         public:
@@ -19,6 +18,7 @@ namespace mainMenu {
         public:
             AppsMenuScreen();
 
+            void open(bool urgent = true) override;
             void handleEvent(ui::Event event) override;
     };
 
