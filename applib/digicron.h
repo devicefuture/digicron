@@ -170,6 +170,7 @@ namespace dataTypes {
                 unsigned int _length = 0;
 
             public:
+                String();
                 String(const char* value);
                 String(const String& other);
                 ~String();
@@ -620,6 +621,8 @@ template<typename T> dataTypes::StoredValue<T>::StoredValue(T valueToStore) {
 template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
 
 #ifdef DIGICRON_H_
+    inline dataTypes::String::String() {}
+
     inline dataTypes::String::String(const char* value) {
         while (value[_length] != '\0') {
             _length++;

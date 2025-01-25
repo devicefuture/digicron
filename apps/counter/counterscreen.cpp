@@ -1,19 +1,57 @@
 #include "counterscreen.h"
 
+Counter* CounterScreen::getCounter() {
+    if (counters.length() == 0) {
+        counters.push(new Counter("Counter"));
+    }
+
+    return counters[_counterIndex % counters.length()];
+}
+
 void CounterScreen::update() {
+    Counter* counter = getCounter();
+
     clear();
 
-    print("Counter\n");
+    scroll(counter->getName(), 8);
     pad(8, ' ');
-    print(_value);
+    print(counter->getValue());
 }
 
 void CounterScreen::handleEvent(ui::Event event) {
-    if (event.type == ui::EventType::BUTTON_DOWN && event.data.button == input::Button::SELECT) {
-        _value++;
-    }
+    if (event.type == ui::EventType::BUTTON_DOWN) {
+        switch (event.data.button) {
+            case input::Button::BACK:
+                proc::stop();
+                break;
 
-    if (event.type == ui::EventType::BUTTON_DOWN && event.data.button == input::Button::BACK) {
-        proc::stop();
+            case input::Button::SELECT:
+                getCounter()->incrementValue(1);
+                break;
+
+            case input::Button::LEFT:
+                if (counters.length() == 0) {
+                    break;
+                }
+
+                if (_counterIndex > 0) {
+                    _counterIndex--;
+                } else {
+                    _counterIndex = counters.length() - 1;
+                }
+
+                resetScroll();
+
+                break;
+
+            case input::Button::RIGHT:
+                if (counters.length() == 0) {
+                    break;
+                }
+
+                _counterIndex++;
+                resetScroll();
+                break;
+        }
     }
 }

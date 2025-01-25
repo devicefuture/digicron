@@ -3,16 +3,20 @@
 
 #include "../../applib/digicron.h"
 
+#include "counters.h"
+
 using namespace dc;
 using namespace dc::dataTypes;
 
 class CounterScreen : public dc::ui::Screen {
     public:
+        Counter* getCounter();
+
         void update() override;
         void handleEvent(dc::ui::Event event) override;
 
     protected:
-        int _value = 0;
+        int _counterIndex = 0;
 };
 
 #endif

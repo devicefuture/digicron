@@ -29,6 +29,7 @@ namespace dataTypes {
                 unsigned int _length = 0;
 
             public:
+                String();
                 String(const char* value);
                 String(const String& other);
                 ~String();
