@@ -11,3 +11,4 @@
     - [ ] Choose date cycle (such as fixed or repeat countdown for every month or year)
     - [ ] Allow assigning to today's date (will be done in the menu with an 'are you sure' prompt)
     - [ ] Choose format to be number of days only or years, months and days
+    - [ ] Set alerts for day countdown approaching zero
