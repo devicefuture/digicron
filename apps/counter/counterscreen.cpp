@@ -1,4 +1,7 @@
 #include "counterscreen.h"
+#include "countermenu.h"
+
+CounterScreen* counterScreen;
 
 Counter* CounterScreen::getCounter() {
     if (counters.length() == 0) {
@@ -22,7 +25,7 @@ void CounterScreen::handleEvent(ui::Event event) {
     if (event.type == ui::EventType::BUTTON_DOWN) {
         switch (event.data.button) {
             case input::Button::BACK:
-                proc::stop();
+                counterMenu->openForCounter(getCounter());
                 break;
 
             case input::Button::SELECT:

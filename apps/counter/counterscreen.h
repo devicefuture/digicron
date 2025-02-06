@@ -8,15 +8,17 @@
 using namespace dc;
 using namespace dc::dataTypes;
 
-class CounterScreen : public dc::ui::Screen {
+class CounterScreen : public ui::Screen {
     public:
         Counter* getCounter();
 
         void update() override;
-        void handleEvent(dc::ui::Event event) override;
+        void handleEvent(ui::Event event) override;
 
     protected:
         int _counterIndex = 0;
 };
+
+extern CounterScreen* counterScreen;
 
 #endif

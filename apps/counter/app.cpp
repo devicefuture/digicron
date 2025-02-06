@@ -2,11 +2,10 @@
 
 #include "counters.h"
 #include "counterscreen.h"
+#include "countermenu.h"
 
 using namespace dc;
 using namespace dc::dataTypes;
-
-CounterScreen* counterScreen;
 
 void setup() {
     counters.push(new Counter("Counter", 0));
@@ -14,6 +13,7 @@ void setup() {
     counters.push(new Counter("Times I've spent hours debugging something trivial", 1000));
 
     counterScreen = new CounterScreen();
+    counterMenu = new CounterMenu();
 
     counterScreen->open(true);
 }
