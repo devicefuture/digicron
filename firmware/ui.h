@@ -156,6 +156,19 @@ namespace ui {
             String _title = "";
     };
 
+    class ConfirmationMenu : public ContextualMenu {
+        public:
+            ConfirmationMenu();
+            ConfirmationMenu(proc::Process* process);
+            ConfirmationMenu(String title, bool swapYesNo = false);
+            ConfirmationMenu(proc::Process* process, String title, bool swapYesNo = false);
+
+            bool yesSelected();
+
+            void update() override;
+            void _handleEvent(Event event) override;
+    };
+
     class Popup : public Screen {
         public:
             using Screen::Screen;

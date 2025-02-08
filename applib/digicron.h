@@ -96,6 +96,9 @@ WASM_IMPORT("digicron", "dc_ui_Menu_addItem") void dc_ui_Menu_addItem(dc::_Sid s
 WASM_IMPORT("digicron", "dc_ui_ContextualMenu_new") dc::_Sid dc_ui_ContextualMenu_new();
 WASM_IMPORT("digicron", "dc_ui_ContextualMenu_newWithTitle") dc::_Sid dc_ui_ContextualMenu_newWithTitle(char* title);
 WASM_IMPORT("digicron", "dc_ui_ContextualMenu_setTitle") void dc_ui_ContextualMenu_setTitle(dc::_Sid sid, char* title);
+WASM_IMPORT("digicron", "dc_ui_ConfirmationMenu_new") dc::_Sid dc_ui_ConfirmationMenu_new();
+WASM_IMPORT("digicron", "dc_ui_ConfirmationMenu_newWithTitle") dc::_Sid dc_ui_ConfirmationMenu_newWithTitle(char* title, bool swapYesNo);
+WASM_IMPORT("digicron", "dc_ui_ConfirmationMenu_yesSelected") bool dc_ui_ConfirmationMenu_yesSelected(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_ui_Popup_new") dc::_Sid dc_ui_Popup_new();
 WASM_IMPORT("digicron", "dc_test_TestClass_new") dc::_Sid dc_test_TestClass_new(unsigned int seed);
 WASM_IMPORT("digicron", "dc_test_TestClass_identify") void dc_test_TestClass_identify(dc::_Sid sid);
@@ -176,11 +179,17 @@ namespace dataTypes {
                 ~String();
 
                 String& operator=(const String& other);
-                char operator[](int index);
+                char operator[](int index) {return charAt(index);}
+                const bool operator==(const String& other) {return equals(other);}
+                const bool operator==(const char* other) {return equals(other);}
+                const bool operator!=(const String& other) {return !equals(other);}
+                const bool operator!=(const char* other) {return !equals(other);}
 
                 char* c_str() const;
                 unsigned int length() const;
                 char charAt(int index);
+                const bool equals(const String& other);
+                const bool equals(const char* other);
         };
     #else
         typedef String String;
@@ -228,7 +237,7 @@ namespace dataTypes {
 
 #endif
 
-enum _Type {EMPTY, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_Popup, test_TestClass, test_TestSubclass};
+enum _Type {EMPTY, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, test_TestClass, test_TestSubclass};
 
 struct _StoredInstance {
     _Type type;
@@ -246,6 +255,9 @@ template<typename T> T* _getBySid(_Type type, _Sid sid) {
             (type == _Type::ui_Screen && storedInstance->type == _Type::ui_Menu) ||
             (type == _Type::ui_Menu && storedInstance->type == _Type::ui_ContextualMenu) ||
             (type == _Type::ui_Screen && storedInstance->type == _Type::ui_ContextualMenu) ||
+            (type == _Type::ui_ContextualMenu && storedInstance->type == _Type::ui_ConfirmationMenu) ||
+            (type == _Type::ui_Menu && storedInstance->type == _Type::ui_ConfirmationMenu) ||
+            (type == _Type::ui_Screen && storedInstance->type == _Type::ui_ConfirmationMenu) ||
             (type == _Type::ui_Screen && storedInstance->type == _Type::ui_Popup) ||
             (type == _Type::test_TestClass && storedInstance->type == _Type::test_TestSubclass) ||
             false
@@ -480,6 +492,19 @@ namespace ui {
             void setTitle(dataTypes::String title) {return dc_ui_ContextualMenu_setTitle(_sid, title.c_str());}
     };
 
+    class ConfirmationMenu : public ContextualMenu {
+        protected:
+            ConfirmationMenu(_Dummy dummy) : ContextualMenu(dummy) {}
+
+        public:
+            using ContextualMenu::ContextualMenu;
+
+            ConfirmationMenu() : ContextualMenu((_Dummy) {}) {_sid = dc_ui_ConfirmationMenu_new(); _addStoredInstance(_Type::ui_ConfirmationMenu, this);}
+            ConfirmationMenu(dataTypes::String title, bool swapYesNo) {_sid = dc_ui_ConfirmationMenu_newWithTitle(title.c_str(), swapYesNo); _addStoredInstance(_Type::ui_ConfirmationMenu, this);}
+
+            bool yesSelected() {return dc_ui_ConfirmationMenu_yesSelected(_sid);}
+    };
+
     class Popup : public Screen {
         protected:
             Popup(_Dummy dummy) : Screen(dummy) {}
@@ -660,10 +685,6 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         return *this;
     }
 
-    inline char dataTypes::String::operator[](int index) {
-        return charAt(index);
-    }
-
     inline char* dataTypes::String::c_str() const {
         return _value;
     }
@@ -678,6 +699,37 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         }
 
         return _value[index];
+    }
+
+    inline const bool dataTypes::String::equals(const String& other) {
+        if (this == &other) {
+            return true;
+        }
+
+        if (length() != other.length()) {
+            return false;
+        }
+
+        return equals(other.c_str());
+    }
+
+    inline const bool dataTypes::String::equals(const char* other) {
+        if (other == _value) {
+            return true;
+        }
+
+        for (unsigned int i = 0; i < _length; i++) {
+            if (_value[i] != other[i]) {
+                return false;
+            }
+        }
+
+        if (other[_length]) {
+            // The other string is longer than this one
+            return false;
+        }
+
+        return true;
     }
 #endif
 

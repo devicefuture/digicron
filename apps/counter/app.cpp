@@ -13,6 +13,7 @@ void setup() {
     counters.push(new Counter("Times I've spent hours debugging something trivial", 1000));
 
     counterScreen = new CounterScreen();
+    resetConfirmationMenu = new ResetConfirmationMenu();
     counterMenu = new CounterMenu();
 
     counterScreen->open(true);

@@ -1,22 +1,45 @@
 #include "countermenu.h"
 
+ResetConfirmationMenu* resetConfirmationMenu;
 CounterMenu* counterMenu;
+
+void ResetConfirmationMenu::openForCounter(Counter* counter) {
+    _counter = counter;
+
+    open(false);
+}
+
+void ResetConfirmationMenu::handleEvent(ui::Event event) {
+    if (!_counter) {
+        return;
+    }
+
+    if (event.type == ui::EventType::ITEM_SELECT) {
+        if (yesSelected()) {
+            _counter->setValue(0);
+
+            counterMenu->close();
+        }
+
+        close();
+    }
+}
 
 CounterMenu::CounterMenu() : ui::ContextualMenu() {
     _counter = nullptr;
 
     items.push(new String("RESET"));
     items.push(new String("RENAME"));
-    items.push(new String("BTNACTS"));
-    items.push(new String("AUTOCNT"));
+    items.push(new String("AUTOCNT (Auto count)"));
+    items.push(new String("BTNACTS (Button actions)"));
     items.push(new String("BASE-N"));
+    items.push(new String("CH RVAL (Change reset value)"));
     items.push(new String("DELETE"));
 
     updateItems();
 }
 
 void CounterMenu::openForCounter(Counter* counter) {
-    console::log("Call");
     _counter = counter;
 
     if (counter) {
@@ -25,4 +48,16 @@ void CounterMenu::openForCounter(Counter* counter) {
     }
 
     open(false);
+}
+
+void CounterMenu::handleEvent(ui::Event event) {
+    if (event.type == ui::EventType::ITEM_SELECT) {
+        String selectedItem = *items[event.data.index];
+
+        console::log("Reset:", selectedItem, selectedItem == "RESET");
+
+        if (selectedItem == "RESET") {
+            resetConfirmationMenu->openForCounter(_counter);
+        }
+    }
 }

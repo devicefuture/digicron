@@ -23,6 +23,8 @@ ui::Screen* ui::currentScreen;
 proc::Process* ui::foregroundProcess = nullptr;
 proc::Process* ui::lastNonHomeProcess = nullptr;
 dataTypes::List<ui::Screen> ui::screenStack;
+String* yesOption = new String("YES");
+String* noOption = new String("NO");
 
 ui::Icon* menuSelectionIcon = ui::constructIcon(
     "     "
@@ -453,6 +455,88 @@ void ui::ContextualMenu::update() {
 
     scroll(*items[_currentIndex], display::COLUMNS - 1);
     print(menuScrollableIcon);
+}
+
+ui::ConfirmationMenu::ConfirmationMenu() : ui::ContextualMenu() {
+    items.push(yesOption);
+    items.push(noOption);
+}
+
+ui::ConfirmationMenu::ConfirmationMenu(proc::Process* process) : ui::ContextualMenu(process) {
+    items.push(yesOption);
+    items.push(noOption);
+}
+
+ui::ConfirmationMenu::ConfirmationMenu(String title, bool swapYesNo) : ui::ContextualMenu(title) {
+    items.push(swapYesNo ? noOption : yesOption);
+    items.push(swapYesNo ? yesOption : noOption);
+}
+
+ui::ConfirmationMenu::ConfirmationMenu(proc::Process* process, String title, bool swapYesNo) : ui::ContextualMenu(process, title) {
+    items.push(swapYesNo ? noOption : yesOption);
+    items.push(swapYesNo ? yesOption : noOption);
+}
+
+bool ui::ConfirmationMenu::yesSelected() {
+    return items[_currentIndex] == yesOption;
+}
+
+void ui::ConfirmationMenu::update() {
+    bool arrangeYesNo = items[0] == yesOption && items[1] == noOption;
+    bool arrangeNoYes = items[0] == noOption && items[1] == yesOption;
+
+    if (items.length() != 2 || !(arrangeYesNo || arrangeNoYes)) {
+        ContextualMenu::update();
+        return;
+    }
+
+    clear();
+
+    scroll(_title);
+
+    _currentIndex == 0 ? print(menuSelectionIcon) : print(' ');
+    print(arrangeYesNo ? *yesOption : *noOption);
+
+    print(' ');
+
+    _currentIndex == 1 ? print(menuSelectionIcon) : print(' ');
+    print(arrangeYesNo ? *noOption : *yesOption);
+}
+
+void ui::ConfirmationMenu::_handleEvent(ui::Event event) {
+    ui::Menu::_handleEvent(event);
+
+    if (event.type == EventType::BUTTON_DOWN) {
+        switch (event.data.button) {
+            case input::Button::LEFT:
+            {
+                if (_currentIndex > 0) {
+                    _currentIndex--;
+                } else {
+                    _currentIndex = items.length() - 1;
+                }
+
+                resetScroll();
+
+                break;
+            }
+
+            case input::Button::RIGHT:
+            {
+                if (_currentIndex < items.length() - 1) {
+                    _currentIndex++;
+                } else {
+                    _currentIndex = 0;
+                }
+
+                resetScroll();
+
+                break;
+            }
+
+            default: break;
+        }
+    }
 }
 
 void ui::Popup::open(bool urgent) {

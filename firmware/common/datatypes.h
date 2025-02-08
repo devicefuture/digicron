@@ -35,11 +35,17 @@ namespace dataTypes {
                 ~String();
 
                 String& operator=(const String& other);
-                char operator[](int index);
+                char operator[](int index) {return charAt(index);}
+                const bool operator==(const String& other) {return equals(other);}
+                const bool operator==(const char* other) {return equals(other);}
+                const bool operator!=(const String& other) {return !equals(other);}
+                const bool operator!=(const char* other) {return !equals(other);}
 
                 char* c_str() const;
                 unsigned int length() const;
                 char charAt(int index);
+                const bool equals(const String& other);
+                const bool equals(const char* other);
         };
     #else
         typedef String String;

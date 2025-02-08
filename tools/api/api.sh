@@ -125,6 +125,12 @@ namespace ui
 
         method "void" setTitle "String" title
 
+    class ConfirmationMenu extends ContextualMenu Menu Screen
+        OVERRIDE=true PASS_PROCESS=true constructor
+        INTERNAL_NAME=dc_ui_ConfirmationMenu_newWithTitle PASS_PROCESS=true constructor "String" title "bool" swapYesNo
+
+        method "bool" yesSelected
+
     class Popup extends Screen
         OVERRIDE=true PASS_PROCESS=true constructor
 

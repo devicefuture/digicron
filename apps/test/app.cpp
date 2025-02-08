@@ -122,7 +122,7 @@ class HelloMenu : public ui::ContextualMenu {
 
         void handleEvent(ui::Event event) {
             if (event.type == ui::EventType::ITEM_SELECT) {
-                confirmationPopup->setSelectedItem(*(items[event.data.index]));
+                confirmationPopup->setSelectedItem(*items[event.data.index]);
 
                 confirmationPopup->open(false);
             }

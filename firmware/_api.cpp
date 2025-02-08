@@ -23,6 +23,9 @@ template<typename T> T* api::getBySid(api::Type type, api::Sid sid) {
             (type == Type::ui_Screen && storedInstance->type == Type::ui_Menu) ||
             (type == Type::ui_Menu && storedInstance->type == Type::ui_ContextualMenu) ||
             (type == Type::ui_Screen && storedInstance->type == Type::ui_ContextualMenu) ||
+            (type == Type::ui_ContextualMenu && storedInstance->type == Type::ui_ConfirmationMenu) ||
+            (type == Type::ui_Menu && storedInstance->type == Type::ui_ConfirmationMenu) ||
+            (type == Type::ui_Screen && storedInstance->type == Type::ui_ConfirmationMenu) ||
             (type == Type::ui_Screen && storedInstance->type == Type::ui_Popup) ||
             (type == Type::test_TestClass && storedInstance->type == Type::test_TestSubclass) ||
         false
@@ -94,6 +97,7 @@ void deleteStoredInstance(api::StoredInstance* storedInstance) {
         case api::Type::ui_Screen: delete (ui::Screen*)storedInstance->instance; break;
         case api::Type::ui_Menu: delete (ui::Menu*)storedInstance->instance; break;
         case api::Type::ui_ContextualMenu: delete (ui::ContextualMenu*)storedInstance->instance; break;
+        case api::Type::ui_ConfirmationMenu: delete (ui::ConfirmationMenu*)storedInstance->instance; break;
         case api::Type::ui_Popup: delete (ui::Popup*)storedInstance->instance; break;
         case api::Type::test_TestClass: delete (test::TestClass*)storedInstance->instance; break;
         case api::Type::test_TestSubclass: delete (test::TestSubclass*)storedInstance->instance; break;
@@ -807,6 +811,37 @@ m3ApiRawFunction(api::dc_ui_ContextualMenu_setTitle) {
     m3ApiSuccess();
 }
 
+m3ApiRawFunction(api::dc_ui_ConfirmationMenu_new) {
+    m3ApiReturnType(Sid)
+
+    auto instance = new ui::ConfirmationMenu((proc::WasmProcess*)runtime->userdata);
+
+    Sid result = api::store<ui::ConfirmationMenu>(Type::ui_ConfirmationMenu, (proc::WasmProcess*)runtime->userdata, instance);
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_ui_ConfirmationMenu_newWithTitle) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArgMem(char*, title)
+    m3ApiGetArg(bool, swapYesNo)
+
+    auto instance = new ui::ConfirmationMenu((proc::WasmProcess*)runtime->userdata, String(title), swapYesNo);
+
+    Sid result = api::store<ui::ConfirmationMenu>(Type::ui_ConfirmationMenu, (proc::WasmProcess*)runtime->userdata, instance);
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_ui_ConfirmationMenu_yesSelected) {
+    m3ApiReturnType(bool)
+    m3ApiGetArg(Sid, _sid)
+
+    bool result = api::getBySid<ui::ConfirmationMenu>(Type::ui_ConfirmationMenu, _sid)->yesSelected();
+
+    m3ApiReturn(result);
+}
+
 m3ApiRawFunction(api::dc_ui_Popup_new) {
     m3ApiReturnType(Sid)
 
@@ -986,6 +1021,9 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ContextualMenu_new", "i()", &dc_ui_ContextualMenu_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ContextualMenu_newWithTitle", "i(i)", &dc_ui_ContextualMenu_newWithTitle);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ContextualMenu_setTitle", "v(ii)", &dc_ui_ContextualMenu_setTitle);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ConfirmationMenu_new", "i()", &dc_ui_ConfirmationMenu_new);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ConfirmationMenu_newWithTitle", "i(ii)", &dc_ui_ConfirmationMenu_newWithTitle);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ConfirmationMenu_yesSelected", "i(i)", &dc_ui_ConfirmationMenu_yesSelected);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_Popup_new", "i()", &dc_ui_Popup_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_new", "i(i)", &dc_test_TestClass_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_identify", "v(i)", &dc_test_TestClass_identify);

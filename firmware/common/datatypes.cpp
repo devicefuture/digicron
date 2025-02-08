@@ -65,10 +65,6 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         return *this;
     }
 
-    inline char dataTypes::String::operator[](int index) {
-        return charAt(index);
-    }
-
     inline char* dataTypes::String::c_str() const {
         return _value;
     }
@@ -83,6 +79,37 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         }
 
         return _value[index];
+    }
+
+    inline const bool dataTypes::String::equals(const String& other) {
+        if (this == &other) {
+            return true;
+        }
+
+        if (length() != other.length()) {
+            return false;
+        }
+
+        return equals(other.c_str());
+    }
+
+    inline const bool dataTypes::String::equals(const char* other) {
+        if (other == _value) {
+            return true;
+        }
+
+        for (unsigned int i = 0; i < _length; i++) {
+            if (_value[i] != other[i]) {
+                return false;
+            }
+        }
+
+        if (other[_length]) {
+            // The other string is longer than this one
+            return false;
+        }
+
+        return true;
     }
 #endif
 
