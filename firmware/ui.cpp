@@ -566,7 +566,7 @@ void ui::Popup::_update() {
             rectInset = (transitionTime * display::CHAR_ROWS) / POPUP_TRANSITION_DURATION;
 
             clear();
-            rect(rectInset * 2, rectInset, display::WIDTH - (rectInset * 2), display::HEIGHT - rectInset, PenMode::ON);
+            rect(rectInset * 2, rectInset, display::WIDTH - (rectInset * 2) - 1, display::HEIGHT - rectInset - 1, PenMode::ON);
 
             return;
         } else {
