@@ -24,10 +24,6 @@ namespace dataTypes {
 
     #ifdef DIGICRON_H_
         class String {
-            private:
-                char* _value = nullptr;
-                unsigned int _length = 0;
-
             public:
                 String();
                 String(const char* value);
@@ -46,10 +42,29 @@ namespace dataTypes {
                 char charAt(int index);
                 const bool equals(const String& other);
                 const bool equals(const char* other);
+
+            private:
+                char* _value = nullptr;
+                unsigned int _length = 0;
         };
     #else
         typedef String String;
     #endif
+
+    class Buffer {
+        public:
+            char* data = nullptr;
+
+            Buffer() {}
+            Buffer(unsigned int size);
+            Buffer(dataTypes::String string);
+            ~Buffer();
+
+            unsigned int getSize();
+
+        private:
+            unsigned int _size = 0;
+    };
 
     template<typename T> class List {
         public:

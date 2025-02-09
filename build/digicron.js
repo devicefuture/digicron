@@ -5869,10 +5869,10 @@ var wasmImports = {
 var wasmExports = createWasm();
 var ___wasm_call_ctors = createExportWrapper('__wasm_call_ctors', 0);
 var ___getTypeName = createExportWrapper('__getTypeName', 1);
-var _main = Module['_main'] = createExportWrapper('__main_argc_argv', 2);
 var _free = createExportWrapper('free', 1);
-var _fflush = createExportWrapper('fflush', 1);
 var _malloc = createExportWrapper('malloc', 1);
+var _main = Module['_main'] = createExportWrapper('__main_argc_argv', 2);
+var _fflush = createExportWrapper('fflush', 1);
 var _strerror = createExportWrapper('strerror', 1);
 var _emscripten_stack_init = () => (_emscripten_stack_init = wasmExports['emscripten_stack_init'])();
 var _emscripten_stack_get_free = () => (_emscripten_stack_get_free = wasmExports['emscripten_stack_get_free'])();
@@ -5883,7 +5883,7 @@ var __emscripten_stack_alloc = (a0) => (__emscripten_stack_alloc = wasmExports['
 var _emscripten_stack_get_current = () => (_emscripten_stack_get_current = wasmExports['emscripten_stack_get_current'])();
 var dynCall_iiiijd = Module['dynCall_iiiijd'] = createExportWrapper('dynCall_iiiijd', 7);
 var dynCall_jiji = Module['dynCall_jiji'] = createExportWrapper('dynCall_jiji', 5);
-var ___emscripten_embedded_file_data = Module['___emscripten_embedded_file_data'] = 82188;
+var ___emscripten_embedded_file_data = Module['___emscripten_embedded_file_data'] = 82348;
 
 // include: postamble.js
 // === Auto-generated postamble setup entry stuff ===

@@ -589,6 +589,10 @@ void ui::Popup::_handleEvent(ui::Event event) {
     }
 }
 
+dataTypes::String ui::TextInput::getValue() {
+    return "Hello from text input!";
+}
+
 void ui::enactScreenPermanence(ui::ScreenPermanence permanenceBoundary) {
     dataTypes::List<ui::Screen>::Iterator iterator;
 

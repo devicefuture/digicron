@@ -27,6 +27,9 @@ template<typename T> T* api::getBySid(api::Type type, api::Sid sid) {
             (type == Type::ui_Menu && storedInstance->type == Type::ui_ConfirmationMenu) ||
             (type == Type::ui_Screen && storedInstance->type == Type::ui_ConfirmationMenu) ||
             (type == Type::ui_Screen && storedInstance->type == Type::ui_Popup) ||
+            (type == Type::ui_ContextualMenu && storedInstance->type == Type::ui_TextInput) ||
+            (type == Type::ui_Menu && storedInstance->type == Type::ui_TextInput) ||
+            (type == Type::ui_Screen && storedInstance->type == Type::ui_TextInput) ||
             (type == Type::test_TestClass && storedInstance->type == Type::test_TestSubclass) ||
         false
     ))) {
@@ -91,6 +94,7 @@ void deleteStoredInstance(api::StoredInstance* storedInstance) {
     }
 
     switch (storedInstance->type) {
+        case api::Type::Buffer: delete (dataTypes::Buffer*)storedInstance->instance; break;
         case api::Type::timing_Time: delete (timing::Time*)storedInstance->instance; break;
         case api::Type::timing_EarthTime: delete (timing::EarthTime*)storedInstance->instance; break;
         case api::Type::ui_Icon: delete (ui::Icon*)storedInstance->instance; break;
@@ -99,6 +103,7 @@ void deleteStoredInstance(api::StoredInstance* storedInstance) {
         case api::Type::ui_ContextualMenu: delete (ui::ContextualMenu*)storedInstance->instance; break;
         case api::Type::ui_ConfirmationMenu: delete (ui::ConfirmationMenu*)storedInstance->instance; break;
         case api::Type::ui_Popup: delete (ui::Popup*)storedInstance->instance; break;
+        case api::Type::ui_TextInput: delete (ui::TextInput*)storedInstance->instance; break;
         case api::Type::test_TestClass: delete (test::TestClass*)storedInstance->instance; break;
         case api::Type::test_TestSubclass: delete (test::TestSubclass*)storedInstance->instance; break;
         default: delete storedInstance->instance; break;
@@ -146,6 +151,28 @@ m3ApiRawFunction(api::dc_deleteBySid) {
     m3ApiGetArg(Sid, _sid)
 
     api::deleteBySid(_sid);
+
+    m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_getBufferSize) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArg(Sid, _sid)
+
+    unsigned int result = api::getBySid<dataTypes::Buffer>(Type::Buffer, _sid)->getSize();
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_copyBufferInto) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArgMem(char*, destination)
+
+    dataTypes::Buffer* buffer = api::getBySid<dataTypes::Buffer>(Type::Buffer, _sid);
+
+    for (unsigned int i = 0; i < buffer->getSize(); i++) {
+        destination[i] = buffer->data[i];
+    }
 
     m3ApiSuccess();
 }
@@ -852,6 +879,24 @@ m3ApiRawFunction(api::dc_ui_Popup_new) {
     m3ApiReturn(result);
 }
 
+m3ApiRawFunction(api::dc_ui_TextInput_new) {
+    m3ApiReturnType(Sid)
+
+    auto instance = new ui::TextInput((proc::WasmProcess*)runtime->userdata);
+
+    Sid result = api::store<ui::TextInput>(Type::ui_TextInput, (proc::WasmProcess*)runtime->userdata, instance);
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_ui_TextInput_getValue) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(Sid, _sid)
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<ui::TextInput>(Type::ui_TextInput, _sid)->getValue()));
+
+    m3ApiReturn(result);
+}
+
 m3ApiRawFunction(api::dc_test_TestClass_new) {
     m3ApiReturnType(Sid)
     m3ApiGetArg(unsigned int, seed)
@@ -950,6 +995,8 @@ void api::linkFunctions(IM3Runtime runtime) {
 
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_getGlobalI32", "i(*)", &dc_getGlobalI32);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_deleteBySid", "v(i)", &dc_deleteBySid);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_getBufferSize", "i(i)", &dc_getBufferSize);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_copyBufferInto", "v(i*)", &dc_copyBufferInto);
 
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_proc_stop", "v()", &dc_proc_stop);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_console_logPart", "v(i)", &dc_console_logPart);
@@ -1025,6 +1072,8 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ConfirmationMenu_newWithTitle", "i(ii)", &dc_ui_ConfirmationMenu_newWithTitle);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ConfirmationMenu_yesSelected", "i(i)", &dc_ui_ConfirmationMenu_yesSelected);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_Popup_new", "i()", &dc_ui_Popup_new);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_new", "i()", &dc_ui_TextInput_new);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_getValue", "i(i)", &dc_ui_TextInput_getValue);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_new", "i(i)", &dc_test_TestClass_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_identify", "v(i)", &dc_test_TestClass_identify);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_add", "i(iii)", &dc_test_TestClass_add);

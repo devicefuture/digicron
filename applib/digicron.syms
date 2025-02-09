@@ -1,5 +1,7 @@
 dc_getGlobalI32
 dc_deleteBySid
+dc_getBufferSize
+dc_copyBufferInto
 dc_proc_stop
 dc_console_logPart
 dc_console_logPartChars
@@ -74,6 +76,8 @@ dc_ui_ConfirmationMenu_new
 dc_ui_ConfirmationMenu_newWithTitle
 dc_ui_ConfirmationMenu_yesSelected
 dc_ui_Popup_new
+dc_ui_TextInput_new
+dc_ui_TextInput_getValue
 dc_test_TestClass_new
 dc_test_TestClass_identify
 dc_test_TestClass_add

@@ -25,6 +25,8 @@ extern "C" {
 
 WASM_IMPORT("digicron", "dc_getGlobalI32") uint32_t dc_getGlobalI32(const char* id);
 WASM_IMPORT("digicron", "dc_deleteBySid") void dc_deleteBySid(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_getBufferSize") unsigned int dc_getBufferSize(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_copyBufferInto") void dc_copyBufferInto(dc::_Sid sid, void* destination);
 
 WASM_IMPORT("digicron", "dc_proc_stop") void dc_proc_stop();
 WASM_IMPORT("digicron", "dc_console_logPart") void dc_console_logPart(char* value);
@@ -100,6 +102,8 @@ WASM_IMPORT("digicron", "dc_ui_ConfirmationMenu_new") dc::_Sid dc_ui_Confirmatio
 WASM_IMPORT("digicron", "dc_ui_ConfirmationMenu_newWithTitle") dc::_Sid dc_ui_ConfirmationMenu_newWithTitle(char* title, bool swapYesNo);
 WASM_IMPORT("digicron", "dc_ui_ConfirmationMenu_yesSelected") bool dc_ui_ConfirmationMenu_yesSelected(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_ui_Popup_new") dc::_Sid dc_ui_Popup_new();
+WASM_IMPORT("digicron", "dc_ui_TextInput_new") dc::_Sid dc_ui_TextInput_new();
+WASM_IMPORT("digicron", "dc_ui_TextInput_getValue") dc::_Sid dc_ui_TextInput_getValue(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_test_TestClass_new") dc::_Sid dc_test_TestClass_new(unsigned int seed);
 WASM_IMPORT("digicron", "dc_test_TestClass_identify") void dc_test_TestClass_identify(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_test_TestClass_add") unsigned int dc_test_TestClass_add(dc::_Sid sid, unsigned int value, unsigned int value2);
@@ -168,10 +172,6 @@ namespace dataTypes {
 
     #ifdef DIGICRON_H_
         class String {
-            private:
-                char* _value = nullptr;
-                unsigned int _length = 0;
-
             public:
                 String();
                 String(const char* value);
@@ -190,10 +190,29 @@ namespace dataTypes {
                 char charAt(int index);
                 const bool equals(const String& other);
                 const bool equals(const char* other);
+
+            private:
+                char* _value = nullptr;
+                unsigned int _length = 0;
         };
     #else
         typedef String String;
     #endif
+
+    class Buffer {
+        public:
+            char* data = nullptr;
+
+            Buffer() {}
+            Buffer(unsigned int size);
+            Buffer(dataTypes::String string);
+            ~Buffer();
+
+            unsigned int getSize();
+
+        private:
+            unsigned int _size = 0;
+    };
 
     template<typename T> class List {
         public:
@@ -237,7 +256,7 @@ namespace dataTypes {
 
 #endif
 
-enum _Type {EMPTY, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, test_TestClass, test_TestSubclass};
+enum _Type {EMPTY, Buffer, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, ui_TextInput, test_TestClass, test_TestSubclass};
 
 struct _StoredInstance {
     _Type type;
@@ -259,6 +278,9 @@ template<typename T> T* _getBySid(_Type type, _Sid sid) {
             (type == _Type::ui_Menu && storedInstance->type == _Type::ui_ConfirmationMenu) ||
             (type == _Type::ui_Screen && storedInstance->type == _Type::ui_ConfirmationMenu) ||
             (type == _Type::ui_Screen && storedInstance->type == _Type::ui_Popup) ||
+            (type == _Type::ui_ContextualMenu && storedInstance->type == _Type::ui_TextInput) ||
+            (type == _Type::ui_Menu && storedInstance->type == _Type::ui_TextInput) ||
+            (type == _Type::ui_Screen && storedInstance->type == _Type::ui_TextInput) ||
             (type == _Type::test_TestClass && storedInstance->type == _Type::test_TestSubclass) ||
             false
         )) {
@@ -514,6 +536,18 @@ namespace ui {
 
             Popup() : Screen((_Dummy) {}) {_sid = dc_ui_Popup_new(); _addStoredInstance(_Type::ui_Popup, this);}
     };
+
+    class TextInput : public ContextualMenu {
+        protected:
+            TextInput(_Dummy dummy) : ContextualMenu(dummy) {}
+
+        public:
+            using ContextualMenu::ContextualMenu;
+
+            TextInput() : ContextualMenu((_Dummy) {}) {_sid = dc_ui_TextInput_new(); _addStoredInstance(_Type::ui_TextInput, this);}
+
+            dataTypes::String getValue() {dc::_Sid sid = dc_ui_TextInput_getValue(_sid); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
+    };
 }
 
 namespace test {
@@ -732,6 +766,33 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         return true;
     }
 #endif
+
+inline dataTypes::Buffer::Buffer(unsigned int size) {
+    _size = size;
+    data = (char*)malloc(size);
+}
+
+inline dataTypes::Buffer::Buffer(dataTypes::String string) {
+    _size = string.length() + 1;
+
+    data = (char*)malloc(_size);
+
+    const char* cstr = string.c_str();
+
+    for (unsigned int i = 0; i < _size; i++) {
+        data[i] = cstr[i];
+    }
+}
+
+inline dataTypes::Buffer::~Buffer() {
+    if (data) {
+        free(data);
+    }
+}
+
+inline unsigned int dataTypes::Buffer::getSize() {
+    return _size;
+}
 
 template<typename T> dataTypes::List<T>::List() {
     _firstItemPtr = nullptr;

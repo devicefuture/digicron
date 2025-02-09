@@ -15,7 +15,7 @@
 namespace api {
     typedef int Sid;
 
-    enum Type {EMPTY, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, test_TestClass, test_TestSubclass};
+    enum Type {EMPTY, Buffer, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, ui_TextInput, test_TestClass, test_TestSubclass};
 
     struct StoredInstance {
         Type type;
@@ -33,6 +33,8 @@ namespace api {
 
     m3ApiRawFunction(dc_getGlobalI32);
     m3ApiRawFunction(dc_deleteBySid);
+    m3ApiRawFunction(dc_getBufferSize);
+    m3ApiRawFunction(dc_copyBufferInto);
 
     m3ApiRawFunction(dc_proc_stop);
     m3ApiRawFunction(dc_console_logPart);
@@ -108,6 +110,8 @@ namespace api {
     m3ApiRawFunction(dc_ui_ConfirmationMenu_newWithTitle);
     m3ApiRawFunction(dc_ui_ConfirmationMenu_yesSelected);
     m3ApiRawFunction(dc_ui_Popup_new);
+    m3ApiRawFunction(dc_ui_TextInput_new);
+    m3ApiRawFunction(dc_ui_TextInput_getValue);
     m3ApiRawFunction(dc_test_TestClass_new);
     m3ApiRawFunction(dc_test_TestClass_identify);
     m3ApiRawFunction(dc_test_TestClass_add);

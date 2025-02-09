@@ -184,6 +184,14 @@ namespace ui {
             unsigned long _transitionEndsAt = 0;
     };
 
+    class TextInput : public ContextualMenu {
+        public:
+            TextInput() : ContextualMenu() {}
+            TextInput(proc::Process* process) : ContextualMenu(process) {}
+
+            dataTypes::String getValue();
+    };
+
     extern input::Button lastButton;
     extern Screen* currentScreen;
     extern proc::Process* foregroundProcess;

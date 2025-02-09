@@ -113,6 +113,33 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
     }
 #endif
 
+inline dataTypes::Buffer::Buffer(unsigned int size) {
+    _size = size;
+    data = (char*)malloc(size);
+}
+
+inline dataTypes::Buffer::Buffer(dataTypes::String string) {
+    _size = string.length() + 1;
+
+    data = (char*)malloc(_size);
+
+    const char* cstr = string.c_str();
+
+    for (unsigned int i = 0; i < _size; i++) {
+        data[i] = cstr[i];
+    }
+}
+
+inline dataTypes::Buffer::~Buffer() {
+    if (data) {
+        free(data);
+    }
+}
+
+inline unsigned int dataTypes::Buffer::getSize() {
+    return _size;
+}
+
 template<typename T> dataTypes::List<T>::List() {
     _firstItemPtr = nullptr;
     _length = 0;

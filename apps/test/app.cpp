@@ -11,6 +11,7 @@ timing::EarthTime* currentTime;
 ui::Screen* screen;
 ui::Popup* popup;
 ui::Menu* menu;
+ui::TextInput* textInput;
 
 ui::Icon* smileIcon = ui::constructIcon(
     "     "
@@ -164,6 +165,9 @@ void setup() {
     popup = new HelloPopup();
     menu = new HelloMenu();
     confirmationPopup = new ConfirmationPopup();
+    textInput = new ui::TextInput();
+
+    console::log("Input value:", textInput->getValue());
 
     screen->open(true);
 }

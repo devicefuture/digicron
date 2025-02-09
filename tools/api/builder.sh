@@ -7,7 +7,7 @@ export ENUM=
 export CLASS=
 export LAST_NAMESPACE_MEMBER=
 export HAD_CONSTRUCTOR=false
-export TAG_TYPES="EMPTY, "
+export TAG_TYPES="EMPTY, Buffer, "
 export TAG_TYPE_DELETES=""
 
 function _closeNamespace {
@@ -28,7 +28,7 @@ function namespace {
     export NAMESPACE=$1
 
     echo namespace $NAMESPACE { >> applib/digicron.h
-    echo "#include \"$NAMESPACE.h\"" >> tools/api/_api-includes.h
+    echo "#include \"${NAMESPACE:-IMPORT_PATH}.h\"" >> tools/api/_api-includes.h
     echo Including namespace: dc::$NAMESPACE
 }
 
@@ -144,10 +144,20 @@ function method {
 
     name="$2"
     returnType="$1"
-    nameAndType="$1 $2"
     virtualKeyword=
     overrideKeyword=
     superConstructorCall=
+
+    internalReturnType=$returnType
+    firmwareReturnType=$returnType
+
+    if [ "$returnType" = "String" ]; then
+        internalReturnType=dc::_Sid
+        firmwareReturnType=Sid
+        nameAndType="dataTypes::String $name"
+    else
+        nameAndType="$returnType $name"
+    fi
 
     if [ "$IN_CONSTRUCTOR" = true ]; then
         nameAndType=$1
@@ -193,14 +203,17 @@ function method {
         case "$1" in
             "void")
                 shortReturnType=v ;;
+
+            "String")
+                shortReturnType=i ;;
         esac
 
         passArgs=
         prependArg=
         prependShortArg=
 
-        if [ "$returnType" != "void" ]; then
-            echo "    m3ApiReturnType($returnType)" >> firmware/_api.cpp
+        if [ "$internalReturnType" != "void" ]; then
+            echo "    m3ApiReturnType($firmwareReturnType)" >> firmware/_api.cpp
         fi
     
         if [ "$OUT_OF_CLASS" != true ]; then
@@ -211,7 +224,7 @@ function method {
             echo "    m3ApiGetArg(Sid, _sid)" >> firmware/_api.cpp
         fi
 
-        echo -n "WASM_IMPORT(\"digicron\", \"$INTERNAL_NAME\") $1 $INTERNAL_NAME($prependArg" >> tools/api/_digicron-imports.h
+        echo -n "WASM_IMPORT(\"digicron\", \"$INTERNAL_NAME\") $internalReturnType $INTERNAL_NAME($prependArg" >> tools/api/_digicron-imports.h
 
         echo -n "    m3_LinkRawFunction(runtime->modules, MODULE_NAME, \"$INTERNAL_NAME\", \"$shortReturnType($prependShortArg" >> tools/api/_api-linker.h
 
@@ -316,6 +329,14 @@ function method {
             echo
             echo -n "    auto instance = new $NAMESPACE::$CLASS("
         ) >> firmware/_api.cpp
+    elif [ "$returnType" = "String" ]; then
+        echo ")$overrideKeyword {dc::_Sid sid = $INTERNAL_NAME($passArgs); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}" >> applib/digicron.h
+
+        if [ "$OUT_OF_CLASS" = true ]; then
+            echo -n "    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer($NAMESPACE::$name(" >> firmware/_api.cpp
+        else
+            echo -n "    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<$NAMESPACE::$CLASS>(Type::${NAMESPACE}_$CLASS, _sid)->$name(" >> firmware/_api.cpp
+        fi
     else
         echo ")$overrideKeyword {return $INTERNAL_NAME($passArgs);}" >> applib/digicron.h
 
@@ -324,7 +345,6 @@ function method {
         fi
 
         if [ "$returnType" != "void" ]; then
-
             if [ "$OUT_OF_CLASS" = true ]; then
                 echo -n "    $returnType result = $NAMESPACE::$name(" >> firmware/_api.cpp
             else
@@ -349,7 +369,13 @@ function method {
 
     echo ");" >> tools/api/_digicron-imports.h
     echo ")\", &$INTERNAL_NAME);" >> tools/api/_api-linker.h
-    echo "$firmwareArgs);" >> firmware/_api.cpp
+
+    if [ "$returnType" = "String" ]; then
+        echo "$firmwareArgs)));" >> firmware/_api.cpp
+    else
+        echo "$firmwareArgs);" >> firmware/_api.cpp
+    fi
+
     echo "" >> firmware/_api.cpp
     echo ")"
 
@@ -465,6 +491,8 @@ void api::linkFunctions(IM3Runtime runtime) {
 
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_getGlobalI32", "i(*)", &dc_getGlobalI32);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_deleteBySid", "v(i)", &dc_deleteBySid);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_getBufferSize", "i(i)", &dc_getBufferSize);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_copyBufferInto", "v(i*)", &dc_copyBufferInto);
 
 EOF
 
@@ -549,6 +577,7 @@ void deleteStoredInstance(api::StoredInstance* storedInstance) {
     }
 
     switch (storedInstance->type) {
+        case api::Type::Buffer: delete (dataTypes::Buffer*)storedInstance->instance; break;
 // {{ deletes }}
         default: delete storedInstance->instance; break;
     }
@@ -599,6 +628,28 @@ m3ApiRawFunction(api::dc_deleteBySid) {
     m3ApiSuccess();
 }
 
+m3ApiRawFunction(api::dc_getBufferSize) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArg(Sid, _sid)
+
+    unsigned int result = api::getBySid<dataTypes::Buffer>(Type::Buffer, _sid)->getSize();
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_copyBufferInto) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArgMem(char*, destination)
+
+    dataTypes::Buffer* buffer = api::getBySid<dataTypes::Buffer>(Type::Buffer, _sid);
+
+    for (unsigned int i = 0; i < buffer->getSize(); i++) {
+        destination[i] = buffer->data[i];
+    }
+
+    m3ApiSuccess();
+}
+
 EOF
 
 tee -a firmware/_api.h > /dev/null << EOF
@@ -632,6 +683,8 @@ namespace api {
 
     m3ApiRawFunction(dc_getGlobalI32);
     m3ApiRawFunction(dc_deleteBySid);
+    m3ApiRawFunction(dc_getBufferSize);
+    m3ApiRawFunction(dc_copyBufferInto);
 
 EOF
 
@@ -670,6 +723,8 @@ extern "C" {
 
 WASM_IMPORT("digicron", "dc_getGlobalI32") uint32_t dc_getGlobalI32(const char* id);
 WASM_IMPORT("digicron", "dc_deleteBySid") void dc_deleteBySid(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_getBufferSize") unsigned int dc_getBufferSize(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_copyBufferInto") void dc_copyBufferInto(dc::_Sid sid, void* destination);
 
 // {{ imports }}
 
@@ -688,6 +743,8 @@ echo >> applib/digicron.h
 
 echo dc_getGlobalI32 >> applib/digicron.syms
 echo dc_deleteBySid >> applib/digicron.syms
+echo dc_getBufferSize >> applib/digicron.syms
+echo dc_copyBufferInto >> applib/digicron.syms
 
 export -f _closeNamespace namespace _closeClass class method constructor
 

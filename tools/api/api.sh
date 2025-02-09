@@ -134,6 +134,11 @@ namespace ui
     class Popup extends Screen
         OVERRIDE=true PASS_PROCESS=true constructor
 
+    class TextInput extends ContextualMenu Menu Screen
+        OVERRIDE=true PASS_PROCESS=true constructor
+
+        method "String" getValue
+
 namespace test
     class TestClass
         constructor "unsigned int" seed
