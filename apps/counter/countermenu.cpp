@@ -35,6 +35,7 @@ CounterMenu::CounterMenu() : ui::ContextualMenu() {
     items.push(new String("BASE-N"));
     items.push(new String("CH RVAL (Change reset value)"));
     items.push(new String("DELETE"));
+    items.push(new String("+NEW"));
 
     updateItems();
 }
