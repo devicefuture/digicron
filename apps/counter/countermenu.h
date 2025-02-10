@@ -36,5 +36,6 @@ class CounterMenu : public ui::ContextualMenu {
 
 extern ResetConfirmationMenu* resetConfirmationMenu;
 extern CounterMenu* counterMenu;
+extern ui::TextInput* counterNameInput;
 
 #endif

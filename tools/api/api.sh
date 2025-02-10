@@ -73,7 +73,7 @@ namespace ui
 
     enum PopupTransitionState NONE OPENING CLOSING
 
-    enum PenMode OFF ON
+    enum PenMode OFF ON INVERT
 
     struct Event "EventType" type "union {input::Button button; unsigned int index;}" data
 
@@ -136,6 +136,7 @@ namespace ui
 
     class TextInput extends ContextualMenu Menu Screen
         OVERRIDE=true PASS_PROCESS=true constructor
+        INTERNAL_NAME=dc_ui_TextInput_newWithValue PASS_PROCESS=true constructor "String" value
 
         method "String" getValue
 

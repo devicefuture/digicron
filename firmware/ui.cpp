@@ -48,6 +48,8 @@ ui::Icon* menuScrollableIcon = ui::constructIcon(
 void ui::Icon::setPixel(unsigned int x, unsigned int y, ui::PenMode value) {
     if (value == PenMode::ON) {
         iconData[x] |= 1 << y;
+    } else if (value == PenMode::INVERT) {
+        iconData[x] ^= 1 << y;
     } else {
         iconData[x] &= ~(1 << y);
     }
@@ -99,6 +101,8 @@ void ui::Screen::setPixel(unsigned int x, unsigned int y, ui::PenMode value) {
 
     if (value == PenMode::ON) {
         *bytePointer |= 1 << y;
+    } else if (value == PenMode::INVERT) {
+        *bytePointer ^= 1 << y;
     } else {
         *bytePointer &= ~(1 << y);
     }
@@ -589,8 +593,70 @@ void ui::Popup::_handleEvent(ui::Event event) {
     }
 }
 
+ui::TextInput::TextInput() : ContextualMenu() {
+    _init();
+}
+
+ui::TextInput::TextInput(proc::Process* process) : ContextualMenu(process) {
+    _init();
+}
+
+ui::TextInput::TextInput(String value) : ContextualMenu() {
+    _value = value;
+    _caretPosition = value.length();
+
+    _init();
+}
+
+ui::TextInput::TextInput(proc::Process* process, String value) : ContextualMenu(process) {
+    _value = value;
+    _caretPosition = value.length();
+
+    _init();
+}
+
 dataTypes::String ui::TextInput::getValue() {
-    return "Hello from text input!";
+    return _value;
+}
+
+void ui::TextInput::open(bool urgent) {
+    _caretBlinkStartTime = timing::getCurrentTick();
+
+    ContextualMenu::open(urgent);
+}
+
+void ui::TextInput::update() {
+    clear();
+
+    print(_value.substring(0, display::COLUMNS));
+
+    if ((timing::getCurrentTick() - _caretBlinkStartTime) % 1000 < 500) {
+        for (unsigned int y = 0; y < display::CHAR_ROWS; y++) {
+            setPixel((_caretPosition * display::CHAR_COLUMNS) + 0, y, PenMode::ON);
+            setPixel((_caretPosition * display::CHAR_COLUMNS) + 1, y, PenMode::OFF);
+        }
+    }
+
+    if (items.length() == 0) {
+        return ContextualMenu::update();
+    }
+
+    setPosition(0, 1);
+    scroll(*items[_currentIndex], display::COLUMNS - 1);
+    print(menuScrollableIcon);
+}
+
+void ui::TextInput::_handleEvent(ui::Event event) {
+    ContextualMenu::_handleEvent(event);
+}
+
+void ui::TextInput::_init() {
+    addItem("eaoiu^.");
+    addItem("tnrcfpj");
+    addItem("shlmwbx");
+    addItem("dgyvkqz");
+    addItem("01234");
+    addItem("56789");
 }
 
 void ui::enactScreenPermanence(ui::ScreenPermanence permanenceBoundary) {

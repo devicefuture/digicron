@@ -37,7 +37,8 @@ namespace ui {
 
     enum PenMode {
         OFF,
-        ON
+        ON,
+        INVERT
     };
 
     struct Event {
@@ -186,10 +187,24 @@ namespace ui {
 
     class TextInput : public ContextualMenu {
         public:
-            TextInput() : ContextualMenu() {}
-            TextInput(proc::Process* process) : ContextualMenu(process) {}
+            TextInput();
+            TextInput(proc::Process* process);
+            TextInput(String value);
+            TextInput(proc::Process* process, String value);
 
             dataTypes::String getValue();
+
+            void open(bool urgent = false) override;
+
+            void update() override;
+            void _handleEvent(Event event) override;
+
+        protected:
+            String _value = "";
+            unsigned int _caretPosition = 0;
+            unsigned int _caretBlinkStartTime = 0;
+
+            void _init();
     };
 
     extern input::Button lastButton;

@@ -2,6 +2,7 @@
 
 ResetConfirmationMenu* resetConfirmationMenu;
 CounterMenu* counterMenu;
+ui::TextInput* counterNameInput;
 
 void ResetConfirmationMenu::openForCounter(Counter* counter) {
     _counter = counter;
@@ -55,10 +56,12 @@ void CounterMenu::handleEvent(ui::Event event) {
     if (event.type == ui::EventType::ITEM_SELECT) {
         String selectedItem = *items[event.data.index];
 
-        console::log("Reset:", selectedItem, selectedItem == "RESET");
-
         if (selectedItem == "RESET") {
             resetConfirmationMenu->openForCounter(_counter);
+        }
+
+        if (selectedItem == "RENAME") {
+            counterNameInput->open(false);
         }
     }
 }

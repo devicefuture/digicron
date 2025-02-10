@@ -167,8 +167,6 @@ void setup() {
     confirmationPopup = new ConfirmationPopup();
     textInput = new ui::TextInput();
 
-    console::log("Input value:", textInput->getValue());
-
     screen->open(true);
 }
 

@@ -111,6 +111,7 @@ namespace api {
     m3ApiRawFunction(dc_ui_ConfirmationMenu_yesSelected);
     m3ApiRawFunction(dc_ui_Popup_new);
     m3ApiRawFunction(dc_ui_TextInput_new);
+    m3ApiRawFunction(dc_ui_TextInput_newWithValue);
     m3ApiRawFunction(dc_ui_TextInput_getValue);
     m3ApiRawFunction(dc_test_TestClass_new);
     m3ApiRawFunction(dc_test_TestClass_identify);

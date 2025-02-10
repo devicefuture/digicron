@@ -103,6 +103,7 @@ WASM_IMPORT("digicron", "dc_ui_ConfirmationMenu_newWithTitle") dc::_Sid dc_ui_Co
 WASM_IMPORT("digicron", "dc_ui_ConfirmationMenu_yesSelected") bool dc_ui_ConfirmationMenu_yesSelected(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_ui_Popup_new") dc::_Sid dc_ui_Popup_new();
 WASM_IMPORT("digicron", "dc_ui_TextInput_new") dc::_Sid dc_ui_TextInput_new();
+WASM_IMPORT("digicron", "dc_ui_TextInput_newWithValue") dc::_Sid dc_ui_TextInput_newWithValue(char* value);
 WASM_IMPORT("digicron", "dc_ui_TextInput_getValue") dc::_Sid dc_ui_TextInput_getValue(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_test_TestClass_new") dc::_Sid dc_test_TestClass_new(unsigned int seed);
 WASM_IMPORT("digicron", "dc_test_TestClass_identify") void dc_test_TestClass_identify(dc::_Sid sid);
@@ -424,7 +425,8 @@ namespace ui {
 
     enum PenMode {
         OFF,
-        ON
+        ON,
+        INVERT
     };
 
     struct Event {
@@ -545,6 +547,7 @@ namespace ui {
             using ContextualMenu::ContextualMenu;
 
             TextInput() : ContextualMenu((_Dummy) {}) {_sid = dc_ui_TextInput_new(); _addStoredInstance(_Type::ui_TextInput, this);}
+            TextInput(dataTypes::String value) {_sid = dc_ui_TextInput_newWithValue(value.c_str()); _addStoredInstance(_Type::ui_TextInput, this);}
 
             dataTypes::String getValue() {dc::_Sid sid = dc_ui_TextInput_getValue(_sid); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
     };

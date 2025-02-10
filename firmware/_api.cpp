@@ -889,6 +889,17 @@ m3ApiRawFunction(api::dc_ui_TextInput_new) {
     m3ApiReturn(result);
 }
 
+m3ApiRawFunction(api::dc_ui_TextInput_newWithValue) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArgMem(char*, value)
+
+    auto instance = new ui::TextInput((proc::WasmProcess*)runtime->userdata, String(value));
+
+    Sid result = api::store<ui::TextInput>(Type::ui_TextInput, (proc::WasmProcess*)runtime->userdata, instance);
+
+    m3ApiReturn(result);
+}
+
 m3ApiRawFunction(api::dc_ui_TextInput_getValue) {
     m3ApiReturnType(Sid)
     m3ApiGetArg(Sid, _sid)
@@ -1073,6 +1084,7 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ConfirmationMenu_yesSelected", "i(i)", &dc_ui_ConfirmationMenu_yesSelected);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_Popup_new", "i()", &dc_ui_Popup_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_new", "i()", &dc_ui_TextInput_new);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_newWithValue", "i(i)", &dc_ui_TextInput_newWithValue);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_getValue", "i(i)", &dc_ui_TextInput_getValue);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_new", "i(i)", &dc_test_TestClass_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_identify", "v(i)", &dc_test_TestClass_identify);
