@@ -641,12 +641,40 @@ void ui::TextInput::update() {
         return ContextualMenu::update();
     }
 
+    if (_choosingColumn) {
+        if (timing::getCurrentTick() - _timeSinceColumnChange > 1000) {
+            String valueAfterCaret = _value.substring(_caretPosition);
+
+            _value = _value.substring(0, _caretPosition);
+
+            _value.concat(items[_currentIndex]->charAt(_currentColumn));
+            _value.concat(valueAfterCaret);
+
+            _choosingColumn = false;
+            _currentIndex = 0;
+            _caretPosition++;
+        }
+
+        setPosition(_currentColumn, 1);
+        print(items[_currentIndex]->charAt(_currentColumn));
+
+        return;
+    }
+
     setPosition(0, 1);
     scroll(*items[_currentIndex], display::COLUMNS - 1);
     print(menuScrollableIcon);
 }
 
 void ui::TextInput::_handleEvent(ui::Event event) {
+    if (event.type == ui::EventType::BUTTON_DOWN && event.data.button == input::Button::SELECT) {
+        _currentColumn = _choosingColumn ? _currentColumn + 1 : 0;
+        _choosingColumn = true;
+        _timeSinceColumnChange = timing::getCurrentTick();
+
+        return;
+    }
+
     ContextualMenu::_handleEvent(event);
 }
 
