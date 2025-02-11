@@ -27,6 +27,24 @@ dataTypes::String ui::TextInput::getValue() {
     return _value;
 }
 
+void ui::TextInput::typeText(char text) {
+    String valueAfterCaret = _value.substring(_caretPosition);
+
+    _value = _value.substring(0, _caretPosition);
+
+    _value.concat(text);
+    _value.concat(valueAfterCaret);
+
+    _caretPosition++;
+    _caretBlinkStartTime = timing::getCurrentTick();
+}
+
+void ui::TextInput::typeText(String text) {
+    for (unsigned int i = 0; i < text.length(); i++) {
+        typeText(text[i]);
+    }
+}
+
 void ui::TextInput::open(bool urgent) {
     _caretBlinkStartTime = timing::getCurrentTick();
 
@@ -51,16 +69,10 @@ void ui::TextInput::update() {
 
     if (_choosingColumn) {
         if (timing::getCurrentTick() - _timeSinceColumnChange > 1000) {
-            String valueAfterCaret = _value.substring(_caretPosition);
-
-            _value = _value.substring(0, _caretPosition);
-
-            _value.concat(items[_currentIndex]->charAt(_currentColumn));
-            _value.concat(valueAfterCaret);
+            typeText(items[_currentIndex]->charAt(_currentColumn));
 
             _choosingColumn = false;
             _currentIndex = 0;
-            _caretPosition++;
         }
 
         setPosition(_currentColumn, 1);
@@ -75,12 +87,51 @@ void ui::TextInput::update() {
 }
 
 void ui::TextInput::_handleEvent(ui::Event event) {
-    if (event.type == ui::EventType::BUTTON_DOWN && event.data.button == input::Button::SELECT) {
-        _currentColumn = _choosingColumn ? _currentColumn + 1 : 0;
-        _choosingColumn = true;
-        _timeSinceColumnChange = timing::getCurrentTick();
+    if (event.type == ui::EventType::BUTTON_DOWN) {
+        switch (event.data.button) {
+            case input::Button::LEFT:
+            {
+                if (_caretPosition == 0) {
+                    return;
+                }
 
-        return;
+                String valueAfterCaret = _value.substring(_caretPosition);
+
+                _value = _value.substring(0, _caretPosition - 1);
+
+                _value.concat(valueAfterCaret);
+
+                _caretPosition--;
+                _caretBlinkStartTime = timing::getCurrentTick();
+
+                return;
+            }
+
+            case input::Button::RIGHT:
+            {
+                typeText(' ');
+                return;
+            }
+ 
+            case input::Button::SELECT:
+            {
+                _currentColumn = _choosingColumn ? _currentColumn + 1 : 0;
+
+                if (_currentColumn >= items[_currentIndex]->length()) {
+                    _choosingColumn = false;
+                    _currentColumn = 0;
+
+                    return;
+                }
+
+                _choosingColumn = true;
+                _timeSinceColumnChange = timing::getCurrentTick();
+
+                return;
+            }
+
+            default: break;
+        }
     }
 
     ContextualMenu::_handleEvent(event);

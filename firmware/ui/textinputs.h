@@ -13,6 +13,8 @@ namespace ui {
             TextInput(proc::Process* process, String value);
 
             dataTypes::String getValue();
+            void typeText(char text);
+            void typeText(String text);
 
             void open(bool urgent = false) override;
 
