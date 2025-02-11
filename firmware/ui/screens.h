@@ -4,6 +4,7 @@
 #include "../ui.h"
 
 namespace ui {
+    const unsigned int BUTTON_DEBOUNCE_DURATION = 25;
     const unsigned int SCROLL_DELAY = 1000;
     const unsigned int SCROLL_INTERVAL = 250;
 

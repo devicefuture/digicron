@@ -16,6 +16,9 @@ proc::Process* ui::foregroundProcess = nullptr;
 proc::Process* ui::lastNonHomeProcess = nullptr;
 dataTypes::List<ui::Screen> ui::screenStack;
 
+unsigned int lastButtonPressTime = 0;
+unsigned int lastButtonReleaseTime = 0;
+
 ui::Screen::Screen() {
     clear();
     resetScroll();
@@ -348,15 +351,25 @@ void ui::renderCurrentScreen() {
 
     if (currentButton != lastButton) {
         if (lastButton != input::Button::NONE) {
+            if (timing::getCurrentTick() - lastButtonPressTime < BUTTON_DEBOUNCE_DURATION) {
+                goto render;
+            }
+
             Event buttonUpEvent = {
                 .type = EventType::BUTTON_UP,
                 .data = {.button = lastButton}
             };
 
             currentScreen->_handleEvent(buttonUpEvent);
+
+            lastButtonReleaseTime = timing::getCurrentTick();
         }
 
         if (currentButton != input::Button::NONE) {
+            if (timing::getCurrentTick() - lastButtonReleaseTime < BUTTON_DEBOUNCE_DURATION) {
+                goto render;
+            }
+
             Event buttonDownEvent = {
                 .type = EventType::BUTTON_DOWN,
                 .data = {.button = currentButton}
@@ -378,10 +391,14 @@ void ui::renderCurrentScreen() {
                     determineCurrentScreen();
                 }
             }
+
+            lastButtonPressTime = timing::getCurrentTick();
         }
 
         lastButton = currentButton;
     }
+
+    render:
 
     currentScreen->_update();
 
