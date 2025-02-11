@@ -30,6 +30,7 @@ target_include_directories(Wasm3 PUBLIC ${CMAKE_SOURCE_DIR}/lib/wasm3/source)
 file(GLOB SOURCES
     ${CMAKE_SOURCE_DIR}/firmware/*.cpp
     ${CMAKE_SOURCE_DIR}/firmware/common/*.cpp
+    ${CMAKE_SOURCE_DIR}/firmware/ui/*.cpp
 )
 
 add_executable(digicron ${SOURCES})
