@@ -151,7 +151,10 @@ void setup() {
         console::log("Adding method works!");
     }
 
-    testClass->bools(true, false, true);
+    console::log("Bool return:", (char)testClass->bools(true, false, true));
+    console::log("Bool return (all false):", (char)testClass->bools(false, false, false));
+    console::log("Normal bool:", true);
+    console::log("Normal bool:", false);
 
     testSubclass = new test::TestSubclass(10);
 

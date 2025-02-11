@@ -111,7 +111,7 @@ WASM_IMPORT("digicron", "dc_ui_TextInput_typeText") void dc_ui_TextInput_typeTex
 WASM_IMPORT("digicron", "dc_test_TestClass_new") dc::_Sid dc_test_TestClass_new(unsigned int seed);
 WASM_IMPORT("digicron", "dc_test_TestClass_identify") void dc_test_TestClass_identify(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_test_TestClass_add") unsigned int dc_test_TestClass_add(dc::_Sid sid, unsigned int value, unsigned int value2);
-WASM_IMPORT("digicron", "dc_test_TestClass_bools") void dc_test_TestClass_bools(dc::_Sid sid, bool a, bool b, bool c);
+WASM_IMPORT("digicron", "dc_test_TestClass_bools") bool dc_test_TestClass_bools(dc::_Sid sid, bool a, bool b, bool c);
 WASM_IMPORT("digicron", "dc_test_TestClass_nextRandomNumber") unsigned int dc_test_TestClass_nextRandomNumber(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_test_TestSubclass_new") dc::_Sid dc_test_TestSubclass_new(unsigned int seed);
 WASM_IMPORT("digicron", "dc_test_TestSubclass_identify") void dc_test_TestSubclass_identify(dc::_Sid sid);
@@ -576,7 +576,7 @@ namespace test {
 
             virtual void identify() {return dc_test_TestClass_identify(_sid);}
             unsigned int add(unsigned int value, unsigned int value2) {return dc_test_TestClass_add(_sid, value, value2);}
-            void bools(bool a, bool b, bool c) {return dc_test_TestClass_bools(_sid, a, b, c);}
+            bool bools(bool a, bool b, bool c) {return dc_test_TestClass_bools(_sid, a, b, c);}
             unsigned int nextRandomNumber() {return dc_test_TestClass_nextRandomNumber(_sid);}
     };
 

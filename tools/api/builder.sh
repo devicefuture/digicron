@@ -151,6 +151,10 @@ function method {
     internalReturnType=$returnType
     firmwareReturnType=$returnType
 
+    if [ "$returnType" = "bool" ]; then
+        firmwareReturnType="unsigned int"
+    fi
+
     if [ "$returnType" = "String" ]; then
         internalReturnType=dc::_Sid
         firmwareReturnType=Sid
@@ -346,9 +350,9 @@ function method {
 
         if [ "$returnType" != "void" ]; then
             if [ "$OUT_OF_CLASS" = true ]; then
-                echo -n "    $returnType result = $NAMESPACE::$name(" >> firmware/_api.cpp
+                echo -n "    $firmwareReturnType result = $NAMESPACE::$name(" >> firmware/_api.cpp
             else
-                echo -n "    $returnType result = api::getBySid<$NAMESPACE::$CLASS>(Type::${NAMESPACE}_$CLASS, _sid)->$name(" >> firmware/_api.cpp
+                echo -n "    $firmwareReturnType result = api::getBySid<$NAMESPACE::$CLASS>(Type::${NAMESPACE}_$CLASS, _sid)->$name(" >> firmware/_api.cpp
             fi
         else
             if [ "$OUT_OF_CLASS" = true ]; then

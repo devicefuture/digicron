@@ -322,10 +322,10 @@ m3ApiRawFunction(api::dc_timing_Time_millisecondsInDay) {
 }
 
 m3ApiRawFunction(api::dc_timing_Time_inLeapMillisecond) {
-    m3ApiReturnType(bool)
+    m3ApiReturnType(unsigned int)
     m3ApiGetArg(Sid, _sid)
 
-    bool result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->inLeapMillisecond();
+    unsigned int result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->inLeapMillisecond();
 
     m3ApiReturn(result);
 }
@@ -861,10 +861,10 @@ m3ApiRawFunction(api::dc_ui_ConfirmationMenu_newWithTitle) {
 }
 
 m3ApiRawFunction(api::dc_ui_ConfirmationMenu_yesSelected) {
-    m3ApiReturnType(bool)
+    m3ApiReturnType(unsigned int)
     m3ApiGetArg(Sid, _sid)
 
-    bool result = api::getBySid<ui::ConfirmationMenu>(Type::ui_ConfirmationMenu, _sid)->yesSelected();
+    unsigned int result = api::getBySid<ui::ConfirmationMenu>(Type::ui_ConfirmationMenu, _sid)->yesSelected();
 
     m3ApiReturn(result);
 }
@@ -966,14 +966,15 @@ m3ApiRawFunction(api::dc_test_TestClass_add) {
 }
 
 m3ApiRawFunction(api::dc_test_TestClass_bools) {
+    m3ApiReturnType(unsigned int)
     m3ApiGetArg(Sid, _sid)
     m3ApiGetArg(bool, a)
     m3ApiGetArg(bool, b)
     m3ApiGetArg(bool, c)
 
-    api::getBySid<test::TestClass>(Type::test_TestClass, _sid)->bools(a, b, c);
+    unsigned int result = api::getBySid<test::TestClass>(Type::test_TestClass, _sid)->bools(a, b, c);
 
-    m3ApiSuccess();
+    m3ApiReturn(result);
 }
 
 m3ApiRawFunction(api::dc_test_TestClass_nextRandomNumber) {
@@ -1119,7 +1120,7 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_new", "i(i)", &dc_test_TestClass_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_identify", "v(i)", &dc_test_TestClass_identify);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_add", "i(iii)", &dc_test_TestClass_add);
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_bools", "v(iiii)", &dc_test_TestClass_bools);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_bools", "i(iiii)", &dc_test_TestClass_bools);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_nextRandomNumber", "i(i)", &dc_test_TestClass_nextRandomNumber);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestSubclass_new", "i(i)", &dc_test_TestSubclass_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestSubclass_identify", "v(i)", &dc_test_TestSubclass_identify);

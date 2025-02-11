@@ -27,8 +27,10 @@ unsigned int test::TestClass::add(unsigned int value, unsigned int value2) {
     return value + value2;
 }
 
-void test::TestClass::bools(bool a, bool b, bool c) {
+bool test::TestClass::bools(bool a, bool b, bool c) {
     Serial.printf("Bools: %d%d%d\n", a, b, c);
+
+    return a || b || c;
 }
 
 unsigned int test::TestClass::nextRandomNumber() {

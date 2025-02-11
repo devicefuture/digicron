@@ -11,7 +11,7 @@ namespace test {
 
             virtual void identify();
             unsigned int add(unsigned int value, unsigned int value2);
-            void bools(bool a, bool b, bool c);
+            bool bools(bool a, bool b, bool c);
             unsigned int nextRandomNumber();
 
         protected:

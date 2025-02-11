@@ -6,6 +6,7 @@ namespace proc
 namespace console
     PASS_PROCESS=true fn "void" logPart "String" value
     INTERNAL_NAME=dc_console_logPartChars PASS_PROCESS=true fn "void" logPart "char*" value
+    # INTERNAL_NAME=dc_console_logPartBool PASS_PROCESS=true fn "void" logPart "bool" value
     INTERNAL_NAME=dc_console_logPartUInt PASS_PROCESS=true fn "void" logPart "unsigned int" value
     INTERNAL_NAME=dc_console_logPartInt PASS_PROCESS=true fn "void" logPart "int" value
     INTERNAL_NAME=dc_console_logPartULong PASS_PROCESS=true fn "void" logPart "unsigned long" value
@@ -149,7 +150,7 @@ namespace test
 
         VIRTUAL=true method "void" identify
         method "unsigned int" add "unsigned int" value "unsigned int" value2
-        method "void" bools "bool" a "bool" b "bool" c
+        method "bool" bools "bool" a "bool" b "bool" c
         method "unsigned int" nextRandomNumber
 
     class TestSubclass extends TestClass
