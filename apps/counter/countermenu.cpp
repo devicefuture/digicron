@@ -2,7 +2,7 @@
 
 ResetConfirmationMenu* resetConfirmationMenu;
 CounterMenu* counterMenu;
-ui::TextInput* counterNameInput;
+CounterNameInput* counterNameInput;
 
 void ResetConfirmationMenu::openForCounter(Counter* counter) {
     _counter = counter;
@@ -26,9 +26,35 @@ void ResetConfirmationMenu::handleEvent(ui::Event event) {
     }
 }
 
-CounterMenu::CounterMenu() : ui::ContextualMenu() {
-    _counter = nullptr;
+void CounterNameInput::openForCounter(Counter* counter) {
+    _counter = counter;
 
+    setValue(_counter->getName());
+
+    open(false);
+}
+
+void CounterNameInput::openForCounterMenu(CounterMenu* counterMenu, Counter* counter) {
+    _counterMenu = counterMenu;
+
+    openForCounter(counter);
+}
+
+void CounterNameInput::handleEvent(ui::Event event) {
+    if (!_counter) {
+        return;
+    }
+
+    if (event.type == ui::EventType::CONFIRM_VALUE) {
+        _counter->setName(getValue());
+
+        if (_counterMenu) {
+            _counterMenu->setTitle(getValue());
+        }
+    }
+}
+
+CounterMenu::CounterMenu() : ui::ContextualMenu() {
     items.push(new String("RESET"));
     items.push(new String("RENAME"));
     items.push(new String("AUTOCNT (Auto count)"));
@@ -61,7 +87,7 @@ void CounterMenu::handleEvent(ui::Event event) {
         }
 
         if (selectedItem == "RENAME") {
-            counterNameInput->open(false);
+            counterNameInput->openForCounterMenu(this, _counter);
         }
     }
 }

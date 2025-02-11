@@ -8,18 +8,32 @@
 using namespace dc;
 using namespace dc::dataTypes;
 
+class CounterMenu;
+
 class ResetConfirmationMenu : public ui::ConfirmationMenu {
     public:
-        ResetConfirmationMenu() : ConfirmationMenu("Reset?", true) {
-            _counter = nullptr;
-        }
+        ResetConfirmationMenu() : ConfirmationMenu("Reset?", true) {}
 
         void openForCounter(Counter* counter);
 
         void handleEvent(ui::Event event) override;
 
     private:
-        Counter* _counter;
+        Counter* _counter = nullptr;
+};
+
+class CounterNameInput : public ui::TextInput {
+    public:
+        CounterNameInput() : TextInput() {}
+
+        void openForCounter(Counter* counter);
+        void openForCounterMenu(CounterMenu* counterMenu, Counter* counter);
+
+        void handleEvent(ui::Event event) override;
+
+    private:
+        Counter* _counter = nullptr;
+        CounterMenu* _counterMenu = nullptr;
 };
 
 class CounterMenu : public ui::ContextualMenu {
@@ -31,11 +45,11 @@ class CounterMenu : public ui::ContextualMenu {
         void handleEvent(ui::Event event) override;
 
     private:
-        Counter* _counter;
+        Counter* _counter = nullptr;
 };
 
 extern ResetConfirmationMenu* resetConfirmationMenu;
 extern CounterMenu* counterMenu;
-extern ui::TextInput* counterNameInput;
+extern CounterNameInput* counterNameInput;
 
 #endif

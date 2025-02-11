@@ -79,6 +79,9 @@ dc_ui_Popup_new
 dc_ui_TextInput_new
 dc_ui_TextInput_newWithValue
 dc_ui_TextInput_getValue
+dc_ui_TextInput_setValue
+dc_ui_TextInput_typeTextChar
+dc_ui_TextInput_typeText
 dc_test_TestClass_new
 dc_test_TestClass_identify
 dc_test_TestClass_add

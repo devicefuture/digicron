@@ -1,10 +1,24 @@
 #ifndef UI_TEXTINPUTS_H_
 #define UI_TEXTINPUTS_H_
 
-#include "menus.h"
 #include "../ui.h"
 
 namespace ui {
+    class TextInput;
+
+    class TextInputConfirmationMenu : public ConfirmationMenu {
+        public:
+            TextInputConfirmationMenu(TextInput* textInput);
+            TextInputConfirmationMenu(proc::Process* process, TextInput* textInput);
+
+            void handleEvent(Event event) override;
+
+        private:
+            TextInput* _textInput;
+
+            void _init();
+    };
+
     class TextInput : public ContextualMenu {
         public:
             TextInput();
@@ -12,7 +26,11 @@ namespace ui {
             TextInput(String value);
             TextInput(proc::Process* process, String value);
 
-            dataTypes::String getValue();
+            ~TextInput();
+
+            String getValue();
+            void setValue(String value);
+
             void typeText(char text);
             void typeText(String text);
 
@@ -28,6 +46,7 @@ namespace ui {
             bool _choosingColumn = false;
             unsigned int _currentColumn = 0;
             unsigned int _timeSinceColumnChange = 0;
+            TextInputConfirmationMenu* _confirmationMenu = nullptr;
 
             void _init();
     };

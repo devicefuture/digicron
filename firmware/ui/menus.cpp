@@ -170,17 +170,23 @@ bool ui::ConfirmationMenu::yesSelected() {
 }
 
 void ui::ConfirmationMenu::update() {
-    bool arrangeYesNo = items[0] == yesOption && items[1] == noOption;
-    bool arrangeNoYes = items[0] == noOption && items[1] == yesOption;
-
-    if (items.length() != 2 || !(arrangeYesNo || arrangeNoYes)) {
-        ContextualMenu::update();
-        return;
-    }
-
     clear();
 
     scroll(_title);
+
+    if (items.length() < 2) {
+        print(menuSelectionIcon);
+        scroll(*items[_currentIndex], display::COLUMNS - 1);
+    }
+
+    bool arrangeYesNo = items[0] == yesOption && items[1] == noOption;
+    bool arrangeNoYes = items[0] == noOption && items[1] == yesOption;
+
+    if (!(arrangeYesNo || arrangeNoYes) || _currentIndex >= 2) {
+        print(menuSelectionIcon);
+        scroll(*items[_currentIndex], display::COLUMNS - 1);
+        return;
+    }
 
     _currentIndex == 0 ? print(menuSelectionIcon) : print(' ');
     print(arrangeYesNo ? *yesOption : *noOption);

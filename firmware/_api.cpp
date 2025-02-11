@@ -908,6 +908,33 @@ m3ApiRawFunction(api::dc_ui_TextInput_getValue) {
     m3ApiReturn(result);
 }
 
+m3ApiRawFunction(api::dc_ui_TextInput_setValue) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArgMem(char*, value)
+
+    api::getBySid<ui::TextInput>(Type::ui_TextInput, _sid)->setValue(String(value));
+
+    m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_ui_TextInput_typeTextChar) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArg(char, text)
+
+    api::getBySid<ui::TextInput>(Type::ui_TextInput, _sid)->typeText(text);
+
+    m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_ui_TextInput_typeText) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArgMem(char*, text)
+
+    api::getBySid<ui::TextInput>(Type::ui_TextInput, _sid)->typeText(String(text));
+
+    m3ApiSuccess();
+}
+
 m3ApiRawFunction(api::dc_test_TestClass_new) {
     m3ApiReturnType(Sid)
     m3ApiGetArg(unsigned int, seed)
@@ -1086,6 +1113,9 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_new", "i()", &dc_ui_TextInput_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_newWithValue", "i(i)", &dc_ui_TextInput_newWithValue);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_getValue", "i(i)", &dc_ui_TextInput_getValue);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_setValue", "v(ii)", &dc_ui_TextInput_setValue);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_typeTextChar", "v(ii)", &dc_ui_TextInput_typeTextChar);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_typeText", "v(ii)", &dc_ui_TextInput_typeText);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_new", "i(i)", &dc_test_TestClass_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_identify", "v(i)", &dc_test_TestClass_identify);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_add", "i(iii)", &dc_test_TestClass_add);

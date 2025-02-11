@@ -113,6 +113,9 @@ namespace api {
     m3ApiRawFunction(dc_ui_TextInput_new);
     m3ApiRawFunction(dc_ui_TextInput_newWithValue);
     m3ApiRawFunction(dc_ui_TextInput_getValue);
+    m3ApiRawFunction(dc_ui_TextInput_setValue);
+    m3ApiRawFunction(dc_ui_TextInput_typeTextChar);
+    m3ApiRawFunction(dc_ui_TextInput_typeText);
     m3ApiRawFunction(dc_test_TestClass_new);
     m3ApiRawFunction(dc_test_TestClass_identify);
     m3ApiRawFunction(dc_test_TestClass_add);

@@ -15,7 +15,7 @@ void setup() {
     counterScreen = new CounterScreen();
     resetConfirmationMenu = new ResetConfirmationMenu();
     counterMenu = new CounterMenu();
-    counterNameInput = new ui::TextInput();
+    counterNameInput = new CounterNameInput();
 
     counterScreen->open(true);
 }

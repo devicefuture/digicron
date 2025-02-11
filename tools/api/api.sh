@@ -69,7 +69,7 @@ namespace input
         "SELECT = 7"
 
 namespace ui
-    enum EventType BUTTON_DOWN BUTTON_UP ITEM_SELECT CANCEL
+    enum EventType BUTTON_DOWN BUTTON_UP ITEM_SELECT CANCEL CONFIRM_VALUE
 
     enum PopupTransitionState NONE OPENING CLOSING
 
@@ -139,6 +139,9 @@ namespace ui
         INTERNAL_NAME=dc_ui_TextInput_newWithValue PASS_PROCESS=true constructor "String" value
 
         method "String" getValue
+        method "void" setValue "String" value
+        INTERNAL_NAME=dc_ui_TextInput_typeTextChar method "void" typeText "char" text
+        method "void" typeText "String" text
 
 namespace test
     class TestClass

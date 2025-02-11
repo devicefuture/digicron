@@ -13,7 +13,8 @@ namespace ui {
         BUTTON_DOWN,
         BUTTON_UP,
         ITEM_SELECT,
-        CANCEL
+        CANCEL,
+        CONFIRM_VALUE
     };
 
     enum PenMode {

@@ -1,6 +1,44 @@
 #include "textinputs.h"
 #include "../timing.h"
 
+ui::TextInputConfirmationMenu::TextInputConfirmationMenu(TextInput* textInput) : ConfirmationMenu(textInput->getValue()) {
+    _textInput = textInput;
+
+    _init();
+}
+
+ui::TextInputConfirmationMenu::TextInputConfirmationMenu(proc::Process* process, TextInput* textInput) : ConfirmationMenu(process, textInput->getValue()) {
+    _textInput = textInput;
+
+    _init();
+}
+
+void ui::TextInputConfirmationMenu::_init() {
+    addItem("CANCEL");
+}
+
+void ui::TextInputConfirmationMenu::handleEvent(ui::Event event) {
+    if (event.type == EventType::CANCEL) {
+        _textInput->_handleEvent((Event) {
+            .type = EventType::CANCEL
+        });
+
+        _textInput->close();
+    }
+
+    if (event.type == EventType::ITEM_SELECT) {
+        if (event.data.index < 2) {
+            _textInput->_handleEvent((Event) {
+                .type = yesSelected() ? EventType::CONFIRM_VALUE : EventType::CANCEL
+            });
+
+            _textInput->close();
+        }
+
+        close();
+    }
+}
+
 ui::TextInput::TextInput() : ContextualMenu() {
     _init();
 }
@@ -23,8 +61,21 @@ ui::TextInput::TextInput(proc::Process* process, String value) : ContextualMenu(
     _init();
 }
 
-dataTypes::String ui::TextInput::getValue() {
+ui::TextInput::~TextInput() {
+    if (_confirmationMenu) {
+        delete _confirmationMenu;
+    }
+}
+
+String ui::TextInput::getValue() {
     return _value;
+}
+
+void ui::TextInput::setValue(String value) {
+    _value = value;
+    _caretPosition = 0;
+
+    // TODO: Reset text scroll
 }
 
 void ui::TextInput::typeText(char text) {
@@ -89,6 +140,19 @@ void ui::TextInput::update() {
 void ui::TextInput::_handleEvent(ui::Event event) {
     if (event.type == ui::EventType::BUTTON_DOWN) {
         switch (event.data.button) {
+            case input::Button::BACK:
+            {
+                if (_confirmationMenu) {
+                    delete _confirmationMenu;
+                }
+
+                _confirmationMenu = new TextInputConfirmationMenu(ownerProcess, this);
+
+                _confirmationMenu->open();
+
+                return;
+            }
+
             case input::Button::LEFT:
             {
                 if (_caretPosition == 0) {

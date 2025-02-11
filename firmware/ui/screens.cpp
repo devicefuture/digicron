@@ -299,6 +299,10 @@ void ui::Screen::_handleEvent(ui::Event event) {
         if (event.type == EventType::CANCEL) {
             ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleSimpleEvent", event.type);
         }
+
+        if (event.type == EventType::CONFIRM_VALUE) {
+            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleSimpleEvent", event.type);
+        }
     }
 }
 

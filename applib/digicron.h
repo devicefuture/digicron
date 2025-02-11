@@ -105,6 +105,9 @@ WASM_IMPORT("digicron", "dc_ui_Popup_new") dc::_Sid dc_ui_Popup_new();
 WASM_IMPORT("digicron", "dc_ui_TextInput_new") dc::_Sid dc_ui_TextInput_new();
 WASM_IMPORT("digicron", "dc_ui_TextInput_newWithValue") dc::_Sid dc_ui_TextInput_newWithValue(char* value);
 WASM_IMPORT("digicron", "dc_ui_TextInput_getValue") dc::_Sid dc_ui_TextInput_getValue(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_ui_TextInput_setValue") void dc_ui_TextInput_setValue(dc::_Sid sid, char* value);
+WASM_IMPORT("digicron", "dc_ui_TextInput_typeTextChar") void dc_ui_TextInput_typeTextChar(dc::_Sid sid, char text);
+WASM_IMPORT("digicron", "dc_ui_TextInput_typeText") void dc_ui_TextInput_typeText(dc::_Sid sid, char* text);
 WASM_IMPORT("digicron", "dc_test_TestClass_new") dc::_Sid dc_test_TestClass_new(unsigned int seed);
 WASM_IMPORT("digicron", "dc_test_TestClass_identify") void dc_test_TestClass_identify(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_test_TestClass_add") unsigned int dc_test_TestClass_add(dc::_Sid sid, unsigned int value, unsigned int value2);
@@ -414,7 +417,8 @@ namespace ui {
         BUTTON_DOWN,
         BUTTON_UP,
         ITEM_SELECT,
-        CANCEL
+        CANCEL,
+        CONFIRM_VALUE
     };
 
     enum PopupTransitionState {
@@ -550,6 +554,9 @@ namespace ui {
             TextInput(dataTypes::String value) {_sid = dc_ui_TextInput_newWithValue(value.c_str()); _addStoredInstance(_Type::ui_TextInput, this);}
 
             dataTypes::String getValue() {dc::_Sid sid = dc_ui_TextInput_getValue(_sid); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
+            void setValue(dataTypes::String value) {return dc_ui_TextInput_setValue(_sid, value.c_str());}
+            void typeText(char text) {return dc_ui_TextInput_typeTextChar(_sid, text);}
+            void typeText(dataTypes::String text) {return dc_ui_TextInput_typeText(_sid, text.c_str());}
     };
 }
 
