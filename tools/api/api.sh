@@ -143,6 +143,7 @@ namespace ui
         method "void" setValue "String" value
         INTERNAL_NAME=dc_ui_TextInput_typeTextChar method "void" typeText "char" text
         method "void" typeText "String" text
+        method "void" selectAll
 
 namespace test
     class TestClass

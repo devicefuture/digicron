@@ -34,6 +34,8 @@ namespace ui {
             void typeText(char text);
             void typeText(String text);
 
+            void selectAll();
+
             void open(bool urgent = false) override;
 
             void update() override;
@@ -46,6 +48,7 @@ namespace ui {
             bool _choosingColumn = false;
             unsigned int _currentColumn = 0;
             unsigned int _timeSinceColumnChange = 0;
+            bool _selectedAll = false;
             TextInputConfirmationMenu* _confirmationMenu = nullptr;
 
             void _init();

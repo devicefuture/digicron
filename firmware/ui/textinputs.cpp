@@ -74,11 +74,18 @@ String ui::TextInput::getValue() {
 void ui::TextInput::setValue(String value) {
     _value = value;
     _caretPosition = 0;
+    _selectedAll = false;
 
     // TODO: Reset text scroll
 }
 
 void ui::TextInput::typeText(char text) {
+    if (_selectedAll) {
+        _value = "";
+        _caretPosition = 0;
+        _selectedAll = false;
+    }
+
     String valueAfterCaret = _value.substring(_caretPosition);
 
     _value = _value.substring(0, _caretPosition);
@@ -96,6 +103,10 @@ void ui::TextInput::typeText(String text) {
     }
 }
 
+void ui::TextInput::selectAll() {
+    _selectedAll = _value.length() > 0;
+}
+
 void ui::TextInput::open(bool urgent) {
     _caretBlinkStartTime = timing::getCurrentTick();
 
@@ -105,13 +116,21 @@ void ui::TextInput::open(bool urgent) {
 void ui::TextInput::update() {
     clear();
 
-    print(_value.substring(0, display::COLUMNS));
+    bool shouldDisplayValue = !_selectedAll;
 
     if ((timing::getCurrentTick() - _caretBlinkStartTime) % 1000 < 500) {
-        for (unsigned int y = 0; y < display::CHAR_ROWS; y++) {
-            setPixel((_caretPosition * display::CHAR_COLUMNS) + 0, y, PenMode::ON);
-            setPixel((_caretPosition * display::CHAR_COLUMNS) + 1, y, PenMode::OFF);
+        if (_selectedAll) {
+            shouldDisplayValue = true;
+        } else {
+            for (unsigned int y = 0; y < display::CHAR_ROWS; y++) {
+                setPixel((_caretPosition * display::CHAR_COLUMNS) + 0, y, PenMode::ON);
+                setPixel((_caretPosition * display::CHAR_COLUMNS) + 1, y, PenMode::OFF);
+            }
         }
+    }
+
+    if (shouldDisplayValue) {
+        print(_value.substring(0, display::COLUMNS));
     }
 
     if (items.length() == 0) {
@@ -155,6 +174,13 @@ void ui::TextInput::_handleEvent(ui::Event event) {
 
             case input::Button::LEFT:
             {
+                if (_selectedAll) {
+                    _value = "";
+                    _caretPosition = 0;
+                    _selectedAll = false;
+                    return;
+                }
+
                 if (_caretPosition == 0) {
                     return;
                 }
@@ -173,6 +199,12 @@ void ui::TextInput::_handleEvent(ui::Event event) {
 
             case input::Button::RIGHT:
             {
+                if (_selectedAll) {
+                    _caretPosition = _value.length();
+                    _selectedAll = false;
+                    return;
+                }
+
                 typeText(' ');
                 return;
             }
@@ -208,4 +240,8 @@ void ui::TextInput::_init() {
     addItem("dgyvkqz");
     addItem("01234");
     addItem("56789");
+
+    if (_value.length() > 0) {
+        _selectedAll = true;
+    }
 }

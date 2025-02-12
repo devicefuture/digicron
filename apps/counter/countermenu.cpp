@@ -30,6 +30,7 @@ void CounterNameInput::openForCounter(Counter* counter) {
     _counter = counter;
 
     setValue(_counter->getName());
+    selectAll();
 
     open(false);
 }
