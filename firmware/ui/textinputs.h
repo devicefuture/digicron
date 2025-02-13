@@ -48,10 +48,12 @@ namespace ui {
             bool _choosingColumn = false;
             unsigned int _currentColumn = 0;
             unsigned int _timeSinceColumnChange = 0;
+            bool _shiftEnabled = true;
             bool _selectedAll = false;
             TextInputConfirmationMenu* _confirmationMenu = nullptr;
 
             void _init();
+            void _updateItems();
     };
 }
 

@@ -105,6 +105,9 @@ void ui::TextInput::typeText(String text) {
 
 void ui::TextInput::selectAll() {
     _selectedAll = _value.length() > 0;
+    _shiftEnabled = true;
+
+    _updateItems();
 }
 
 void ui::TextInput::open(bool urgent) {
@@ -139,7 +142,27 @@ void ui::TextInput::update() {
 
     if (_choosingColumn) {
         if (timing::getCurrentTick() - _timeSinceColumnChange > 1000) {
-            typeText(items[_currentIndex]->charAt(_currentColumn));
+            char selectedChar = items[_currentIndex]->charAt(_currentColumn);
+
+            if (selectedChar == '^') {
+                // TODO: Use better character representation of shift symbol
+
+                _shiftEnabled = !_shiftEnabled;
+
+                _updateItems();
+            } else {
+                typeText(selectedChar);
+
+                if (selectedChar == '.' || selectedChar == '!') {
+                    _shiftEnabled = true;
+
+                    _updateItems();
+                } else if (_shiftEnabled) {
+                    _shiftEnabled = false;
+
+                    _updateItems();
+                }
+            }
 
             _choosingColumn = false;
             _currentIndex = 0;
@@ -172,12 +195,26 @@ void ui::TextInput::_handleEvent(ui::Event event) {
                 return;
             }
 
+            case input::Button::UP:
+            case input::Button::DOWN:
+            {
+                if (_choosingColumn) {
+                    return;
+                }
+
+                break;
+            }
+
             case input::Button::LEFT:
             {
                 if (_selectedAll) {
                     _value = "";
                     _caretPosition = 0;
+                    _shiftEnabled = true;
                     _selectedAll = false;
+
+                    _updateItems();
+
                     return;
                 }
 
@@ -194,6 +231,14 @@ void ui::TextInput::_handleEvent(ui::Event event) {
                 _caretPosition--;
                 _caretBlinkStartTime = timing::getCurrentTick();
 
+                if (_caretPosition == 0) {
+                    _shiftEnabled = true;
+
+                    _updateItems();
+
+                    return;
+                }
+
                 return;
             }
 
@@ -201,7 +246,11 @@ void ui::TextInput::_handleEvent(ui::Event event) {
             {
                 if (_selectedAll) {
                     _caretPosition = _value.length();
+                    _shiftEnabled = false;
                     _selectedAll = false;
+
+                    _updateItems();
+
                     return;
                 }
 
@@ -234,14 +283,33 @@ void ui::TextInput::_handleEvent(ui::Event event) {
 }
 
 void ui::TextInput::_init() {
-    addItem("eaoiu^.");
-    addItem("tnrcfpj");
-    addItem("shlmwbx");
-    addItem("dgyvkqz");
-    addItem("01234");
-    addItem("56789");
+    _updateItems();
 
     if (_value.length() > 0) {
         _selectedAll = true;
     }
+}
+
+void ui::TextInput::_updateItems() {
+    clearItems();
+
+    if (_shiftEnabled) {
+        addItem("EAOIU^!");
+        addItem("TNRCFPJ");
+        addItem("SHLMWBX");
+        addItem("DGYVKQZ");
+    } else {
+        addItem("eaoiu^.");
+        addItem("tnrcfpj");
+        addItem("shlmwbx");
+        addItem("dgyvkqz");
+    }
+
+    addItem("01234");
+    addItem("56789");
+    addItem("&<>^~|"); // TODO: Add ¬ symbol when supported by text renderer
+    addItem("[]{}#\\`");
+    addItem("()\"@$"); // TODO: Add $ and € symbols when supported by text renderer
+    addItem("-/+=*_%");
+    addItem(".!?',:;");
 }
