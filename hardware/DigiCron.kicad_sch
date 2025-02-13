@@ -6524,8 +6524,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+3V3"
-			(at 259.715 145.4149 90)
+		(property "Value" "+5V"
+			(at 259.08 145.4149 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6591,7 +6591,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+3V3"
+		(property "Value" "+5V"
 			(at 259.08 110.4899 90)
 			(effects
 				(font
@@ -7280,7 +7280,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+3V3"
+		(property "Value" "+5V"
 			(at 259.08 113.0299 90)
 			(effects
 				(font
@@ -7921,8 +7921,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+3V3"
-			(at 259.715 147.9549 90)
+		(property "Value" "+5V"
+			(at 259.08 147.9549 90)
 			(effects
 				(font
 					(size 1.27 1.27)
