@@ -74,6 +74,7 @@ String ui::TextInput::getValue() {
 void ui::TextInput::setValue(String value) {
     _value = value;
     _caretPosition = 0;
+    _scrollPosition = 0;
     _selectedAll = false;
 
     // TODO: Reset text scroll
@@ -121,19 +122,27 @@ void ui::TextInput::update() {
 
     bool shouldDisplayValue = !_selectedAll;
 
+    if (_caretPosition <= _scrollPosition || _caretPosition >= _scrollPosition + display::COLUMNS) {
+        int newScrollPosition = _caretPosition - display::COLUMNS + 1;
+
+        _scrollPosition = newScrollPosition >= 0 ? newScrollPosition : 0;
+    }
+
     if ((timing::getCurrentTick() - _caretBlinkStartTime) % 1000 < 500) {
         if (_selectedAll) {
             shouldDisplayValue = true;
         } else {
             for (unsigned int y = 0; y < display::CHAR_ROWS; y++) {
-                setPixel((_caretPosition * display::CHAR_COLUMNS) + 0, y, PenMode::ON);
-                setPixel((_caretPosition * display::CHAR_COLUMNS) + 1, y, PenMode::OFF);
+                unsigned int x = (_caretPosition - _scrollPosition) * display::CHAR_COLUMNS;
+
+                setPixel(x, y, PenMode::ON);
+                setPixel(x + 1, y, PenMode::OFF);
             }
         }
     }
 
     if (shouldDisplayValue) {
-        print(_value.substring(0, display::COLUMNS));
+        print(_value.substring(_scrollPosition, display::COLUMNS + _scrollPosition));
     }
 
     if (items.length() == 0) {

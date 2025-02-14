@@ -45,6 +45,7 @@ namespace ui {
             String _value = "";
             unsigned int _caretPosition = 0;
             unsigned int _caretBlinkStartTime = 0;
+            unsigned int _scrollPosition = 0;
             bool _choosingColumn = false;
             unsigned int _currentColumn = 0;
             unsigned int _timeSinceColumnChange = 0;
