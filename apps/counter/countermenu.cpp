@@ -58,10 +58,10 @@ void CounterNameInput::handleEvent(ui::Event event) {
 CounterMenu::CounterMenu() : ui::ContextualMenu() {
     items.push(new String("RESET"));
     items.push(new String("RENAME"));
-    items.push(new String("AUTOCNT (Auto count)"));
-    items.push(new String("BTNACTS (Button actions)"));
+    items.push(new String("AUTOCNT"));
+    items.push(new String("BTNACTS"));
     items.push(new String("BASE-N"));
-    items.push(new String("CH RVAL (Change reset value)"));
+    items.push(new String("CH RVAL"));
     items.push(new String("DELETE"));
     items.push(new String("+NEW"));
 
