@@ -1,4 +1,5 @@
 #include "countermenu.h"
+#include "counterscreen.h"
 
 ResetConfirmationMenu* resetConfirmationMenu;
 CounterMenu* counterMenu;
@@ -89,6 +90,17 @@ void CounterMenu::handleEvent(ui::Event event) {
 
         if (selectedItem == "RENAME") {
             counterNameInput->openForCounterMenu(this, _counter);
+        }
+
+        if (selectedItem == "+NEW") {
+            int newCounterIndex = counterScreen->getCounterIndex() + 1;
+
+            // TODO: Add number to end of string to differentiate from existing counters
+            counters.insert(newCounterIndex, new Counter("Counter"));
+
+            counterScreen->setCounterIndex(newCounterIndex);
+
+            close();
         }
     }
 }

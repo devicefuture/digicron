@@ -11,6 +11,22 @@ Counter* CounterScreen::getCounter() {
     return counters[_counterIndex % counters.length()];
 }
 
+int CounterScreen::getCounterIndex() {
+    return _counterIndex;
+}
+
+void CounterScreen::setCounterIndex(int index) {
+    _counterIndex = index;
+
+    if (_counterIndex < 0) {
+        _counterIndex = 0;
+    }
+
+    if (_counterIndex > counters.length() - 1) {
+        _counterIndex = counters.length() - 1;
+    }
+}
+
 void CounterScreen::update() {
     Counter* counter = getCounter();
 

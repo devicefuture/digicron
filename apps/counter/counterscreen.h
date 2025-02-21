@@ -11,6 +11,8 @@ using namespace dc::dataTypes;
 class CounterScreen : public ui::Screen {
     public:
         Counter* getCounter();
+        int getCounterIndex();
+        void setCounterIndex(int index);
 
         void update() override;
         void handleEvent(ui::Event event) override;
