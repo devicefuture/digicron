@@ -5,6 +5,7 @@
 #include "ui.h"
 #include "input.h"
 #include "apps.h"
+#include "home.h"
 
 proc::Process mainMenu::mainMenuProcess;
 mainMenu::MainMenuScreen mainMenu::mainMenuScreen;
@@ -44,6 +45,14 @@ mainMenu::MainMenuScreen::MainMenuScreen() : ui::Menu() {
     items.push(new String("REALLY LONG NAME"));
     items.push(new String("ANOTHER"));
     items.push(new String("ENDLESS"));
+}
+
+void mainMenu::MainMenuScreen::close() {
+    ui::Menu::close();
+
+    ui::foregroundProcess = &home::homeProcess;
+
+    ui::determineCurrentScreen();
 }
 
 void mainMenu::MainMenuScreen::handleEvent(ui::Event event) {

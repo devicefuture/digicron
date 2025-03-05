@@ -11,6 +11,7 @@ namespace mainMenu {
         public:
             MainMenuScreen();
 
+            void close() override;
             void handleEvent(ui::Event event) override;
     };
 
