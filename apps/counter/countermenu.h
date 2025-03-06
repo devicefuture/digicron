@@ -36,6 +36,18 @@ class CounterNameInput : public ui::TextInput {
         CounterMenu* _counterMenu = nullptr;
 };
 
+class ChangeBaseMenu : public ui::ContextualMenu {
+    public:
+        ChangeBaseMenu();
+
+        void openForCounter(Counter* counter);
+
+        void handleEvent(ui::Event event) override;
+
+    private:
+        Counter* _counter = nullptr;
+};
+
 class CounterMenu : public ui::ContextualMenu {
     public:
         CounterMenu();
@@ -51,5 +63,6 @@ class CounterMenu : public ui::ContextualMenu {
 extern ResetConfirmationMenu* resetConfirmationMenu;
 extern CounterMenu* counterMenu;
 extern CounterNameInput* counterNameInput;
+extern ChangeBaseMenu* changeBaseMenu;
 
 #endif

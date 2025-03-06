@@ -1,9 +1,12 @@
 #include "countermenu.h"
 #include "counterscreen.h"
 
+const unsigned int BASES_MAP[] = {2, 8, 10, 16};
+
 ResetConfirmationMenu* resetConfirmationMenu;
 CounterMenu* counterMenu;
 CounterNameInput* counterNameInput;
+ChangeBaseMenu* changeBaseMenu;
 
 void ResetConfirmationMenu::openForCounter(Counter* counter) {
     _counter = counter;
@@ -56,6 +59,41 @@ void CounterNameInput::handleEvent(ui::Event event) {
     }
 }
 
+ChangeBaseMenu::ChangeBaseMenu() : ui::ContextualMenu("Base-n?") {
+    items.push(new String("2 (BIN)"));
+    items.push(new String("8 (OCT)"));
+    items.push(new String("10(DEN)"));
+    items.push(new String("16(HEX)"));
+
+    updateItems();
+    setSelectionBlinking(true);
+}
+
+void ChangeBaseMenu::openForCounter(Counter* counter) {
+    _counter = counter;
+
+    open(false);
+
+    setCurrentIndex(2);
+
+    for (unsigned int i = 0; i < items.length(); i++) {
+        if (BASES_MAP[i] == _counter->getBase()) {
+            setCurrentIndex(i);
+        }
+    }
+}
+
+void ChangeBaseMenu::handleEvent(ui::Event event) {
+    if (!_counter) {
+        return;
+    }
+
+    if (event.type == ui::EventType::ITEM_SELECT) {
+        _counter->setBase(BASES_MAP[event.data.index]);
+        close();
+    }
+}
+
 CounterMenu::CounterMenu() : ui::ContextualMenu() {
     items.push(new String("RESET"));
     items.push(new String("RENAME"));
@@ -90,6 +128,10 @@ void CounterMenu::handleEvent(ui::Event event) {
 
         if (selectedItem == "RENAME") {
             counterNameInput->openForCounterMenu(this, _counter);
+        }
+
+        if (selectedItem == "BASE-N") {
+            changeBaseMenu->openForCounter(_counter);
         }
 
         if (selectedItem == "+NEW") {

@@ -15,10 +15,13 @@ class Counter {
         long getValue();
         void setValue(long value);
         void incrementValue(long amount);
+        unsigned int getBase();
+        void setBase(unsigned int base);
 
     private:
         String _name;
         long _value;
+        unsigned int _base = 10;
 };
 
 extern List<Counter> counters;

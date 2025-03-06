@@ -28,6 +28,13 @@ WASM_IMPORT("digicron", "dc_deleteBySid") void dc_deleteBySid(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_getBufferSize") unsigned int dc_getBufferSize(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_copyBufferInto") void dc_copyBufferInto(dc::_Sid sid, void* destination);
 
+WASM_IMPORT("digicron", "dc_utils_numberToStringUInt") dc::_Sid dc_utils_numberToStringUInt(unsigned int number, unsigned int base);
+WASM_IMPORT("digicron", "dc_utils_numberToStringInt") dc::_Sid dc_utils_numberToStringInt(int number, unsigned int base);
+WASM_IMPORT("digicron", "dc_utils_numberToStringULong") dc::_Sid dc_utils_numberToStringULong(unsigned long number, unsigned int base);
+WASM_IMPORT("digicron", "dc_utils_numberToStringLong") dc::_Sid dc_utils_numberToStringLong(long number, unsigned int base);
+WASM_IMPORT("digicron", "dc_utils_numberToStringDouble") dc::_Sid dc_utils_numberToStringDouble(double number, unsigned int base);
+WASM_IMPORT("digicron", "dc_utils_stringToLong") long dc_utils_stringToLong(char* string);
+WASM_IMPORT("digicron", "dc_utils_stringToDouble") double dc_utils_stringToDouble(char* string);
 WASM_IMPORT("digicron", "dc_proc_stop") void dc_proc_stop();
 WASM_IMPORT("digicron", "dc_console_logPart") void dc_console_logPart(char* value);
 WASM_IMPORT("digicron", "dc_console_logPartChars") void dc_console_logPartChars(char* value);
@@ -95,9 +102,14 @@ WASM_IMPORT("digicron", "dc_ui_Screen_swapWith") void dc_ui_Screen_swapWith(dc::
 WASM_IMPORT("digicron", "dc_ui_Menu_new") dc::_Sid dc_ui_Menu_new();
 WASM_IMPORT("digicron", "dc_ui_Menu_clearItems") void dc_ui_Menu_clearItems(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_ui_Menu_addItem") void dc_ui_Menu_addItem(dc::_Sid sid, char* item);
+WASM_IMPORT("digicron", "dc_ui_Menu_getCurrentIndex") unsigned int dc_ui_Menu_getCurrentIndex(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_ui_Menu_setCurrentIndex") void dc_ui_Menu_setCurrentIndex(dc::_Sid sid, unsigned int index);
 WASM_IMPORT("digicron", "dc_ui_ContextualMenu_new") dc::_Sid dc_ui_ContextualMenu_new();
 WASM_IMPORT("digicron", "dc_ui_ContextualMenu_newWithTitle") dc::_Sid dc_ui_ContextualMenu_newWithTitle(char* title);
+WASM_IMPORT("digicron", "dc_ui_ContextualMenu_getTitle") dc::_Sid dc_ui_ContextualMenu_getTitle(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_ui_ContextualMenu_setTitle") void dc_ui_ContextualMenu_setTitle(dc::_Sid sid, char* title);
+WASM_IMPORT("digicron", "dc_ui_ContextualMenu_getSelectionBlinking") bool dc_ui_ContextualMenu_getSelectionBlinking(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_ui_ContextualMenu_setSelectionBlinking") void dc_ui_ContextualMenu_setSelectionBlinking(dc::_Sid sid, bool blinkSelection);
 WASM_IMPORT("digicron", "dc_ui_ConfirmationMenu_new") dc::_Sid dc_ui_ConfirmationMenu_new();
 WASM_IMPORT("digicron", "dc_ui_ConfirmationMenu_newWithTitle") dc::_Sid dc_ui_ConfirmationMenu_newWithTitle(char* title, bool swapYesNo);
 WASM_IMPORT("digicron", "dc_ui_ConfirmationMenu_yesSelected") bool dc_ui_ConfirmationMenu_yesSelected(dc::_Sid sid);
@@ -181,6 +193,12 @@ namespace dataTypes {
                 String();
                 String(const char* value);
                 String(const String& other);
+                String(char c);
+                String(unsigned int value, unsigned char base = 10);
+                String(int value, unsigned char base = 10);
+                String(unsigned long value, unsigned char base = 10);
+                String(long value, unsigned char base = 10);
+                String(double value, unsigned char base = 10);
                 ~String();
 
                 String& operator=(const String& other);
@@ -195,6 +213,11 @@ namespace dataTypes {
                 char charAt(int index);
                 const bool equals(const String& other);
                 const bool equals(const char* other);
+
+                long toInt();
+                long toLong();
+                float toFloat();
+                double toDouble();
 
             private:
                 char* _value = nullptr;
@@ -325,6 +348,16 @@ inline void _removeStoredInstance(void* instance) {
 
         index++;
     }
+}
+
+namespace utils {
+    inline dataTypes::String numberToString(unsigned int number, unsigned int base) {dc::_Sid sid = dc_utils_numberToStringUInt(number, base); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
+    inline dataTypes::String numberToString(int number, unsigned int base) {dc::_Sid sid = dc_utils_numberToStringInt(number, base); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
+    inline dataTypes::String numberToString(unsigned long number, unsigned int base) {dc::_Sid sid = dc_utils_numberToStringULong(number, base); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
+    inline dataTypes::String numberToString(long number, unsigned int base) {dc::_Sid sid = dc_utils_numberToStringLong(number, base); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
+    inline dataTypes::String numberToString(double number, unsigned int base) {dc::_Sid sid = dc_utils_numberToStringDouble(number, base); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
+    inline long stringToLong(dataTypes::String string) {return dc_utils_stringToLong(string.c_str());}
+    inline double stringToDouble(dataTypes::String string) {return dc_utils_stringToDouble(string.c_str());}
 }
 
 namespace proc {
@@ -504,6 +537,8 @@ namespace ui {
 
             void clearItems() {return dc_ui_Menu_clearItems(_sid);}
             void addItem(dataTypes::String item) {return dc_ui_Menu_addItem(_sid, item.c_str());}
+            unsigned int getCurrentIndex() {return dc_ui_Menu_getCurrentIndex(_sid);}
+            void setCurrentIndex(unsigned int index) {return dc_ui_Menu_setCurrentIndex(_sid, index);}
             dataTypes::List<dataTypes::String> items;
             void updateItems() {clearItems(); items.start(); while (auto item = items.next()) {addItem(*item);}}
     };
@@ -518,7 +553,10 @@ namespace ui {
             ContextualMenu() : Menu((_Dummy) {}) {_sid = dc_ui_ContextualMenu_new(); _addStoredInstance(_Type::ui_ContextualMenu, this);}
             ContextualMenu(dataTypes::String title) {_sid = dc_ui_ContextualMenu_newWithTitle(title.c_str()); _addStoredInstance(_Type::ui_ContextualMenu, this);}
 
+            dataTypes::String getTitle() {dc::_Sid sid = dc_ui_ContextualMenu_getTitle(_sid); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
             void setTitle(dataTypes::String title) {return dc_ui_ContextualMenu_setTitle(_sid, title.c_str());}
+            bool getSelectionBlinking() {return dc_ui_ContextualMenu_getSelectionBlinking(_sid);}
+            void setSelectionBlinking(bool blinkSelection) {return dc_ui_ContextualMenu_setSelectionBlinking(_sid, blinkSelection);}
     };
 
     class ConfirmationMenu : public ContextualMenu {
@@ -708,6 +746,18 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
 
     inline dataTypes::String::String(const dataTypes::String& other) : String(other.c_str()) {}
 
+    inline dataTypes::String::String(char c) {
+        _value = (char*)malloc(2);
+        _value[0] = c;
+        _value[1] = '\0';
+    }
+
+    inline dataTypes::String::String(unsigned int value, unsigned char base) : String(utils::numberToString(value, base)) {}
+    inline dataTypes::String::String(int value, unsigned char base) : String(utils::numberToString(value, base)) {}
+    inline dataTypes::String::String(unsigned long value, unsigned char base) : String(utils::numberToString(value, base)) {}
+    inline dataTypes::String::String(long value, unsigned char base) : String(utils::numberToString(value, base)) {}
+    inline dataTypes::String::String(double value, unsigned char base) : String(utils::numberToString(value, base)) {}
+
     inline dataTypes::String::~String() {
         if (_value) {
             free(_value);
@@ -776,6 +826,18 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         }
 
         return true;
+    }
+
+    inline long dataTypes::String::toInt() {
+        return utils::stringToLong(String(c_str()));
+    }
+
+    inline float dataTypes::String::toFloat() {
+        return utils::stringToDouble(String(c_str()));
+    }
+
+    inline double dataTypes::String::toDouble() {
+        return utils::stringToDouble(String(c_str()));
     }
 #endif
 

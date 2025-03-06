@@ -28,6 +28,12 @@ namespace dataTypes {
                 String();
                 String(const char* value);
                 String(const String& other);
+                String(char c);
+                String(unsigned int value, unsigned char base = 10);
+                String(int value, unsigned char base = 10);
+                String(unsigned long value, unsigned char base = 10);
+                String(long value, unsigned char base = 10);
+                String(double value, unsigned char base = 10);
                 ~String();
 
                 String& operator=(const String& other);
@@ -42,6 +48,11 @@ namespace dataTypes {
                 char charAt(int index);
                 const bool equals(const String& other);
                 const bool equals(const char* other);
+
+                long toInt();
+                long toLong();
+                float toFloat();
+                double toDouble();
 
             private:
                 char* _value = nullptr;

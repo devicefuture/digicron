@@ -5,6 +5,7 @@
 
 #include <wasm3.h>
 
+#include "utils.h"
 #include "proc.h"
 #include "console.h"
 #include "timing.h"
@@ -36,6 +37,13 @@ namespace api {
     m3ApiRawFunction(dc_getBufferSize);
     m3ApiRawFunction(dc_copyBufferInto);
 
+    m3ApiRawFunction(dc_utils_numberToStringUInt);
+    m3ApiRawFunction(dc_utils_numberToStringInt);
+    m3ApiRawFunction(dc_utils_numberToStringULong);
+    m3ApiRawFunction(dc_utils_numberToStringLong);
+    m3ApiRawFunction(dc_utils_numberToStringDouble);
+    m3ApiRawFunction(dc_utils_stringToLong);
+    m3ApiRawFunction(dc_utils_stringToDouble);
     m3ApiRawFunction(dc_proc_stop);
     m3ApiRawFunction(dc_console_logPart);
     m3ApiRawFunction(dc_console_logPartChars);
@@ -103,9 +111,14 @@ namespace api {
     m3ApiRawFunction(dc_ui_Menu_new);
     m3ApiRawFunction(dc_ui_Menu_clearItems);
     m3ApiRawFunction(dc_ui_Menu_addItem);
+    m3ApiRawFunction(dc_ui_Menu_getCurrentIndex);
+    m3ApiRawFunction(dc_ui_Menu_setCurrentIndex);
     m3ApiRawFunction(dc_ui_ContextualMenu_new);
     m3ApiRawFunction(dc_ui_ContextualMenu_newWithTitle);
+    m3ApiRawFunction(dc_ui_ContextualMenu_getTitle);
     m3ApiRawFunction(dc_ui_ContextualMenu_setTitle);
+    m3ApiRawFunction(dc_ui_ContextualMenu_getSelectionBlinking);
+    m3ApiRawFunction(dc_ui_ContextualMenu_setSelectionBlinking);
     m3ApiRawFunction(dc_ui_ConfirmationMenu_new);
     m3ApiRawFunction(dc_ui_ConfirmationMenu_newWithTitle);
     m3ApiRawFunction(dc_ui_ConfirmationMenu_yesSelected);

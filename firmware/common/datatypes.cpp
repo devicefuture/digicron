@@ -42,6 +42,18 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
 
     inline dataTypes::String::String(const dataTypes::String& other) : String(other.c_str()) {}
 
+    inline dataTypes::String::String(char c) {
+        _value = (char*)malloc(2);
+        _value[0] = c;
+        _value[1] = '\0';
+    }
+
+    inline dataTypes::String::String(unsigned int value, unsigned char base) : String(utils::numberToString(value, base)) {}
+    inline dataTypes::String::String(int value, unsigned char base) : String(utils::numberToString(value, base)) {}
+    inline dataTypes::String::String(unsigned long value, unsigned char base) : String(utils::numberToString(value, base)) {}
+    inline dataTypes::String::String(long value, unsigned char base) : String(utils::numberToString(value, base)) {}
+    inline dataTypes::String::String(double value, unsigned char base) : String(utils::numberToString(value, base)) {}
+
     inline dataTypes::String::~String() {
         if (_value) {
             free(_value);
@@ -110,6 +122,18 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         }
 
         return true;
+    }
+
+    inline long dataTypes::String::toInt() {
+        return utils::stringToLong(String(c_str()));
+    }
+
+    inline float dataTypes::String::toFloat() {
+        return utils::stringToDouble(String(c_str()));
+    }
+
+    inline double dataTypes::String::toDouble() {
+        return utils::stringToDouble(String(c_str()));
     }
 #endif
 

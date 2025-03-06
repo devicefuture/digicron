@@ -1,5 +1,14 @@
 #!/bin/bash
 
+namespace utils
+    INTERNAL_NAME=dc_utils_numberToStringUInt fn "String" numberToString "unsigned int" number "unsigned int" base
+    INTERNAL_NAME=dc_utils_numberToStringInt fn "String" numberToString "int" number "unsigned int" base
+    INTERNAL_NAME=dc_utils_numberToStringULong fn "String" numberToString "unsigned long" number "unsigned int" base
+    INTERNAL_NAME=dc_utils_numberToStringLong fn "String" numberToString "long" number "unsigned int" base
+    INTERNAL_NAME=dc_utils_numberToStringDouble fn "String" numberToString "double" number "unsigned int" base
+    fn "long" stringToLong "String" string
+    fn "double" stringToDouble "String" string
+
 namespace proc
     PASS_PROCESS=true fn "void" stop
 
@@ -117,6 +126,8 @@ namespace ui
 
         method "void" clearItems
         method "void" addItem "String" item
+        method "unsigned int" getCurrentIndex
+        method "void" setCurrentIndex "unsigned int" index
 
         list "String" items
 
@@ -124,7 +135,10 @@ namespace ui
         OVERRIDE=true PASS_PROCESS=true constructor
         INTERNAL_NAME=dc_ui_ContextualMenu_newWithTitle PASS_PROCESS=true constructor "String" title
 
+        method "String" getTitle
         method "void" setTitle "String" title
+        method "bool" getSelectionBlinking
+        method "void" setSelectionBlinking "bool" blinkSelection
 
     class ConfirmationMenu extends ContextualMenu Menu Screen
         OVERRIDE=true PASS_PROCESS=true constructor

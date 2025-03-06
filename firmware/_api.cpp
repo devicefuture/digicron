@@ -6,6 +6,7 @@
 #include "_api.h"
 #include "proc.h"
 #include "datatypes.h"
+#include "utils.h"
 #include "proc.h"
 #include "console.h"
 #include "timing.h"
@@ -175,6 +176,69 @@ m3ApiRawFunction(api::dc_copyBufferInto) {
     }
 
     m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_utils_numberToStringUInt) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(unsigned int, number)
+    m3ApiGetArg(unsigned int, base)
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::numberToString(number, base)));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_utils_numberToStringInt) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(int, number)
+    m3ApiGetArg(unsigned int, base)
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::numberToString(number, base)));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_utils_numberToStringULong) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(unsigned long, number)
+    m3ApiGetArg(unsigned int, base)
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::numberToString(number, base)));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_utils_numberToStringLong) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(long, number)
+    m3ApiGetArg(unsigned int, base)
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::numberToString(number, base)));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_utils_numberToStringDouble) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(double, number)
+    m3ApiGetArg(unsigned int, base)
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::numberToString(number, base)));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_utils_stringToLong) {
+    m3ApiReturnType(long)
+    m3ApiGetArgMem(char*, string)
+
+    long result = utils::stringToLong(String(string));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_utils_stringToDouble) {
+    m3ApiReturnType(double)
+    m3ApiGetArgMem(char*, string)
+
+    double result = utils::stringToDouble(String(string));
+
+    m3ApiReturn(result);
 }
 
 m3ApiRawFunction(api::dc_proc_stop) {
@@ -808,6 +872,24 @@ m3ApiRawFunction(api::dc_ui_Menu_addItem) {
     m3ApiSuccess();
 }
 
+m3ApiRawFunction(api::dc_ui_Menu_getCurrentIndex) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArg(Sid, _sid)
+
+    unsigned int result = api::getBySid<ui::Menu>(Type::ui_Menu, _sid)->getCurrentIndex();
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_ui_Menu_setCurrentIndex) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArg(unsigned int, index)
+
+    api::getBySid<ui::Menu>(Type::ui_Menu, _sid)->setCurrentIndex(index);
+
+    m3ApiSuccess();
+}
+
 m3ApiRawFunction(api::dc_ui_ContextualMenu_new) {
     m3ApiReturnType(Sid)
 
@@ -829,11 +911,37 @@ m3ApiRawFunction(api::dc_ui_ContextualMenu_newWithTitle) {
     m3ApiReturn(result);
 }
 
+m3ApiRawFunction(api::dc_ui_ContextualMenu_getTitle) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(Sid, _sid)
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<ui::ContextualMenu>(Type::ui_ContextualMenu, _sid)->getTitle()));
+
+    m3ApiReturn(result);
+}
+
 m3ApiRawFunction(api::dc_ui_ContextualMenu_setTitle) {
     m3ApiGetArg(Sid, _sid)
     m3ApiGetArgMem(char*, title)
 
     api::getBySid<ui::ContextualMenu>(Type::ui_ContextualMenu, _sid)->setTitle(String(title));
+
+    m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_ui_ContextualMenu_getSelectionBlinking) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArg(Sid, _sid)
+
+    unsigned int result = api::getBySid<ui::ContextualMenu>(Type::ui_ContextualMenu, _sid)->getSelectionBlinking();
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_ui_ContextualMenu_setSelectionBlinking) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArg(bool, blinkSelection)
+
+    api::getBySid<ui::ContextualMenu>(Type::ui_ContextualMenu, _sid)->setSelectionBlinking(blinkSelection);
 
     m3ApiSuccess();
 }
@@ -1045,6 +1153,13 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_getBufferSize", "i(i)", &dc_getBufferSize);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_copyBufferInto", "v(i*)", &dc_copyBufferInto);
 
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_numberToStringUInt", "i(ii)", &dc_utils_numberToStringUInt);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_numberToStringInt", "i(ii)", &dc_utils_numberToStringInt);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_numberToStringULong", "i(ii)", &dc_utils_numberToStringULong);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_numberToStringLong", "i(ii)", &dc_utils_numberToStringLong);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_numberToStringDouble", "i(Fi)", &dc_utils_numberToStringDouble);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_stringToLong", "i(i)", &dc_utils_stringToLong);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_stringToDouble", "i(i)", &dc_utils_stringToDouble);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_proc_stop", "v()", &dc_proc_stop);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_console_logPart", "v(i)", &dc_console_logPart);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_console_logPartChars", "v(*)", &dc_console_logPartChars);
@@ -1112,9 +1227,14 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_Menu_new", "i()", &dc_ui_Menu_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_Menu_clearItems", "v(i)", &dc_ui_Menu_clearItems);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_Menu_addItem", "v(ii)", &dc_ui_Menu_addItem);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_Menu_getCurrentIndex", "i(i)", &dc_ui_Menu_getCurrentIndex);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_Menu_setCurrentIndex", "v(ii)", &dc_ui_Menu_setCurrentIndex);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ContextualMenu_new", "i()", &dc_ui_ContextualMenu_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ContextualMenu_newWithTitle", "i(i)", &dc_ui_ContextualMenu_newWithTitle);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ContextualMenu_getTitle", "i(i)", &dc_ui_ContextualMenu_getTitle);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ContextualMenu_setTitle", "v(ii)", &dc_ui_ContextualMenu_setTitle);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ContextualMenu_getSelectionBlinking", "i(i)", &dc_ui_ContextualMenu_getSelectionBlinking);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ContextualMenu_setSelectionBlinking", "v(ii)", &dc_ui_ContextualMenu_setSelectionBlinking);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ConfirmationMenu_new", "i()", &dc_ui_ConfirmationMenu_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ConfirmationMenu_newWithTitle", "i(ii)", &dc_ui_ConfirmationMenu_newWithTitle);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_ConfirmationMenu_yesSelected", "i(i)", &dc_ui_ConfirmationMenu_yesSelected);

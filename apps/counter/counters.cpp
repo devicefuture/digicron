@@ -26,3 +26,11 @@ void Counter::setValue(long value) {
 void Counter::incrementValue(long amount) {
     _value += amount;
 }
+
+unsigned int Counter::getBase() {
+    return _base;
+}
+
+void Counter::setBase(unsigned int base) {
+    _base = base;
+}

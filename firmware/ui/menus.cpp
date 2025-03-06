@@ -1,4 +1,5 @@
 #include "menus.h"
+#include "../timing.h"
 
 String* ui::yesOption = new String("YES");
 String* ui::noOption = new String("NO");
@@ -126,6 +127,14 @@ void ui::Menu::_handleEvent(ui::Event event) {
     }
 }
 
+void ui::ContextualMenu::open(bool urgent) {
+    if (_blinkSelection) {
+        _blinkStartTime = timing::getCurrentTick();
+    }
+
+    ui::Menu::open(urgent);
+}
+
 void ui::ContextualMenu::update() {
     clear();
 
@@ -141,8 +150,24 @@ void ui::ContextualMenu::update() {
         _currentIndex = items.length() - 1;
     }
 
-    scroll(*items[_currentIndex], display::COLUMNS - 1);
+    if (!_blinkSelection || (timing::getCurrentTick() - _blinkStartTime) % 1000 < 500) {
+        scroll(*items[_currentIndex], display::COLUMNS - 1);
+    } else {
+        setPosition(display::COLUMNS - 1, 1);
+    }
+
     print(menuScrollableIcon);
+}
+
+void ui::ContextualMenu::_handleEvent(Event event) {
+    Menu::_handleEvent(event);
+
+    if (_blinkSelection && event.type == EventType::BUTTON_DOWN && (
+        event.data.button == input::Button::UP ||
+        event.data.button == input::Button::DOWN
+    )) {
+        _blinkStartTime = timing::getCurrentTick();
+    }
 }
 
 ui::ConfirmationMenu::ConfirmationMenu() : ui::ContextualMenu() {
