@@ -17,11 +17,14 @@ class Counter {
         void incrementValue(long amount);
         unsigned int getBase();
         void setBase(unsigned int base);
+        long getResetValue();
+        void setResetValue(long resetValue);
 
     private:
         String _name;
         long _value;
         unsigned int _base = 10;
+        long _resetValue = 0;
 };
 
 extern List<Counter> counters;

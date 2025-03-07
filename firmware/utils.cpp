@@ -1,5 +1,7 @@
 #include "utils.h"
 
+// TODO: Fix handling negative numbers when in base other than 10
+
 String utils::numberToString(unsigned int number, unsigned int base) {
     String result(number, base);
 

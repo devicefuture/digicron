@@ -79,5 +79,6 @@ namespace ui {
 
 #include "menus.h"
 #include "popups.h"
+#include "numericinputs.h"
 
 #endif

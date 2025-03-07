@@ -7,6 +7,7 @@ ResetConfirmationMenu* resetConfirmationMenu;
 CounterMenu* counterMenu;
 CounterNameInput* counterNameInput;
 ChangeBaseMenu* changeBaseMenu;
+ChangeResetValueInput* changeResetValueInput;
 
 void ResetConfirmationMenu::openForCounter(Counter* counter) {
     _counter = counter;
@@ -21,7 +22,7 @@ void ResetConfirmationMenu::handleEvent(ui::Event event) {
 
     if (event.type == ui::EventType::ITEM_SELECT) {
         if (yesSelected()) {
-            _counter->setValue(0);
+            _counter->setValue(_counter->getResetValue());
 
             counterMenu->close();
         }
@@ -94,6 +95,25 @@ void ChangeBaseMenu::handleEvent(ui::Event event) {
     }
 }
 
+void ChangeResetValueInput::openForCounter(Counter* counter) {
+    _counter = counter;
+
+    setValue(_counter->getResetValue());
+    setValueBlinking(true);
+    setBase(_counter->getBase());
+    open(false);
+}
+
+void ChangeResetValueInput::handleEvent(ui::Event event) {
+    if (!_counter) {
+        return;
+    }
+
+    if (event.type == ui::EventType::CONFIRM_VALUE) {
+        _counter->setResetValue(getValue());
+    }
+}
+
 CounterMenu::CounterMenu() : ui::ContextualMenu() {
     items.push(new String("RESET"));
     items.push(new String("RENAME"));
@@ -132,6 +152,10 @@ void CounterMenu::handleEvent(ui::Event event) {
 
         if (selectedItem == "BASE-N") {
             changeBaseMenu->openForCounter(_counter);
+        }
+
+        if (selectedItem == "CH RVAL") {
+            changeResetValueInput->openForCounter(_counter);
         }
 
         if (selectedItem == "+NEW") {

@@ -121,6 +121,17 @@ WASM_IMPORT("digicron", "dc_ui_TextInput_setValue") void dc_ui_TextInput_setValu
 WASM_IMPORT("digicron", "dc_ui_TextInput_typeTextChar") void dc_ui_TextInput_typeTextChar(dc::_Sid sid, char text);
 WASM_IMPORT("digicron", "dc_ui_TextInput_typeText") void dc_ui_TextInput_typeText(dc::_Sid sid, char* text);
 WASM_IMPORT("digicron", "dc_ui_TextInput_selectAll") void dc_ui_TextInput_selectAll(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_ui_IntInput_new") dc::_Sid dc_ui_IntInput_new();
+WASM_IMPORT("digicron", "dc_ui_TextInput_newWithTitleAndValue") dc::_Sid dc_ui_TextInput_newWithTitleAndValue(char* title, long value);
+WASM_IMPORT("digicron", "dc_ui_IntInput_getTitle") dc::_Sid dc_ui_IntInput_getTitle(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_ui_IntInput_setTitle") void dc_ui_IntInput_setTitle(dc::_Sid sid, char* title);
+WASM_IMPORT("digicron", "dc_ui_IntInput_getValue") long dc_ui_IntInput_getValue(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_ui_IntInput_setValue") void dc_ui_IntInput_setValue(dc::_Sid sid, long value);
+WASM_IMPORT("digicron", "dc_ui_IntInput_getValueBlinking") bool dc_ui_IntInput_getValueBlinking(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_ui_IntInput_setValueBlinking") void dc_ui_IntInput_setValueBlinking(dc::_Sid sid, bool blinkValue);
+WASM_IMPORT("digicron", "dc_ui_IntInput_getBase") unsigned int dc_ui_IntInput_getBase(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_ui_IntInput_setBase") void dc_ui_IntInput_setBase(dc::_Sid sid, unsigned int base);
+WASM_IMPORT("digicron", "dc_ui_IntInput_setRange") void dc_ui_IntInput_setRange(dc::_Sid sid, long minValue, long maxValue);
 WASM_IMPORT("digicron", "dc_test_TestClass_new") dc::_Sid dc_test_TestClass_new(unsigned int seed);
 WASM_IMPORT("digicron", "dc_test_TestClass_identify") void dc_test_TestClass_identify(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_test_TestClass_add") unsigned int dc_test_TestClass_add(dc::_Sid sid, unsigned int value, unsigned int value2);
@@ -284,7 +295,7 @@ namespace dataTypes {
 
 #endif
 
-enum _Type {EMPTY, Buffer, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, ui_TextInput, test_TestClass, test_TestSubclass};
+enum _Type {EMPTY, Buffer, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, ui_TextInput, ui_IntInput, test_TestClass, test_TestSubclass};
 
 struct _StoredInstance {
     _Type type;
@@ -309,6 +320,7 @@ template<typename T> T* _getBySid(_Type type, _Sid sid) {
             (type == _Type::ui_ContextualMenu && storedInstance->type == _Type::ui_TextInput) ||
             (type == _Type::ui_Menu && storedInstance->type == _Type::ui_TextInput) ||
             (type == _Type::ui_Screen && storedInstance->type == _Type::ui_TextInput) ||
+            (type == _Type::ui_Screen && storedInstance->type == _Type::ui_IntInput) ||
             (type == _Type::test_TestClass && storedInstance->type == _Type::test_TestSubclass) ||
             false
         )) {
@@ -597,6 +609,27 @@ namespace ui {
             void typeText(char text) {return dc_ui_TextInput_typeTextChar(_sid, text);}
             void typeText(dataTypes::String text) {return dc_ui_TextInput_typeText(_sid, text.c_str());}
             void selectAll() {return dc_ui_TextInput_selectAll(_sid);}
+    };
+
+    class IntInput : public Screen {
+        protected:
+            IntInput(_Dummy dummy) : Screen(dummy) {}
+
+        public:
+            using Screen::Screen;
+
+            IntInput() : Screen((_Dummy) {}) {_sid = dc_ui_IntInput_new(); _addStoredInstance(_Type::ui_IntInput, this);}
+            IntInput(dataTypes::String title, long value) {_sid = dc_ui_TextInput_newWithTitleAndValue(title.c_str(), value); _addStoredInstance(_Type::ui_IntInput, this);}
+
+            dataTypes::String getTitle() {dc::_Sid sid = dc_ui_IntInput_getTitle(_sid); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
+            void setTitle(dataTypes::String title) {return dc_ui_IntInput_setTitle(_sid, title.c_str());}
+            long getValue() {return dc_ui_IntInput_getValue(_sid);}
+            void setValue(long value) {return dc_ui_IntInput_setValue(_sid, value);}
+            bool getValueBlinking() {return dc_ui_IntInput_getValueBlinking(_sid);}
+            void setValueBlinking(bool blinkValue) {return dc_ui_IntInput_setValueBlinking(_sid, blinkValue);}
+            unsigned int getBase() {return dc_ui_IntInput_getBase(_sid);}
+            void setBase(unsigned int base) {return dc_ui_IntInput_setBase(_sid, base);}
+            void setRange(long minValue, long maxValue) {return dc_ui_IntInput_setRange(_sid, minValue, maxValue);}
     };
 }
 

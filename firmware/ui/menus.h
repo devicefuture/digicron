@@ -42,17 +42,9 @@ namespace ui {
                 setTitle(title);
             }
 
-            String getTitle() {
-                return _title;
-            }
-
-            void setTitle(String title) {
-                _title = title;
-            }
-
-            bool getSelectionBlinking() {
-                return _blinkSelection;
-            }
+            String getTitle() {return _title;}
+            void setTitle(String title) {_title = title;}
+            bool getSelectionBlinking() {return _blinkSelection;}
 
             void setSelectionBlinking(bool blinkSelection) {
                 _blinkSelection = blinkSelection;

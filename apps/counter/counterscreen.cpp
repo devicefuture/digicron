@@ -32,8 +32,8 @@ void CounterScreen::update() {
 
     clear();
 
-    scroll(counter->getName(), 8);
-    pad(8, counter->getBase() == 10 ? ' ' : '0');
+    scroll(counter->getName(), display::COLUMNS);
+    pad(display::COLUMNS, counter->getBase() == 10 ? ' ' : '0');
     print(utils::numberToString(counter->getValue(), counter->getBase())); // TODO: Render overflows by dropping most significant digits
 }
 

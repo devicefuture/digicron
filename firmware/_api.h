@@ -16,7 +16,7 @@
 namespace api {
     typedef int Sid;
 
-    enum Type {EMPTY, Buffer, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, ui_TextInput, test_TestClass, test_TestSubclass};
+    enum Type {EMPTY, Buffer, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, ui_TextInput, ui_IntInput, test_TestClass, test_TestSubclass};
 
     struct StoredInstance {
         Type type;
@@ -130,6 +130,17 @@ namespace api {
     m3ApiRawFunction(dc_ui_TextInput_typeTextChar);
     m3ApiRawFunction(dc_ui_TextInput_typeText);
     m3ApiRawFunction(dc_ui_TextInput_selectAll);
+    m3ApiRawFunction(dc_ui_IntInput_new);
+    m3ApiRawFunction(dc_ui_TextInput_newWithTitleAndValue);
+    m3ApiRawFunction(dc_ui_IntInput_getTitle);
+    m3ApiRawFunction(dc_ui_IntInput_setTitle);
+    m3ApiRawFunction(dc_ui_IntInput_getValue);
+    m3ApiRawFunction(dc_ui_IntInput_setValue);
+    m3ApiRawFunction(dc_ui_IntInput_getValueBlinking);
+    m3ApiRawFunction(dc_ui_IntInput_setValueBlinking);
+    m3ApiRawFunction(dc_ui_IntInput_getBase);
+    m3ApiRawFunction(dc_ui_IntInput_setBase);
+    m3ApiRawFunction(dc_ui_IntInput_setRange);
     m3ApiRawFunction(dc_test_TestClass_new);
     m3ApiRawFunction(dc_test_TestClass_identify);
     m3ApiRawFunction(dc_test_TestClass_add);

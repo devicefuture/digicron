@@ -34,3 +34,11 @@ unsigned int Counter::getBase() {
 void Counter::setBase(unsigned int base) {
     _base = base;
 }
+
+long Counter::getResetValue() {
+    return _resetValue;
+}
+
+void Counter::setResetValue(long resetValue) {
+    _resetValue = resetValue;
+}

@@ -48,6 +48,18 @@ class ChangeBaseMenu : public ui::ContextualMenu {
         Counter* _counter = nullptr;
 };
 
+class ChangeResetValueInput : public ui::IntInput {
+    public:
+        ChangeResetValueInput() : IntInput("Rst val?", 0) {}
+
+        void openForCounter(Counter* counter);
+
+        void handleEvent(ui::Event event) override;
+
+    private:
+        Counter* _counter = nullptr;
+};
+
 class CounterMenu : public ui::ContextualMenu {
     public:
         CounterMenu();
@@ -64,5 +76,6 @@ extern ResetConfirmationMenu* resetConfirmationMenu;
 extern CounterMenu* counterMenu;
 extern CounterNameInput* counterNameInput;
 extern ChangeBaseMenu* changeBaseMenu;
+extern ChangeResetValueInput* changeResetValueInput;
 
 #endif

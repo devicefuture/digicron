@@ -159,6 +159,20 @@ namespace ui
         method "void" typeText "String" text
         method "void" selectAll
 
+    class IntInput extends Screen
+        OVERRIDE=true PASS_PROCESS=true constructor
+        INTERNAL_NAME=dc_ui_TextInput_newWithTitleAndValue PASS_PROCESS=true constructor "String" title "long" value
+
+        method "String" getTitle
+        method "void" setTitle "String" title
+        method "long" getValue
+        method "void" setValue "long" value
+        method "bool" getValueBlinking
+        method "void" setValueBlinking "bool" blinkValue
+        method "unsigned int" getBase
+        method "void" setBase "unsigned int" base
+        method "void" setRange "long" minValue "long" maxValue
+
 namespace test
     class TestClass
         constructor "unsigned int" seed

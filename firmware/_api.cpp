@@ -31,6 +31,7 @@ template<typename T> T* api::getBySid(api::Type type, api::Sid sid) {
             (type == Type::ui_ContextualMenu && storedInstance->type == Type::ui_TextInput) ||
             (type == Type::ui_Menu && storedInstance->type == Type::ui_TextInput) ||
             (type == Type::ui_Screen && storedInstance->type == Type::ui_TextInput) ||
+            (type == Type::ui_Screen && storedInstance->type == Type::ui_IntInput) ||
             (type == Type::test_TestClass && storedInstance->type == Type::test_TestSubclass) ||
         false
     ))) {
@@ -105,6 +106,7 @@ void deleteStoredInstance(api::StoredInstance* storedInstance) {
         case api::Type::ui_ConfirmationMenu: delete (ui::ConfirmationMenu*)storedInstance->instance; break;
         case api::Type::ui_Popup: delete (ui::Popup*)storedInstance->instance; break;
         case api::Type::ui_TextInput: delete (ui::TextInput*)storedInstance->instance; break;
+        case api::Type::ui_IntInput: delete (ui::IntInput*)storedInstance->instance; break;
         case api::Type::test_TestClass: delete (test::TestClass*)storedInstance->instance; break;
         case api::Type::test_TestSubclass: delete (test::TestSubclass*)storedInstance->instance; break;
         default: delete storedInstance->instance; break;
@@ -1051,6 +1053,109 @@ m3ApiRawFunction(api::dc_ui_TextInput_selectAll) {
     m3ApiSuccess();
 }
 
+m3ApiRawFunction(api::dc_ui_IntInput_new) {
+    m3ApiReturnType(Sid)
+
+    auto instance = new ui::IntInput((proc::WasmProcess*)runtime->userdata);
+
+    Sid result = api::store<ui::IntInput>(Type::ui_IntInput, (proc::WasmProcess*)runtime->userdata, instance);
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_ui_TextInput_newWithTitleAndValue) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArgMem(char*, title)
+    m3ApiGetArg(long, value)
+
+    auto instance = new ui::IntInput((proc::WasmProcess*)runtime->userdata, String(title), value);
+
+    Sid result = api::store<ui::IntInput>(Type::ui_IntInput, (proc::WasmProcess*)runtime->userdata, instance);
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_ui_IntInput_getTitle) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(Sid, _sid)
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->getTitle()));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_ui_IntInput_setTitle) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArgMem(char*, title)
+
+    api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->setTitle(String(title));
+
+    m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_ui_IntInput_getValue) {
+    m3ApiReturnType(long)
+    m3ApiGetArg(Sid, _sid)
+
+    long result = api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->getValue();
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_ui_IntInput_setValue) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArg(long, value)
+
+    api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->setValue(value);
+
+    m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_ui_IntInput_getValueBlinking) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArg(Sid, _sid)
+
+    unsigned int result = api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->getValueBlinking();
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_ui_IntInput_setValueBlinking) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArg(bool, blinkValue)
+
+    api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->setValueBlinking(blinkValue);
+
+    m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_ui_IntInput_getBase) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArg(Sid, _sid)
+
+    unsigned int result = api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->getBase();
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_ui_IntInput_setBase) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArg(unsigned int, base)
+
+    api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->setBase(base);
+
+    m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_ui_IntInput_setRange) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArg(long, minValue)
+    m3ApiGetArg(long, maxValue)
+
+    api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->setRange(minValue, maxValue);
+
+    m3ApiSuccess();
+}
+
 m3ApiRawFunction(api::dc_test_TestClass_new) {
     m3ApiReturnType(Sid)
     m3ApiGetArg(unsigned int, seed)
@@ -1246,6 +1351,17 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_typeTextChar", "v(ii)", &dc_ui_TextInput_typeTextChar);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_typeText", "v(ii)", &dc_ui_TextInput_typeText);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_selectAll", "v(i)", &dc_ui_TextInput_selectAll);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_new", "i()", &dc_ui_IntInput_new);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_newWithTitleAndValue", "i(ii)", &dc_ui_TextInput_newWithTitleAndValue);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_getTitle", "i(i)", &dc_ui_IntInput_getTitle);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_setTitle", "v(ii)", &dc_ui_IntInput_setTitle);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_getValue", "i(i)", &dc_ui_IntInput_getValue);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_setValue", "v(ii)", &dc_ui_IntInput_setValue);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_getValueBlinking", "i(i)", &dc_ui_IntInput_getValueBlinking);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_setValueBlinking", "v(ii)", &dc_ui_IntInput_setValueBlinking);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_getBase", "i(i)", &dc_ui_IntInput_getBase);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_setBase", "v(ii)", &dc_ui_IntInput_setBase);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_setRange", "v(iii)", &dc_ui_IntInput_setRange);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_new", "i(i)", &dc_test_TestClass_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_identify", "v(i)", &dc_test_TestClass_identify);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_add", "i(iii)", &dc_test_TestClass_add);

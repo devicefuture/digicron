@@ -28,6 +28,7 @@ namespace ui {
         union {
             input::Button button;
             unsigned int index;
+            long intValue;
         } data;
     };
 
