@@ -95,6 +95,8 @@ void CounterScreen::handleEvent(ui::Event event) {
                 _counterIndex++;
                 resetScroll();
                 break;
+
+            default: break;
         }
     }
 }

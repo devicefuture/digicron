@@ -18,9 +18,9 @@ extern "C" {
 
 void* operator new(size_t size);
 void* operator new[](size_t size);
-void operator delete(void* ptr);
-void operator delete(void* ptr, size_t size);
-void operator delete[](void* ptr);
-void operator delete[](void* ptr, size_t size);
+void operator delete(void* ptr) noexcept;
+void operator delete(void* ptr, size_t size) noexcept;
+void operator delete[](void* ptr) noexcept;
+void operator delete[](void* ptr, size_t size) noexcept;
 
 extern "C" int __cxa_atexit(void (*function)(void*), void* argument, void* handle);

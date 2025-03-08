@@ -3,6 +3,11 @@
 #ifndef DIGICRON_H_
 #define DIGICRON_H_
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc99-designator"
+#pragma clang diagnostic ignored "-Wc++17-extensions"
+#pragma clang diagnostic ignored "-Wc++20-designator"
+
 #include <stdint.h>
 
 #define WASM_EXPORT extern "C" __attribute__((used)) __attribute__((visibility ("default")))
@@ -165,10 +170,10 @@ extern "C" {
 
 void* operator new(size_t size);
 void* operator new[](size_t size);
-void operator delete(void* ptr);
-void operator delete(void* ptr, size_t size);
-void operator delete[](void* ptr);
-void operator delete[](void* ptr, size_t size);
+void operator delete(void* ptr) noexcept;
+void operator delete(void* ptr, size_t size) noexcept;
+void operator delete[](void* ptr) noexcept;
+void operator delete[](void* ptr, size_t size) noexcept;
 
 extern "C" int __cxa_atexit(void (*function)(void*), void* argument, void* handle);
 
@@ -1367,4 +1372,6 @@ _DC_CALLABLE(void, ui, Screen, handleItemEvent)(dc::_Sid sid, dc::ui::EventType 
         .data.index = index
     });
 }
+#pragma clang diagnostic pop
+
 #endif

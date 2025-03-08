@@ -705,6 +705,11 @@ tee -a applib/digicron.h > /dev/null << EOF
 #ifndef DIGICRON_H_
 #define DIGICRON_H_
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc99-designator"
+#pragma clang diagnostic ignored "-Wc++17-extensions"
+#pragma clang diagnostic ignored "-Wc++20-designator"
+
 #include <stdint.h>
 
 #define WASM_EXPORT extern "C" __attribute__((used)) __attribute__((visibility ("default")))
@@ -854,6 +859,8 @@ WASM_EXPORT_AS("_loop") inline void _loop() {
 }
 
 // {{ callables }}
+
+#pragma clang diagnostic pop
 
 #endif
 EOF

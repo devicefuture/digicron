@@ -1,5 +1,8 @@
 #include "digicron.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wc++17-extensions"
+
 #define _DC_ALIGN_SIZE 4
 #define _DC_ALIGN(value) (((value) + _DC_ALIGN_SIZE - 1) & ~(_DC_ALIGN_SIZE - 1))
 
@@ -269,22 +272,24 @@ void* operator new[](size_t size) {
     return malloc(size);
 }
 
-void operator delete(void* ptr) {
+void operator delete(void* ptr) noexcept {
     free(ptr);
 }
 
-void operator delete(void* ptr, size_t size) {
+void operator delete(void* ptr, size_t size) noexcept {
     free(ptr);
 }
 
-void operator delete[](void* ptr) {
+void operator delete[](void* ptr) noexcept {
     free(ptr);
 }
 
-void operator delete[](void* ptr, size_t size) {
+void operator delete[](void* ptr, size_t size) noexcept {
     free(ptr);
 }
 
 extern "C" int __cxa_atexit(void (*function)(void*), void* argument, void* handle) {
     return 0;
 }
+
+#pragma clang diagnostic pop
