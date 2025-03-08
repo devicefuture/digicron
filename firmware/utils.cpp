@@ -1,46 +1,24 @@
 #include "utils.h"
+#include "common/maths.h"
 
-// TODO: Fix handling negative numbers when in base other than 10
+#define UTILS_NUMBER_TO_STRING(type) String utils::numberToString(type number, unsigned int base) { \
+        String result = number < 0 ? "-" : ""; \
+        \
+        result.concat(String(maths::abs(number), base)); \
+        result.toUpperCase(); \
+        \
+        return result; \
+    }
 
-String utils::numberToString(unsigned int number, unsigned int base) {
-    String result(number, base);
+#define UTILS_NUMBER_TO_STRING_UNSIGNED(type) String utils::numberToString(type number, unsigned int base) { \
+        return String(number, base); \
+    }
 
-    result.toUpperCase();
-
-    return result;
-}
-
-String utils::numberToString(int number, unsigned int base) {
-    String result(number, base);
-
-    result.toUpperCase();
-
-    return result;
-}
-
-String utils::numberToString(unsigned long number, unsigned int base) {
-    String result(number, base);
-
-    result.toUpperCase();
-
-    return result;
-}
-
-String utils::numberToString(long number, unsigned int base) {
-    String result(number, base);
-
-    result.toUpperCase();
-
-    return result;
-}
-
-String utils::numberToString(double number, unsigned int base) {
-    String result(number, base);
-
-    result.toUpperCase();
-
-    return result;
-}
+UTILS_NUMBER_TO_STRING_UNSIGNED(unsigned int)
+UTILS_NUMBER_TO_STRING(int)
+UTILS_NUMBER_TO_STRING_UNSIGNED(unsigned long)
+UTILS_NUMBER_TO_STRING(long)
+UTILS_NUMBER_TO_STRING(double)
 
 long utils::stringToLong(String string) {
     return string.toInt();

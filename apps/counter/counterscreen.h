@@ -19,6 +19,11 @@ class CounterScreen : public ui::Screen {
 
     protected:
         int _counterIndex = 0;
+        long _minDisplayValue = 0;
+        long _maxDisplayValue = 0;
+        unsigned int _lastCounterBase = 0;
+
+        void _updateDisplayValueRange();
 };
 
 extern CounterScreen* counterScreen;

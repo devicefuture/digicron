@@ -696,6 +696,22 @@ namespace display {
 
 #endif
 
+#ifndef DC_COMMON_MATHS_H_
+#define DC_COMMON_MATHS_H_
+
+#ifndef ONCE
+#define ONCE
+#endif
+
+namespace maths {
+    ONCE int abs(int value);
+    ONCE long abs(long value);
+    ONCE double abs(double value);
+    ONCE long power(long base, long exponent);
+}
+
+#endif
+
 #ifndef DC_COMMON_UI_H_
 #define DC_COMMON_UI_H_
 
@@ -1248,6 +1264,33 @@ template<typename T> dataTypes::List<T> dataTypes::List<T>::concat(dataTypes::Li
 
 #ifndef DC_COMMON_DISPLAY_CPP_
 #define DC_COMMON_DISPLAY_CPP_
+
+#endif
+
+#ifndef DC_COMMON_MATHS_CPP_
+#define DC_COMMON_MATHS_CPP_
+
+#ifndef DIGICRON_H_
+    #include "maths.h"
+#endif
+
+#define DC_COMMON_MATHS_ABS(type) type maths::abs(type value) { \
+        return value < 0 ? -value : value; \
+    }
+
+DC_COMMON_MATHS_ABS(int);
+DC_COMMON_MATHS_ABS(long);
+DC_COMMON_MATHS_ABS(double);
+
+long maths::power(long base, long exponent) {
+    long result = 1;
+
+    for (long i = 0; i < exponent; i++) {
+        result *= base;
+    }
+
+    return result;
+}
 
 #endif
 

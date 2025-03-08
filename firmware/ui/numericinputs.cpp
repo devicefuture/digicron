@@ -1,4 +1,5 @@
 #include "numericinputs.h"
+#include "../common/maths.h"
 #include "../timing.h"
 #include "../utils.h"
 
@@ -23,9 +24,15 @@ void ui::IntInput::update() {
 
     scroll(_title);
 
+    if (_base != 10 && _value < 0) {
+        _value = _maxDisplayValue;
+    }
+
     if (!_blinkValue || (timing::getCurrentTick() - _blinkStartTime) % 1000 < 500) {
+        long boundedValue = _value % (_value < 0 ? -_minDisplayValue + 1 : _maxDisplayValue + 1);
+
         pad(display::COLUMNS - 1, _base == 10 ? ' ' : '0');
-        print(utils::numberToString(_value, _base)); // TODO: Render overflows by dropping most significant digits
+        print(utils::numberToString(boundedValue, _base));
     } else {
         setPosition(display::COLUMNS - 1, 1);
     }
@@ -56,6 +63,10 @@ void ui::IntInput::_handleEvent(Event event) {
                 _value++;
                 _blinkStartTime = timing::getCurrentTick();
 
+                if (_base != 10 && _value > _maxDisplayValue) {
+                    _value = 0;
+                }
+
                 resetScroll();
 
                 break;
@@ -64,6 +75,7 @@ void ui::IntInput::_handleEvent(Event event) {
             case input::Button::DOWN:
             {
                 _value--;
+
                 _blinkStartTime = timing::getCurrentTick();
 
                 resetScroll();
@@ -73,8 +85,13 @@ void ui::IntInput::_handleEvent(Event event) {
 
             case input::Button::LEFT:
             {
-                if (_value * _base <= _maxValue) {
-                    _value *= _base;
+                long newValue = _value * (int)_base;
+
+                if (
+                    newValue >= _minValue && newValue <= _maxValue &&
+                    newValue >= _minDisplayValue && newValue <= _maxDisplayValue
+                ) {
+                    _value = newValue;
                 }
 
                 _blinkStartTime = timing::getCurrentTick();
@@ -86,7 +103,7 @@ void ui::IntInput::_handleEvent(Event event) {
 
             case input::Button::RIGHT:
             {
-                _value /= _base;
+                _value /= (int)_base;
                 _blinkStartTime = timing::getCurrentTick();
 
                 resetScroll();
@@ -118,5 +135,18 @@ void ui::IntInput::_handleEvent(Event event) {
         if (_value > _maxValue) {
             _value = _maxValue;
         }
+
+        if (_value < _minDisplayValue) {
+            _value = _minDisplayValue;
+        }
+
+        if (_value > _maxDisplayValue) {
+            _value = _maxDisplayValue;
+        }
     }
+}
+
+void ui::IntInput::_updateDisplayValueRange() {
+    _minDisplayValue = -maths::power(_base, display::COLUMNS - 2) + 1;
+    _maxDisplayValue = maths::power(_base, display::COLUMNS - 1) - 1;
 }

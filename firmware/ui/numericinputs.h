@@ -6,9 +6,8 @@
 #include "../timing.h"
 
 namespace ui {
-    // TODO: Input default min and max values should depend on base
-    const long INT_INPUT_DEFAULT_MIN_VALUE = -999999;
-    const long INT_INPUT_DEFAULT_MAX_VALUE = 9999999;
+    const long INT_INPUT_DEFAULT_MIN_VALUE = -INT32_MAX;
+    const long INT_INPUT_DEFAULT_MAX_VALUE = INT32_MAX;
 
     class IntInput : public Screen {
         public:
@@ -17,11 +16,13 @@ namespace ui {
             IntInput(String title, long value) : Screen() {
                 setTitle(title);
                 setValue(value);
+                _updateDisplayValueRange();
             }
 
             IntInput(proc::Process* process, String title, long value) : Screen(process) {
                 setTitle(title);
                 setValue(value);
+                _updateDisplayValueRange();
             }
 
             String getTitle() {return _title;}
@@ -36,7 +37,11 @@ namespace ui {
             }
 
             unsigned int getBase() {return _base;}
-            void setBase(unsigned int base) {_base = base;}
+
+            void setBase(unsigned int base) {
+                _base = base;
+                _updateDisplayValueRange();
+            }
 
             void setRange(long minValue, long maxValue) {
                 _minValue = minValue;
@@ -56,6 +61,10 @@ namespace ui {
             unsigned int _base = 10;
             long _minValue = INT_INPUT_DEFAULT_MIN_VALUE;
             long _maxValue = INT_INPUT_DEFAULT_MAX_VALUE;
+            long _minDisplayValue = 0;
+            long _maxDisplayValue = 0;
+
+            void _updateDisplayValueRange();
     };
 
     extern Icon* numericValueChangeableIcon;

@@ -25,6 +25,8 @@ void CounterScreen::setCounterIndex(int index) {
     if (_counterIndex > counters.length() - 1) {
         _counterIndex = counters.length() - 1;
     }
+
+    _updateDisplayValueRange();
 }
 
 void CounterScreen::update() {
@@ -33,8 +35,30 @@ void CounterScreen::update() {
     clear();
 
     scroll(counter->getName(), display::COLUMNS);
-    pad(display::COLUMNS, counter->getBase() == 10 ? ' ' : '0');
-    print(utils::numberToString(counter->getValue(), counter->getBase())); // TODO: Render overflows by dropping most significant digits
+
+    long counterValue = counter->getValue();
+    unsigned int counterBase = counter->getBase();
+
+    if (_lastCounterBase != counterBase) {
+        _lastCounterBase = counterBase;
+
+        _updateDisplayValueRange();
+    }
+
+    if (display::COLUMNS == 8 && counterBase == 16) {
+        pad(4, '0');
+        print(utils::numberToString(((counterValue & 0xFFFF0000) >> 16) & 0xFFFF, counterBase));
+        pad(4, '0');
+        print(utils::numberToString(counterValue & 0xFFFF, counterBase));
+
+        return;
+    }
+
+    long displayValue = counterBase != 10 && counterValue < 0 ? _maxDisplayValue + 1 + counterValue : counterValue;
+    long boundedValue = displayValue % (displayValue < 0 ? -_minDisplayValue + 1 : _maxDisplayValue + 1);
+
+    pad(display::COLUMNS, counterBase == 10 ? ' ' : '0');
+    print(utils::numberToString(boundedValue, counterBase));
 }
 
 void CounterScreen::handleEvent(ui::Event event) {
@@ -73,4 +97,11 @@ void CounterScreen::handleEvent(ui::Event event) {
                 break;
         }
     }
+}
+
+void CounterScreen::_updateDisplayValueRange() {
+    Counter* counter = getCounter();
+
+    _minDisplayValue = -maths::power(counter->getBase(), display::COLUMNS - 1) + 1;
+    _maxDisplayValue = maths::power(counter->getBase(), display::COLUMNS) - 1;
 }
