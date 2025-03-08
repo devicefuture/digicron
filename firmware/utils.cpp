@@ -11,7 +11,11 @@
     }
 
 #define UTILS_NUMBER_TO_STRING_UNSIGNED(type) String utils::numberToString(type number, unsigned int base) { \
-        return String(number, base); \
+        String result(number, base); \
+        \
+        result.toUpperCase(); \
+        \
+        return result; \
     }
 
 UTILS_NUMBER_TO_STRING_UNSIGNED(unsigned int)

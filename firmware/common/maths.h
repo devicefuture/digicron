@@ -5,6 +5,8 @@
 #define ONCE
 #endif
 
+#undef abs
+
 namespace maths {
     ONCE int abs(int value);
     ONCE long abs(long value);
