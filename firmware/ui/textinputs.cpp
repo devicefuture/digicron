@@ -113,6 +113,7 @@ void ui::TextInput::selectAll() {
 
 void ui::TextInput::open(bool urgent) {
     _caretBlinkStartTime = timing::getCurrentTick();
+    _originalValue = _value;
 
     ContextualMenu::open(urgent);
 }
@@ -195,6 +196,18 @@ void ui::TextInput::_handleEvent(ui::Event event) {
             {
                 if (_confirmationMenu) {
                     delete _confirmationMenu;
+
+                    _confirmationMenu = nullptr;
+                }
+
+                if (_value == _originalValue) {
+                    ContextualMenu::_handleEvent((Event) {
+                        .type = EventType::CANCEL
+                    });
+
+                    close();
+
+                    return;
                 }
 
                 _confirmationMenu = new TextInputConfirmationMenu(ownerProcess, this);

@@ -43,6 +43,7 @@ namespace ui {
 
         protected:
             String _value = "";
+            String _originalValue = "";
             unsigned int _caretPosition = 0;
             unsigned int _caretBlinkStartTime = 0;
             unsigned int _scrollPosition = 0;
