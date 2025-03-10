@@ -2,7 +2,7 @@
 - [x] Have different counters for different things
 - [ ] Save counters in flash to recall later on (ensure saving happens a few seconds after a change to prevent flash wear)
 - [x] Allow resetting a counter (will be done in the menu with an 'are you sure' prompt)
-- [ ] Allow changing value to reset to
+- [x] Allow changing value to reset to
 - [ ] Allow changing actions of up, down and select buttons
     - [ ] Choose action to be increment, decrement, set or reset
     - [ ] Allow incrementation and decrementation by specified amount
