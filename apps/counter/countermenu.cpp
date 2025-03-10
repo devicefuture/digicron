@@ -158,6 +158,14 @@ void CounterMenu::handleEvent(ui::Event event) {
             changeResetValueInput->openForCounter(_counter);
         }
 
+        if (selectedItem == "DELETE") {
+            Counter* counter = counters.remove(counterScreen->getCounterIndex());
+
+            delete counter;
+
+            close();
+        }
+
         if (selectedItem == "+NEW") {
             int newCounterIndex = counterScreen->getCounterIndex() + 1;
 
