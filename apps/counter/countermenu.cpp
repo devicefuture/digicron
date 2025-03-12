@@ -159,6 +159,8 @@ void CounterMenu::handleEvent(ui::Event event) {
         }
 
         if (selectedItem == "DELETE") {
+            // TODO: Add confirmation menu for deletion
+
             Counter* counter = counters.remove(counterScreen->getCounterIndex());
 
             delete counter;
