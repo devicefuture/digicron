@@ -18,6 +18,7 @@ void setup() {
     counterNameInput = new CounterNameInput();
     changeBaseMenu = new ChangeBaseMenu();
     changeResetValueInput = new ChangeResetValueInput();
+    deleteConfirmationMenu = new DeleteConfirmationMenu();
 
     counterScreen->open(true);
 }

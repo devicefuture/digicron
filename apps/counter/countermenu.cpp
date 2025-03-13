@@ -8,6 +8,7 @@ CounterMenu* counterMenu;
 CounterNameInput* counterNameInput;
 ChangeBaseMenu* changeBaseMenu;
 ChangeResetValueInput* changeResetValueInput;
+DeleteConfirmationMenu* deleteConfirmationMenu;
 
 void ResetConfirmationMenu::openForCounter(Counter* counter) {
     _counter = counter;
@@ -114,6 +115,34 @@ void ChangeResetValueInput::handleEvent(ui::Event event) {
     }
 }
 
+void DeleteConfirmationMenu::openForCounter(Counter* counter) {
+    _counter = counter;
+
+    open(false);
+}
+
+void DeleteConfirmationMenu::handleEvent(ui::Event event) {
+    if (!_counter) {
+        return;
+    }
+
+    if (event.type == ui::EventType::ITEM_SELECT) {
+        if (yesSelected()) {
+            int index = counters.indexOf(_counter);
+
+            if (index >= 0) {
+                counters.remove(index);
+            }
+
+            delete _counter;
+
+            counterMenu->close();
+        }
+
+        close();
+    }
+}
+
 CounterMenu::CounterMenu() : ui::ContextualMenu() {
     items.push(new String("RESET"));
     items.push(new String("RENAME"));
@@ -159,13 +188,7 @@ void CounterMenu::handleEvent(ui::Event event) {
         }
 
         if (selectedItem == "DELETE") {
-            // TODO: Add confirmation menu for deletion
-
-            Counter* counter = counters.remove(counterScreen->getCounterIndex());
-
-            delete counter;
-
-            close();
+            deleteConfirmationMenu->openForCounter(_counter);
         }
 
         if (selectedItem == "+NEW") {

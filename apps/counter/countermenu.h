@@ -60,6 +60,18 @@ class ChangeResetValueInput : public ui::IntInput {
         Counter* _counter = nullptr;
 };
 
+class DeleteConfirmationMenu : public ui::ConfirmationMenu {
+    public:
+        DeleteConfirmationMenu() : ConfirmationMenu("Delete?", true) {}
+
+        void openForCounter(Counter* counter);
+
+        void handleEvent(ui::Event event) override;
+
+    private:
+        Counter* _counter = nullptr;
+};
+
 class CounterMenu : public ui::ContextualMenu {
     public:
         CounterMenu();
@@ -77,5 +89,6 @@ extern CounterMenu* counterMenu;
 extern CounterNameInput* counterNameInput;
 extern ChangeBaseMenu* changeBaseMenu;
 extern ChangeResetValueInput* changeResetValueInput;
+extern DeleteConfirmationMenu* deleteConfirmationMenu;
 
 #endif
