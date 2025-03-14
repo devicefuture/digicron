@@ -9,6 +9,8 @@
     #include <stdio.h>
 #endif
 
+#include "proc.h"
+
 namespace fs {
     enum FileMode {
         READ,
@@ -24,7 +26,12 @@ namespace fs {
 
     class FileHandle {
         public:
+            proc::Process* ownerProcess = nullptr;
+
+            FileHandle() : FileHandle("", FileMode::READ) {}
+            FileHandle(proc::Process* process);
             FileHandle(String path, FileMode mode = FileMode::READ);
+            FileHandle(proc::Process* process, String path, FileMode mode = FileMode::READ);
             ~FileHandle();
 
             String getPath() {return _path;}
@@ -34,10 +41,11 @@ namespace fs {
 
             char read();
             String readString();
+            const char* readChars();
 
             void write(char c);
             void write(String string);
-            void write(char* string);
+            void write(char* chars);
 
             unsigned int getSize();
             unsigned int tell();

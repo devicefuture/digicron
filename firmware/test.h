@@ -14,6 +14,9 @@ namespace test {
             bool bools(bool a, bool b, bool c);
             unsigned int nextRandomNumber();
 
+            String getString();
+            const char* getChars();
+
         protected:
             unsigned int _counter = 0;
     };
@@ -28,6 +31,7 @@ namespace test {
 
     void sayHello();
     int add(int a, int b);
+    TestClass* getMostRecentTest();
 }
 
 #endif

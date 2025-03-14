@@ -150,6 +150,7 @@ function method {
 
     internalReturnType=$returnType
     firmwareReturnType=$returnType
+    customReturn=
 
     if [ "$returnType" = "bool" ]; then
         firmwareReturnType="unsigned int"
@@ -160,6 +161,28 @@ function method {
         firmwareReturnType=Sid
         nameAndType="dataTypes::String $name"
     else
+        nameAndType="$returnType $name"
+    fi
+
+    if [ "$returnType" = "char*" ]; then
+        internalReturnType=dc::_Sid
+        firmwareReturnType=Sid
+        nameAndType="$returnType $name"
+    fi
+
+    if [[ "$returnType" =~ ^ENUM\  ]]; then
+        returnType=${returnType##ENUM }
+        internalReturnType=dc::_Enum
+        firmwareReturnType="unsigned int"
+        customReturn="($returnType)$INTERNAL_NAME(PASSARGS)"
+        nameAndType="$returnType $name"
+    fi
+
+    if [[ "$returnType" =~ ^CLASSPTR\  ]]; then
+        nonPointerReturnType=${returnType##CLASSPTR }
+        returnType=$nonPointerReturnType*
+        internalReturnType=dc::_Sid
+        firmwareReturnType=Sid
         nameAndType="$returnType $name"
     fi
 
@@ -208,7 +231,7 @@ function method {
             "void")
                 shortReturnType=v ;;
 
-            "String")
+            "String"|"char*")
                 shortReturnType=i ;;
         esac
 
@@ -333,16 +356,36 @@ function method {
             echo
             echo -n "    auto instance = new $NAMESPACE::$CLASS("
         ) >> firmware/_api.cpp
-    elif [ "$returnType" = "String" ]; then
-        echo ")$overrideKeyword {dc::_Sid sid = $INTERNAL_NAME($passArgs); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}" >> applib/digicron.h
+    elif [ "$returnType" = "String" ] || [ "$returnType" = "char*" ]; then
+        if [ "$returnType" = "String" ]; then
+            echo ")$overrideKeyword {dc::_Sid sid = $INTERNAL_NAME($passArgs); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}" >> applib/digicron.h
+        else
+            echo ")$overrideKeyword {dc::_Sid sid = $INTERNAL_NAME($passArgs); char* array = (char*)malloc(dc_getBufferSize(sid)); dc_copyBufferInto(sid, array); dc_deleteBySid(sid); return array;}" >> applib/digicron.h
+        fi
+
+        echo >> firmware/_api.cpp
 
         if [ "$OUT_OF_CLASS" = true ]; then
             echo -n "    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer($NAMESPACE::$name(" >> firmware/_api.cpp
         else
             echo -n "    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<$NAMESPACE::$CLASS>(Type::${NAMESPACE}_$CLASS, _sid)->$name(" >> firmware/_api.cpp
         fi
+    elif [ "$internalReturnType" = "dc::_Sid" ]; then
+        echo ")$overrideKeyword {return dc::_getBySid<$nonPointerReturnType>(_Type::${nonPointerReturnType/::/_}, $INTERNAL_NAME($passArgs));}" >> applib/digicron.h
+
+        echo >> firmware/_api.cpp
+
+        if [ "$OUT_OF_CLASS" = true ]; then
+            echo -n "    Sid result = api::store<$nonPointerReturnType>(Type::${nonPointerReturnType/::/_}, (proc::WasmProcess*)runtime->userdata, $NAMESPACE::$name(" >> firmware/_api.cpp
+        else
+            echo -n "    Sid result = api::store<$nonPointerReturnType>(Type::${nonPointerReturnType/::/_}, (proc::WasmProcess*)runtime->userdata, api::getBySid<$NAMESPACE::$CLASS>(Type::${NAMESPACE}_$CLASS, _sid)->$name(" >> firmware/_api.cpp
+        fi
     else
-        echo ")$overrideKeyword {return $INTERNAL_NAME($passArgs);}" >> applib/digicron.h
+        if [ "$customReturn" = "" ]; then
+            echo ")$overrideKeyword {return $INTERNAL_NAME($passArgs);}" >> applib/digicron.h
+        else
+            echo ")$overrideKeyword {return ${customReturn//PASSARGS/$passArgs};}" >> applib/digicron.h
+        fi
 
         if [ "$passArgs" != "" ]; then
             echo >> firmware/_api.cpp
@@ -374,8 +417,10 @@ function method {
     echo ");" >> tools/api/_digicron-imports.h
     echo ")\", &$INTERNAL_NAME);" >> tools/api/_api-linker.h
 
-    if [ "$returnType" = "String" ]; then
+    if [ "$returnType" = "String" ] || [ "$returnType" = "char*" ]; then
         echo "$firmwareArgs)));" >> firmware/_api.cpp
+    elif [ "$internalReturnType" = "dc::_Sid" ]; then
+        echo "$firmwareArgs));" >> firmware/_api.cpp
     else
         echo "$firmwareArgs);" >> firmware/_api.cpp
     fi
@@ -546,14 +591,20 @@ api::Sid api::findOwnSid(void* instance) {
 
 template<typename T> api::Sid api::store(api::Type type, proc::Process* ownerProcess, T* instance) {
     StoredInstance* storedInstance = nullptr;
-    bool foundStoredInstance = false;
+    bool foundEmptyStoredInstance = false;
+    bool foundExistingStoredInstance = false;
     unsigned int index = 0;
 
     storedInstances.start();
 
     while ((storedInstance = storedInstances.next())) {
         if (storedInstance->type == Type::EMPTY) {
-            foundStoredInstance = true;
+            foundEmptyStoredInstance = true;
+            break;
+        }
+
+        if (instance && storedInstance->instance == instance) {
+            foundExistingStoredInstance = true;
             break;
         }
 
@@ -568,7 +619,7 @@ template<typename T> api::Sid api::store(api::Type type, proc::Process* ownerPro
     storedInstance->ownerProcess = ownerProcess;
     storedInstance->instance = instance;
 
-    if (foundStoredInstance) {
+    if (foundEmptyStoredInstance || foundExistingStoredInstance) {
         return index;
     } else {
         return storedInstances.push(storedInstance) - 1;

@@ -12,6 +12,7 @@
 #include "timing.h"
 #include "input.h"
 #include "ui.h"
+#include "fs.h"
 #include "test.h"
 
 dataTypes::List<api::StoredInstance> api::storedInstances;
@@ -61,14 +62,20 @@ api::Sid api::findOwnSid(void* instance) {
 
 template<typename T> api::Sid api::store(api::Type type, proc::Process* ownerProcess, T* instance) {
     StoredInstance* storedInstance = nullptr;
-    bool foundStoredInstance = false;
+    bool foundEmptyStoredInstance = false;
+    bool foundExistingStoredInstance = false;
     unsigned int index = 0;
 
     storedInstances.start();
 
     while ((storedInstance = storedInstances.next())) {
         if (storedInstance->type == Type::EMPTY) {
-            foundStoredInstance = true;
+            foundEmptyStoredInstance = true;
+            break;
+        }
+
+        if (instance && storedInstance->instance == instance) {
+            foundExistingStoredInstance = true;
             break;
         }
 
@@ -83,7 +90,7 @@ template<typename T> api::Sid api::store(api::Type type, proc::Process* ownerPro
     storedInstance->ownerProcess = ownerProcess;
     storedInstance->instance = instance;
 
-    if (foundStoredInstance) {
+    if (foundEmptyStoredInstance || foundExistingStoredInstance) {
         return index;
     } else {
         return storedInstances.push(storedInstance) - 1;
@@ -107,6 +114,7 @@ void deleteStoredInstance(api::StoredInstance* storedInstance) {
         case api::Type::ui_Popup: delete (ui::Popup*)storedInstance->instance; break;
         case api::Type::ui_TextInput: delete (ui::TextInput*)storedInstance->instance; break;
         case api::Type::ui_IntInput: delete (ui::IntInput*)storedInstance->instance; break;
+        case api::Type::fs_FileHandle: delete (fs::FileHandle*)storedInstance->instance; break;
         case api::Type::test_TestClass: delete (test::TestClass*)storedInstance->instance; break;
         case api::Type::test_TestSubclass: delete (test::TestSubclass*)storedInstance->instance; break;
         default: delete storedInstance->instance; break;
@@ -184,6 +192,7 @@ m3ApiRawFunction(api::dc_utils_numberToStringUInt) {
     m3ApiReturnType(Sid)
     m3ApiGetArg(unsigned int, number)
     m3ApiGetArg(unsigned int, base)
+
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::numberToString(number, base)));
 
     m3ApiReturn(result);
@@ -193,6 +202,7 @@ m3ApiRawFunction(api::dc_utils_numberToStringInt) {
     m3ApiReturnType(Sid)
     m3ApiGetArg(int, number)
     m3ApiGetArg(unsigned int, base)
+
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::numberToString(number, base)));
 
     m3ApiReturn(result);
@@ -202,6 +212,7 @@ m3ApiRawFunction(api::dc_utils_numberToStringULong) {
     m3ApiReturnType(Sid)
     m3ApiGetArg(unsigned long, number)
     m3ApiGetArg(unsigned int, base)
+
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::numberToString(number, base)));
 
     m3ApiReturn(result);
@@ -211,6 +222,7 @@ m3ApiRawFunction(api::dc_utils_numberToStringLong) {
     m3ApiReturnType(Sid)
     m3ApiGetArg(long, number)
     m3ApiGetArg(unsigned int, base)
+
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::numberToString(number, base)));
 
     m3ApiReturn(result);
@@ -220,6 +232,7 @@ m3ApiRawFunction(api::dc_utils_numberToStringDouble) {
     m3ApiReturnType(Sid)
     m3ApiGetArg(double, number)
     m3ApiGetArg(unsigned int, base)
+
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::numberToString(number, base)));
 
     m3ApiReturn(result);
@@ -916,6 +929,7 @@ m3ApiRawFunction(api::dc_ui_ContextualMenu_newWithTitle) {
 m3ApiRawFunction(api::dc_ui_ContextualMenu_getTitle) {
     m3ApiReturnType(Sid)
     m3ApiGetArg(Sid, _sid)
+
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<ui::ContextualMenu>(Type::ui_ContextualMenu, _sid)->getTitle()));
 
     m3ApiReturn(result);
@@ -1013,6 +1027,7 @@ m3ApiRawFunction(api::dc_ui_TextInput_newWithValue) {
 m3ApiRawFunction(api::dc_ui_TextInput_getValue) {
     m3ApiReturnType(Sid)
     m3ApiGetArg(Sid, _sid)
+
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<ui::TextInput>(Type::ui_TextInput, _sid)->getValue()));
 
     m3ApiReturn(result);
@@ -1078,6 +1093,7 @@ m3ApiRawFunction(api::dc_ui_TextInput_newWithTitleAndValue) {
 m3ApiRawFunction(api::dc_ui_IntInput_getTitle) {
     m3ApiReturnType(Sid)
     m3ApiGetArg(Sid, _sid)
+
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->getTitle()));
 
     m3ApiReturn(result);
@@ -1156,6 +1172,190 @@ m3ApiRawFunction(api::dc_ui_IntInput_setRange) {
     m3ApiSuccess();
 }
 
+m3ApiRawFunction(api::dc_fs_FileHandle_new) {
+    m3ApiReturnType(Sid)
+
+    auto instance = new fs::FileHandle((proc::WasmProcess*)runtime->userdata);
+
+    Sid result = api::store<fs::FileHandle>(Type::fs_FileHandle, (proc::WasmProcess*)runtime->userdata, instance);
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_newWithPathAndMode) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArgMem(char*, path)
+    m3ApiGetArg(unsigned int, mode)
+
+    auto instance = new fs::FileHandle((proc::WasmProcess*)runtime->userdata, String(path), (fs::FileMode)mode);
+
+    Sid result = api::store<fs::FileHandle>(Type::fs_FileHandle, (proc::WasmProcess*)runtime->userdata, instance);
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_getPath) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(Sid, _sid)
+
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->getPath()));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_getMode) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArg(Sid, _sid)
+
+    unsigned int result = api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->getMode();
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_isOpen) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArg(Sid, _sid)
+
+    unsigned int result = api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->isOpen();
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_isAvailable) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArg(Sid, _sid)
+
+    unsigned int result = api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->isAvailable();
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_read) {
+    m3ApiReturnType(char)
+    m3ApiGetArg(Sid, _sid)
+
+    char result = api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->read();
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_readString) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(Sid, _sid)
+
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->readString()));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_readChars) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(Sid, _sid)
+
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->readChars()));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_write) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArg(char, c)
+
+    api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->write(c);
+
+    m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_writeString) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArgMem(char*, string)
+
+    api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->write(String(string));
+
+    m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_writeChars) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArgMem(char*, chars)
+
+    api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->write(chars);
+
+    m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_getSize) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArg(Sid, _sid)
+
+    unsigned int result = api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->getSize();
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_tell) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArg(Sid, _sid)
+
+    unsigned int result = api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->tell();
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_seek) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArg(int, position)
+    m3ApiGetArg(unsigned int, origins)
+
+    api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->seek(position, (fs::SeekOrigin)origins);
+
+    m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_start) {
+    m3ApiGetArg(Sid, _sid)
+
+    api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->start();
+
+    m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_fs_FileHandle_close) {
+    m3ApiGetArg(Sid, _sid)
+
+    api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->close();
+
+    m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_fs_open) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArgMem(char*, path)
+    m3ApiGetArg(unsigned int, mode)
+
+    Sid result = api::store<fs::FileHandle>(Type::fs_FileHandle, (proc::WasmProcess*)runtime->userdata, fs::open(String(path), (fs::FileMode)mode));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_getFileModeString) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(unsigned int, mode)
+
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(fs::getFileModeString((fs::FileMode)mode)));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_isFileOpen) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArgMem(char*, path)
+
+    unsigned int result = fs::isFileOpen(String(path));
+
+    m3ApiReturn(result);
+}
+
 m3ApiRawFunction(api::dc_test_TestClass_new) {
     m3ApiReturnType(Sid)
     m3ApiGetArg(unsigned int, seed)
@@ -1207,6 +1407,24 @@ m3ApiRawFunction(api::dc_test_TestClass_nextRandomNumber) {
     m3ApiReturn(result);
 }
 
+m3ApiRawFunction(api::dc_test_TestClass_getString) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(Sid, _sid)
+
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<test::TestClass>(Type::test_TestClass, _sid)->getString()));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_test_TestClass_getChars) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(Sid, _sid)
+
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<test::TestClass>(Type::test_TestClass, _sid)->getChars()));
+
+    m3ApiReturn(result);
+}
+
 m3ApiRawFunction(api::dc_test_TestSubclass_new) {
     m3ApiReturnType(Sid)
     m3ApiGetArg(unsigned int, seed)
@@ -1246,6 +1464,14 @@ m3ApiRawFunction(api::dc_test_add) {
     m3ApiGetArg(int, b)
 
     int result = test::add(a, b);
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_test_getMostRecentTest) {
+    m3ApiReturnType(Sid)
+
+    Sid result = api::store<test::TestClass>(Type::test_TestClass, (proc::WasmProcess*)runtime->userdata, test::getMostRecentTest());
 
     m3ApiReturn(result);
 }
@@ -1362,14 +1588,37 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_getBase", "i(i)", &dc_ui_IntInput_getBase);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_setBase", "v(ii)", &dc_ui_IntInput_setBase);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_setRange", "v(iii)", &dc_ui_IntInput_setRange);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_new", "i()", &dc_fs_FileHandle_new);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_newWithPathAndMode", "i(ii)", &dc_fs_FileHandle_newWithPathAndMode);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_getPath", "i(i)", &dc_fs_FileHandle_getPath);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_getMode", "i(i)", &dc_fs_FileHandle_getMode);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_isOpen", "i(i)", &dc_fs_FileHandle_isOpen);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_isAvailable", "i(i)", &dc_fs_FileHandle_isAvailable);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_read", "i(i)", &dc_fs_FileHandle_read);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_readString", "i(i)", &dc_fs_FileHandle_readString);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_readChars", "i(i)", &dc_fs_FileHandle_readChars);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_write", "v(ii)", &dc_fs_FileHandle_write);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_writeString", "v(ii)", &dc_fs_FileHandle_writeString);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_writeChars", "v(i*)", &dc_fs_FileHandle_writeChars);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_getSize", "i(i)", &dc_fs_FileHandle_getSize);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_tell", "i(i)", &dc_fs_FileHandle_tell);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_seek", "v(iii)", &dc_fs_FileHandle_seek);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_start", "v(i)", &dc_fs_FileHandle_start);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_close", "v(i)", &dc_fs_FileHandle_close);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_open", "i(ii)", &dc_fs_open);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_getFileModeString", "i(i)", &dc_fs_getFileModeString);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_isFileOpen", "i(i)", &dc_fs_isFileOpen);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_new", "i(i)", &dc_test_TestClass_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_identify", "v(i)", &dc_test_TestClass_identify);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_add", "i(iii)", &dc_test_TestClass_add);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_bools", "i(iiii)", &dc_test_TestClass_bools);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_nextRandomNumber", "i(i)", &dc_test_TestClass_nextRandomNumber);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_getString", "i(i)", &dc_test_TestClass_getString);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_getChars", "i(i)", &dc_test_TestClass_getChars);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestSubclass_new", "i(i)", &dc_test_TestSubclass_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestSubclass_identify", "v(i)", &dc_test_TestSubclass_identify);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestSubclass_subclass", "v(i)", &dc_test_TestSubclass_subclass);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_sayHello", "v()", &dc_test_sayHello);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_add", "i(ii)", &dc_test_add);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_getMostRecentTest", "i()", &dc_test_getMostRecentTest);
 }

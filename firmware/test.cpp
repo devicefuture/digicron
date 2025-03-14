@@ -2,10 +2,14 @@
 
 #include "test.h"
 
+test::TestClass* lastTestClass = nullptr;
+
 test::TestClass::TestClass(unsigned int seed) {
     Serial.println("Hello from the test class!");
 
     _counter = seed;
+
+    lastTestClass = this;
 }
 
 test::TestClass::TestClass() {
@@ -41,6 +45,14 @@ unsigned int test::TestClass::nextRandomNumber() {
     return number;
 }
 
+String test::TestClass::getString() {
+    return "This is a string!";
+}
+
+const char* test::TestClass::getChars() {
+    return "These are some chars!";
+}
+
 void test::TestSubclass::identify() {
     Serial.println("This is the test subclass");
     Serial.printf("My counter is %d\n", _counter);
@@ -58,4 +70,8 @@ int test::add(int a, int b) {
     Serial.printf("Add function called with values %d and %d\n", a, b);
 
     return a + b;
+}
+
+test::TestClass* test::getMostRecentTest() {
+    return lastTestClass;
 }

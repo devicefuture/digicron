@@ -1,8 +1,11 @@
 #include "fs.h"
 #include "datatypes.h"
-#include "common/console.h"
 
 auto openFileHandles = dataTypes::List<fs::FileHandle>();
+
+fs::FileHandle::FileHandle(proc::Process* process) : fs::FileHandle::FileHandle() {
+    ownerProcess = process;
+}
 
 fs::FileHandle::FileHandle(String path, FileMode mode) {
     bool isAlreadyOpen = isFileOpen(path);
@@ -22,11 +25,15 @@ fs::FileHandle::FileHandle(String path, FileMode mode) {
         return;
     }
 
-    if (!_openFile(pathCharArray)) {
+    if (path == "" || !_openFile(pathCharArray)) {
         _errorOnOpen = true;
         close();
         return;
     }
+}
+
+fs::FileHandle::FileHandle(proc::Process* process, String path, FileMode mode) : fs::FileHandle::FileHandle(path, mode) {
+    ownerProcess = process;
 }
 
 fs::FileHandle::~FileHandle() {
@@ -49,11 +56,17 @@ String fs::FileHandle::readString() {
     return data;
 }
 
-void fs::FileHandle::write(char* string) {
+const char* fs::FileHandle::readChars() {
+    String string = readString();
+    
+    return string.c_str();
+}
+
+void fs::FileHandle::write(char* charArray) {
     unsigned int i = 0;
 
-    while (string[i] != '\0') {
-        write(string[i++]);
+    while (charArray[i] != '\0') {
+        write(charArray[i++]);
     }
 }
 
@@ -101,7 +114,8 @@ void fs::FileHandle::close() {
     }
 
     if (_errorOnOpen) {
-        console::log("Unable to open file at path:", _path);
+        Serial.print("Unable to open file at path: ");
+        Serial.println(_path);
         return;
     }
 

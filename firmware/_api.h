@@ -11,12 +11,13 @@
 #include "timing.h"
 #include "input.h"
 #include "ui.h"
+#include "fs.h"
 #include "test.h"
 
 namespace api {
     typedef int Sid;
 
-    enum Type {EMPTY, Buffer, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, ui_TextInput, ui_IntInput, test_TestClass, test_TestSubclass};
+    enum Type {EMPTY, Buffer, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, ui_TextInput, ui_IntInput, fs_FileHandle, test_TestClass, test_TestSubclass};
 
     struct StoredInstance {
         Type type;
@@ -141,16 +142,39 @@ namespace api {
     m3ApiRawFunction(dc_ui_IntInput_getBase);
     m3ApiRawFunction(dc_ui_IntInput_setBase);
     m3ApiRawFunction(dc_ui_IntInput_setRange);
+    m3ApiRawFunction(dc_fs_FileHandle_new);
+    m3ApiRawFunction(dc_fs_FileHandle_newWithPathAndMode);
+    m3ApiRawFunction(dc_fs_FileHandle_getPath);
+    m3ApiRawFunction(dc_fs_FileHandle_getMode);
+    m3ApiRawFunction(dc_fs_FileHandle_isOpen);
+    m3ApiRawFunction(dc_fs_FileHandle_isAvailable);
+    m3ApiRawFunction(dc_fs_FileHandle_read);
+    m3ApiRawFunction(dc_fs_FileHandle_readString);
+    m3ApiRawFunction(dc_fs_FileHandle_readChars);
+    m3ApiRawFunction(dc_fs_FileHandle_write);
+    m3ApiRawFunction(dc_fs_FileHandle_writeString);
+    m3ApiRawFunction(dc_fs_FileHandle_writeChars);
+    m3ApiRawFunction(dc_fs_FileHandle_getSize);
+    m3ApiRawFunction(dc_fs_FileHandle_tell);
+    m3ApiRawFunction(dc_fs_FileHandle_seek);
+    m3ApiRawFunction(dc_fs_FileHandle_start);
+    m3ApiRawFunction(dc_fs_FileHandle_close);
+    m3ApiRawFunction(dc_fs_open);
+    m3ApiRawFunction(dc_fs_getFileModeString);
+    m3ApiRawFunction(dc_fs_isFileOpen);
     m3ApiRawFunction(dc_test_TestClass_new);
     m3ApiRawFunction(dc_test_TestClass_identify);
     m3ApiRawFunction(dc_test_TestClass_add);
     m3ApiRawFunction(dc_test_TestClass_bools);
     m3ApiRawFunction(dc_test_TestClass_nextRandomNumber);
+    m3ApiRawFunction(dc_test_TestClass_getString);
+    m3ApiRawFunction(dc_test_TestClass_getChars);
     m3ApiRawFunction(dc_test_TestSubclass_new);
     m3ApiRawFunction(dc_test_TestSubclass_identify);
     m3ApiRawFunction(dc_test_TestSubclass_subclass);
     m3ApiRawFunction(dc_test_sayHello);
     m3ApiRawFunction(dc_test_add);
+    m3ApiRawFunction(dc_test_getMostRecentTest);
 
     void linkFunctions(IM3Runtime runtime);
 }

@@ -156,6 +156,21 @@ void setup() {
     console::log("Normal bool:", true);
     console::log("Normal bool:", false);
 
+    console::log("String return:", testClass->getString());
+    console::log("Chars return:", testClass->getChars());
+
+    console::log("Get most recent test");
+
+    test::TestClass* returnedTest = test::getMostRecentTest();
+
+    if (returnedTest) {
+        returnedTest->identify();
+
+        console::log("Returned test's string:", returnedTest->getString());
+    } else {
+        console::log("Returned test was null");
+    }
+
     testSubclass = new test::TestSubclass(10);
 
     testClass->identify();

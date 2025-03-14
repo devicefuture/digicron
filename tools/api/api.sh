@@ -173,6 +173,34 @@ namespace ui
         method "void" setBase "unsigned int" base
         method "void" setRange "long" minValue "long" maxValue
 
+namespace fs
+    enum FileMode READ WRITE APPEND
+    enum SeekOrigin START CURRENT END
+
+    class FileHandle
+        PASS_PROCESS=true constructor
+        INTERNAL_NAME=dc_fs_FileHandle_newWithPathAndMode PASS_PROCESS=true constructor "String" path "ENUM fs::FileMode" mode
+
+        method "String" getPath
+        method "ENUM fs::FileMode" getMode
+        method "bool" isOpen
+        method "bool" isAvailable
+        method "char" read
+        method "String" readString
+        method "char*" readChars
+        method "void" write "char" c
+        INTERNAL_NAME=dc_fs_FileHandle_writeString method "void" write "String" string
+        INTERNAL_NAME=dc_fs_FileHandle_writeChars method "void" write "char*" chars
+        method "unsigned int" getSize
+        method "unsigned int" tell
+        method "void" seek "int" position "ENUM fs::SeekOrigin" origins
+        method "void" start
+        method "void" close
+
+    fn "CLASSPTR fs::FileHandle" open "String" path "ENUM fs::FileMode" mode
+    fn "char*" getFileModeString "ENUM fs::FileMode" mode
+    fn "bool" isFileOpen "String" path
+
 namespace test
     class TestClass
         constructor "unsigned int" seed
@@ -181,6 +209,8 @@ namespace test
         method "unsigned int" add "unsigned int" value "unsigned int" value2
         method "bool" bools "bool" a "bool" b "bool" c
         method "unsigned int" nextRandomNumber
+        method "String" getString
+        method "char*" getChars
 
     class TestSubclass extends TestClass
         OVERRIDE=true constructor "unsigned int" seed
@@ -190,3 +220,4 @@ namespace test
 
     fn "void" sayHello
     fn "int" add "int" a "int" b
+    fn "CLASSPTR test::TestClass" getMostRecentTest

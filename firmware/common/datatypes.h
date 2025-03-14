@@ -69,6 +69,7 @@ namespace dataTypes {
             Buffer() {}
             Buffer(unsigned int size);
             Buffer(dataTypes::String string);
+            Buffer(const char* chars);
             ~Buffer();
 
             unsigned int getSize();

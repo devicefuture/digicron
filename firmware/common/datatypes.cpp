@@ -154,6 +154,8 @@ inline dataTypes::Buffer::Buffer(dataTypes::String string) {
     }
 }
 
+inline dataTypes::Buffer::Buffer(const char* chars) : dataTypes::Buffer::Buffer(String(chars)) {}
+
 inline dataTypes::Buffer::~Buffer() {
     if (data) {
         free(data);
