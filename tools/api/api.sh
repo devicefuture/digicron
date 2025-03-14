@@ -173,33 +173,33 @@ namespace ui
         method "void" setBase "unsigned int" base
         method "void" setRange "long" minValue "long" maxValue
 
-namespace fs
-    enum FileMode READ WRITE APPEND
-    enum SeekOrigin START CURRENT END
+# namespace fs
+#     enum FileMode READ WRITE APPEND
+#     enum SeekOrigin START CURRENT END
 
-    class FileHandle
-        PASS_PROCESS=true constructor
-        INTERNAL_NAME=dc_fs_FileHandle_newWithPathAndMode PASS_PROCESS=true constructor "String" path "ENUM fs::FileMode" mode
+#     class FileHandle
+#         PASS_PROCESS=true constructor
+#         INTERNAL_NAME=dc_fs_FileHandle_newWithPathAndMode PASS_PROCESS=true constructor "String" path "ENUM fs::FileMode" mode
 
-        method "String" getPath
-        method "ENUM fs::FileMode" getMode
-        method "bool" isOpen
-        method "bool" isAvailable
-        method "char" read
-        method "String" readString
-        method "char*" readChars
-        method "void" write "char" c
-        INTERNAL_NAME=dc_fs_FileHandle_writeString method "void" write "String" string
-        INTERNAL_NAME=dc_fs_FileHandle_writeChars method "void" write "char*" chars
-        method "unsigned int" getSize
-        method "unsigned int" tell
-        method "void" seek "int" position "ENUM fs::SeekOrigin" origins
-        method "void" start
-        method "void" close
+#         method "String" getPath
+#         method "ENUM fs::FileMode" getMode
+#         method "bool" isOpen
+#         method "bool" isAvailable
+#         method "char" read
+#         method "String" readString
+#         method "char*" readChars
+#         method "void" write "char" c
+#         INTERNAL_NAME=dc_fs_FileHandle_writeString method "void" write "String" string
+#         INTERNAL_NAME=dc_fs_FileHandle_writeChars method "void" write "char*" chars
+#         method "unsigned int" getSize
+#         method "unsigned int" tell
+#         method "void" seek "int" position "ENUM fs::SeekOrigin" origins
+#         method "void" start
+#         method "void" close
 
-    fn "CLASSPTR fs::FileHandle" open "String" path "ENUM fs::FileMode" mode
-    fn "char*" getFileModeString "ENUM fs::FileMode" mode
-    fn "bool" isFileOpen "String" path
+#     fn "CLASSPTR fs::FileHandle" open "String" path "ENUM fs::FileMode" mode
+#     fn "char*" getFileModeString "ENUM fs::FileMode" mode
+#     fn "bool" isFileOpen "String" path
 
 namespace test
     class TestClass
