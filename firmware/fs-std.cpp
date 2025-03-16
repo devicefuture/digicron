@@ -70,4 +70,8 @@ void fs::FileHandle::_closeFile() {
     fclose(_file);
 }
 
+bool fs::init() {
+    return true;
+}
+
 #endif

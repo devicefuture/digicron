@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 #ifndef DC_SIMULATOR
-    #include <Adafruit_LittleFS.h>
+    #include <littlefs/lfs.h>
 #else
     #include <stdio.h>
 #endif
@@ -70,9 +70,14 @@ namespace fs {
             void _closeFile();
     };
 
+    bool init();
     FileHandle* open(String path, FileMode mode);
     const char* getFileModeString(FileMode mode);
     bool isFileOpen(String path);
+
+    #ifndef DC_SIMULATOR
+        extern lfs_t* filesystem;
+    #endif
 }
 
 #endif
