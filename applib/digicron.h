@@ -137,6 +137,26 @@ WASM_IMPORT("digicron", "dc_ui_IntInput_setValueBlinking") void dc_ui_IntInput_s
 WASM_IMPORT("digicron", "dc_ui_IntInput_getBase") unsigned int dc_ui_IntInput_getBase(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_ui_IntInput_setBase") void dc_ui_IntInput_setBase(dc::_Sid sid, unsigned int base);
 WASM_IMPORT("digicron", "dc_ui_IntInput_setRange") void dc_ui_IntInput_setRange(dc::_Sid sid, long minValue, long maxValue);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_new") dc::_Sid dc_fs_FileHandle_new();
+WASM_IMPORT("digicron", "dc_fs_FileHandle_newWithPathAndMode") dc::_Sid dc_fs_FileHandle_newWithPathAndMode(char* path, dc::_Enum mode);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_getPath") dc::_Sid dc_fs_FileHandle_getPath(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_getMode") dc::_Enum dc_fs_FileHandle_getMode(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_isOpen") bool dc_fs_FileHandle_isOpen(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_isAvailable") bool dc_fs_FileHandle_isAvailable(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_read") char dc_fs_FileHandle_read(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_readString") dc::_Sid dc_fs_FileHandle_readString(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_readChars") dc::_Sid dc_fs_FileHandle_readChars(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_write") void dc_fs_FileHandle_write(dc::_Sid sid, char c);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_writeString") void dc_fs_FileHandle_writeString(dc::_Sid sid, char* string);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_writeChars") void dc_fs_FileHandle_writeChars(dc::_Sid sid, char* chars);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_getSize") unsigned int dc_fs_FileHandle_getSize(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_tell") unsigned int dc_fs_FileHandle_tell(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_seek") void dc_fs_FileHandle_seek(dc::_Sid sid, int position, dc::_Enum origins);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_start") void dc_fs_FileHandle_start(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_close") void dc_fs_FileHandle_close(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_fs_open") dc::_Sid dc_fs_open(char* path, dc::_Enum mode);
+WASM_IMPORT("digicron", "dc_fs_getFileModeString") dc::_Sid dc_fs_getFileModeString(dc::_Enum mode);
+WASM_IMPORT("digicron", "dc_fs_isFileOpen") bool dc_fs_isFileOpen(char* path);
 WASM_IMPORT("digicron", "dc_test_TestClass_new") dc::_Sid dc_test_TestClass_new(unsigned int seed);
 WASM_IMPORT("digicron", "dc_test_TestClass_identify") void dc_test_TestClass_identify(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_test_TestClass_add") unsigned int dc_test_TestClass_add(dc::_Sid sid, unsigned int value, unsigned int value2);
@@ -304,7 +324,7 @@ namespace dataTypes {
 
 #endif
 
-enum _Type {EMPTY, Buffer, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, ui_TextInput, ui_IntInput, test_TestClass, test_TestSubclass};
+enum _Type {EMPTY, Buffer, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, ui_TextInput, ui_IntInput, fs_FileHandle, test_TestClass, test_TestSubclass};
 
 struct _StoredInstance {
     _Type type;
@@ -640,6 +660,55 @@ namespace ui {
             void setBase(unsigned int base) {return dc_ui_IntInput_setBase(_sid, base);}
             void setRange(long minValue, long maxValue) {return dc_ui_IntInput_setRange(_sid, minValue, maxValue);}
     };
+}
+
+namespace fs {
+    enum FileMode {
+        READ,
+        WRITE,
+        APPEND
+    };
+
+    enum SeekOrigin {
+        START,
+        CURRENT,
+        END
+    };
+
+    class FileHandle {
+        protected:
+            dc::_Sid _sid;
+
+            FileHandle(_Dummy dummy) {}
+
+        public:
+            virtual dc::_Sid _getSid() {return _sid;}
+
+            ~FileHandle() {dc_deleteBySid(_sid); _removeStoredInstance(this);}
+
+            FileHandle() {_sid = dc_fs_FileHandle_new(); _addStoredInstance(_Type::fs_FileHandle, this);}
+            FileHandle(dataTypes::String path, fs::FileMode mode) {_sid = dc_fs_FileHandle_newWithPathAndMode(path.c_str(), mode); _addStoredInstance(_Type::fs_FileHandle, this);}
+
+            dataTypes::String getPath() {dc::_Sid sid = dc_fs_FileHandle_getPath(_sid); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
+            fs::FileMode getMode() {return (fs::FileMode)dc_fs_FileHandle_getMode(_sid);}
+            bool isOpen() {return dc_fs_FileHandle_isOpen(_sid);}
+            bool isAvailable() {return dc_fs_FileHandle_isAvailable(_sid);}
+            char read() {return dc_fs_FileHandle_read(_sid);}
+            dataTypes::String readString() {dc::_Sid sid = dc_fs_FileHandle_readString(_sid); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
+            char* readChars() {dc::_Sid sid = dc_fs_FileHandle_readChars(_sid); char* array = (char*)malloc(dc_getBufferSize(sid)); dc_copyBufferInto(sid, array); dc_deleteBySid(sid); return array;}
+            void write(char c) {return dc_fs_FileHandle_write(_sid, c);}
+            void write(dataTypes::String string) {return dc_fs_FileHandle_writeString(_sid, string.c_str());}
+            void write(char* chars) {return dc_fs_FileHandle_writeChars(_sid, chars);}
+            unsigned int getSize() {return dc_fs_FileHandle_getSize(_sid);}
+            unsigned int tell() {return dc_fs_FileHandle_tell(_sid);}
+            void seek(int position, fs::SeekOrigin origins) {return dc_fs_FileHandle_seek(_sid, position, origins);}
+            void start() {return dc_fs_FileHandle_start(_sid);}
+            void close() {return dc_fs_FileHandle_close(_sid);}
+    };
+
+    inline fs::FileHandle* open(dataTypes::String path, fs::FileMode mode) {return dc::_getBySid<fs::FileHandle>(_Type::fs_FileHandle, dc_fs_open(path.c_str(), mode));}
+    inline char* getFileModeString(fs::FileMode mode) {dc::_Sid sid = dc_fs_getFileModeString(mode); char* array = (char*)malloc(dc_getBufferSize(sid)); dc_copyBufferInto(sid, array); dc_deleteBySid(sid); return array;}
+    inline bool isFileOpen(dataTypes::String path) {return dc_fs_isFileOpen(path.c_str());}
 }
 
 namespace test {
