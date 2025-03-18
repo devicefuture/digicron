@@ -1,5 +1,7 @@
 #ifdef DC_SIMULATOR
 
+#include <unistd.h>
+
 #include "fs.h"
 
 bool fs::FileHandle::isAvailable() {
@@ -21,7 +23,7 @@ char fs::FileHandle::read() {
 }
 
 void fs::FileHandle::write(char c) {
-    if (!isAvailable()) {
+    if (!_isOpen) {
         return;
     }
 
@@ -33,7 +35,7 @@ void fs::FileHandle::write(char c) {
 }
 
 unsigned int fs::FileHandle::getSize() {
-    if (!isAvailable()) {
+    if (!_isOpen) {
         return 0;
     }
 
@@ -49,11 +51,15 @@ unsigned int fs::FileHandle::getSize() {
 }
 
 unsigned int fs::FileHandle::tell() {
-    if (!isAvailable()) {
+    if (!_isOpen) {
         return 0;
     }
 
     return ftell(_file);
+}
+
+void fs::FileHandle::truncate(unsigned int size) {
+    ftruncate(fileno(_file), size);
 }
 
 bool fs::FileHandle::_openFile(char* path) {

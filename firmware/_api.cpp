@@ -1312,6 +1312,15 @@ m3ApiRawFunction(api::dc_fs_FileHandle_seek) {
     m3ApiSuccess();
 }
 
+m3ApiRawFunction(api::dc_fs_FileHandle_truncate) {
+    m3ApiGetArg(Sid, _sid)
+    m3ApiGetArg(unsigned int, size)
+
+    api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->truncate(size);
+
+    m3ApiSuccess();
+}
+
 m3ApiRawFunction(api::dc_fs_FileHandle_start) {
     m3ApiGetArg(Sid, _sid)
 
@@ -1603,6 +1612,7 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_getSize", "i(i)", &dc_fs_FileHandle_getSize);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_tell", "i(i)", &dc_fs_FileHandle_tell);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_seek", "v(iii)", &dc_fs_FileHandle_seek);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_truncate", "v(ii)", &dc_fs_FileHandle_truncate);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_start", "v(i)", &dc_fs_FileHandle_start);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_close", "v(i)", &dc_fs_FileHandle_close);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_open", "i(ii)", &dc_fs_open);

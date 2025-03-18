@@ -1,13 +1,12 @@
 #ifndef DC_SIMULATOR
 
-#include <littlefs/lfs.h>
+#include <Adafruit_LittleFS.h>
+#include <InternalFileSystem.h>
 
 #include "fs.h"
 
-lfs_t* fs::filesystem = nullptr;
-
 bool fs::FileHandle::isAvailable() {
-    return _isOpen;
+    return _isOpen && _file->available();
 }
 
 char fs::FileHandle::read() {
@@ -15,15 +14,15 @@ char fs::FileHandle::read() {
         return '\0';
     }
 
-    static char readData[1];
+    static char c;
 
-    int result = lfs_file_read(filesystem, &_file, readData, 1);
+    int result = _file->read(&c, 1);
 
-    return result == 1 ? readData[0] : '\0';
+    return result == 1 ? c : '\0';
 }
 
 void fs::FileHandle::write(char c) {
-    if (!isAvailable()) {
+    if (!_isOpen) {
         return;
     }
 
@@ -31,21 +30,15 @@ void fs::FileHandle::write(char c) {
         return;
     }
 
-    static char writeData[1];
-
-    writeData[0] = c;
-
-    lfs_file_write(filesystem, &_file, writeData, 1);
+    _file->write(&c, 1);
 }
 
 unsigned int fs::FileHandle::getSize() {
-    if (!isAvailable()) {
+    if (!_isOpen) {
         return 0;
     }
 
-    int result = lfs_file_size(filesystem, &_file);
-
-    return result > 0 ? result : 0;
+    return _file->size();
 }
 
 unsigned int fs::FileHandle::tell() {
@@ -53,34 +46,39 @@ unsigned int fs::FileHandle::tell() {
         return 0;
     }
 
-    return lfs_file_tell(filesystem, &_file);
+    return _file->position();
+}
+
+void fs::FileHandle::truncate(unsigned int size) {
+    _file->truncate(size);
 }
 
 bool fs::FileHandle::_openFile(char* path) {
-    unsigned int flags;
+    unsigned int fileMode = _mode == FileMode::READ ? Adafruit_LittleFS_Namespace::FILE_O_READ : Adafruit_LittleFS_Namespace::FILE_O_WRITE;
 
-    switch (_mode) {
-        case FileMode::READ: flags = LFS_O_RDONLY; break;
-        case FileMode::WRITE: flags = LFS_O_RDWR | LFS_O_CREAT | LFS_O_TRUNC; break;
-        case FileMode::APPEND: flags = LFS_O_RDWR | LFS_O_CREAT | LFS_O_APPEND; break;
+    _file = new Adafruit_LittleFS_Namespace::File(InternalFS);
+
+    if (!_file->open(path, fileMode)) {
+        return false;
     }
 
-    bool success = lfs_file_open(filesystem, &_file, path, flags) >= 0;
+    if (_mode == FileMode::WRITE) {
+        _file->truncate(0);
+    }
 
-    return success;
+    return true;
 }
 
 void fs::FileHandle::_seekFile(unsigned int position) {
-    lfs_file_seek(filesystem, &_file, position, LFS_SEEK_SET);
+    _file->seek(position);
 }
 
 void fs::FileHandle::_closeFile() {
-    lfs_file_close(filesystem, &_file);
+    _file->close();
 }
 
 bool fs::init() {
-    // TODO: Implement filesystem init, including flash read/write calls
-    return false;
+    return InternalFS.begin();
 }
 
 #endif

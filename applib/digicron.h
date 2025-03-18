@@ -152,6 +152,7 @@ WASM_IMPORT("digicron", "dc_fs_FileHandle_writeChars") void dc_fs_FileHandle_wri
 WASM_IMPORT("digicron", "dc_fs_FileHandle_getSize") unsigned int dc_fs_FileHandle_getSize(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_fs_FileHandle_tell") unsigned int dc_fs_FileHandle_tell(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_fs_FileHandle_seek") void dc_fs_FileHandle_seek(dc::_Sid sid, int position, dc::_Enum origins);
+WASM_IMPORT("digicron", "dc_fs_FileHandle_truncate") void dc_fs_FileHandle_truncate(dc::_Sid sid, unsigned int size);
 WASM_IMPORT("digicron", "dc_fs_FileHandle_start") void dc_fs_FileHandle_start(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_fs_FileHandle_close") void dc_fs_FileHandle_close(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_fs_open") dc::_Sid dc_fs_open(char* path, dc::_Enum mode);
@@ -702,6 +703,7 @@ namespace fs {
             unsigned int getSize() {return dc_fs_FileHandle_getSize(_sid);}
             unsigned int tell() {return dc_fs_FileHandle_tell(_sid);}
             void seek(int position, fs::SeekOrigin origins) {return dc_fs_FileHandle_seek(_sid, position, origins);}
+            void truncate(unsigned int size) {return dc_fs_FileHandle_truncate(_sid, size);}
             void start() {return dc_fs_FileHandle_start(_sid);}
             void close() {return dc_fs_FileHandle_close(_sid);}
     };

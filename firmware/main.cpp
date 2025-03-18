@@ -2,8 +2,6 @@
 
 #ifndef DC_SIMULATOR
     #include <bluefruit.h>
-    #include <Adafruit_LittleFS.h>
-    #include <InternalFileSystem.h>
     #include "HCMS39xx.h"
     #include "font5x7.h"
 #else
@@ -19,6 +17,7 @@
 #include "input.h"
 #include "home.h"
 #include "proc.h"
+#include "fs.h"
 #include "systemapps.h"
 
 #define BACK_BTN_PIN 6
@@ -62,7 +61,7 @@ void setup() {
     testScreen->print(tmIcon);
 
     #ifndef DC_SIMULATOR
-        InternalFS.begin();
+        fs::init();
 
         Bluefruit.begin();
         Bluefruit.setTxPower(0);

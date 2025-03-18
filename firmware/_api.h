@@ -157,6 +157,7 @@ namespace api {
     m3ApiRawFunction(dc_fs_FileHandle_getSize);
     m3ApiRawFunction(dc_fs_FileHandle_tell);
     m3ApiRawFunction(dc_fs_FileHandle_seek);
+    m3ApiRawFunction(dc_fs_FileHandle_truncate);
     m3ApiRawFunction(dc_fs_FileHandle_start);
     m3ApiRawFunction(dc_fs_FileHandle_close);
     m3ApiRawFunction(dc_fs_open);

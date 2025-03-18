@@ -193,6 +193,7 @@ namespace fs
         method "unsigned int" getSize
         method "unsigned int" tell
         method "void" seek "int" position "ENUM fs::SeekOrigin" origins
+        method "void" truncate "unsigned int" size
         method "void" start
         method "void" close
 

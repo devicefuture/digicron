@@ -3777,6 +3777,27 @@ function sendDisplayDataToSimulator(dataPtr,size) { renderDisplayData(new Uint8C
   }
   }
 
+  var convertI32PairToI53Checked = (lo, hi) => {
+      assert(lo == (lo >>> 0) || lo == (lo|0)); // lo should either be a i32 or a u32
+      assert(hi === (hi|0));                    // hi should be a i32
+      return ((hi + 0x200000) >>> 0 < 0x400001 - !!lo) ? (lo >>> 0) + hi * 4294967296 : NaN;
+    };
+  function ___syscall_ftruncate64(fd,length_low, length_high) {
+    var length = convertI32PairToI53Checked(length_low, length_high);
+  
+    
+  try {
+  
+      if (isNaN(length)) return 61;
+      FS.ftruncate(fd, length);
+      return 0;
+    } catch (e) {
+    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
+    return -e.errno;
+  }
+  ;
+  }
+
   
   function ___syscall_ioctl(fd, op, varargs) {
   SYSCALLS.varargs = varargs;
@@ -5873,11 +5894,6 @@ function sendDisplayDataToSimulator(dataPtr,size) { renderDisplayData(new Uint8C
   }
 
   
-  var convertI32PairToI53Checked = (lo, hi) => {
-      assert(lo == (lo >>> 0) || lo == (lo|0)); // lo should either be a i32 or a u32
-      assert(hi === (hi|0));                    // hi should be a i32
-      return ((hi + 0x200000) >>> 0 < 0x400001 - !!lo) ? (lo >>> 0) + hi * 4294967296 : NaN;
-    };
   function _fd_seek(fd,offset_low, offset_high,whence,newOffset) {
     var offset = convertI32PairToI53Checked(offset_low, offset_high);
   
@@ -5990,6 +6006,8 @@ var wasmImports = {
   /** @export */
   __syscall_fcntl64: ___syscall_fcntl64,
   /** @export */
+  __syscall_ftruncate64: ___syscall_ftruncate64,
+  /** @export */
   __syscall_ioctl: ___syscall_ioctl,
   /** @export */
   __syscall_openat: ___syscall_openat,
@@ -6057,7 +6075,7 @@ var __emscripten_stack_alloc = (a0) => (__emscripten_stack_alloc = wasmExports['
 var _emscripten_stack_get_current = () => (_emscripten_stack_get_current = wasmExports['emscripten_stack_get_current'])();
 var dynCall_iiiijd = Module['dynCall_iiiijd'] = createExportWrapper('dynCall_iiiijd', 7);
 var dynCall_jiji = Module['dynCall_jiji'] = createExportWrapper('dynCall_jiji', 5);
-var ___emscripten_embedded_file_data = Module['___emscripten_embedded_file_data'] = 84012;
+var ___emscripten_embedded_file_data = Module['___emscripten_embedded_file_data'] = 84044;
 
 // include: postamble.js
 // === Auto-generated postamble setup entry stuff ===
