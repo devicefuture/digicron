@@ -15,12 +15,15 @@ fs::FileHandle::FileHandle(String path, FileMode mode) {
     _mode = mode;
     _isOpen = true;
     _errorOnOpen = false;
+    _alreadyOpen = false;
 
     path.toCharArray(pathCharArray, sizeof(pathCharArray));
 
     openFileHandles.push(this);
 
     if (isAlreadyOpen) {
+        _errorOnOpen = true;
+        _alreadyOpen = true;
         close();
         return;
     }
@@ -56,22 +59,13 @@ String fs::FileHandle::readString() {
     return data;
 }
 
-const char* fs::FileHandle::readChars() {
-    String string = readString();
-    
-    return string.c_str();
-}
-
-void fs::FileHandle::write(char* charArray) {
+void fs::FileHandle::write(String string) {
     unsigned int i = 0;
 
-    while (charArray[i] != '\0') {
-        write(charArray[i++]);
+    while (string[i] != '\0') {
+        write(string[i]);
+        i++;
     }
-}
-
-void fs::FileHandle::write(String string) {
-    write(string.c_str());
 }
 
 void fs::FileHandle::seek(int position, fs::SeekOrigin origin) {
@@ -113,6 +107,12 @@ void fs::FileHandle::close() {
         openFileHandles.remove(handleIndex);
     }
 
+    if (_alreadyOpen) {
+        Serial.print("Unable to open file at path because it is already open elsewhere: ");
+        Serial.println(_path);
+        return;
+    }
+
     if (_errorOnOpen) {
         Serial.print("Unable to open file at path: ");
         Serial.println(_path);
@@ -132,7 +132,7 @@ fs::FileHandle* fs::open(String path, fs::FileMode mode) {
     return fileHandle;
 }
 
-const char* fs::getFileModeString(fs::FileMode mode) {
+String fs::getFileModeString(fs::FileMode mode) {
     switch (mode) {
         case FileMode::READ: default: return "r";
         case FileMode::WRITE: return "w";

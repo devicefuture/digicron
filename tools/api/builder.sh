@@ -90,7 +90,7 @@ function class {
         (
             echo "    class $CLASS : public $CLASS_EXTENDS {"
             echo "        protected:"
-            echo "            $CLASS(_Dummy dummy) : $CLASS_EXTENDS(dummy) {}"
+            echo "            $CLASS(dc::_Dummy dummy) : $CLASS_EXTENDS(dummy) {}"
             echo
             echo "        public:"
             echo "            using $CLASS_EXTENDS::$CLASS_EXTENDS;"
@@ -117,11 +117,12 @@ function class {
             echo "        protected:"
             echo "            dc::_Sid _sid;"
             echo
-            echo "            $CLASS(_Dummy dummy) {}"
+            echo "            $CLASS(dc::_Dummy dummy) {}"
             echo
             echo "        public:"
             echo "            virtual dc::_Sid _getSid() {return _sid;}"
             echo
+            echo "            $CLASS(dc::_Dummy dummy, dc::_Sid sid) {_sid = sid; _addStoredInstance(_Type::${NAMESPACE}_$CLASS, this);}"
             echo "            ~$CLASS() {dc_deleteBySid(_sid); _removeStoredInstance(this);}"
             echo
         ) >> applib/digicron.h
@@ -200,7 +201,7 @@ function method {
 
     if [ "$OVERRIDE" = true ]; then
         overrideKeyword=" override"
-        superConstructorCall=" : $CLASS_EXTENDS((_Dummy) {})"
+        superConstructorCall=" : $CLASS_EXTENDS((dc::_Dummy) {})"
     fi
 
     if [ "$OUT_OF_CLASS" = true ]; then
@@ -371,7 +372,7 @@ function method {
             echo -n "    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<$NAMESPACE::$CLASS>(Type::${NAMESPACE}_$CLASS, _sid)->$name(" >> firmware/_api.cpp
         fi
     elif [ "$internalReturnType" = "dc::_Sid" ]; then
-        echo ")$overrideKeyword {return dc::_getBySid<$nonPointerReturnType>(_Type::${nonPointerReturnType/::/_}, $INTERNAL_NAME($passArgs));}" >> applib/digicron.h
+        echo ")$overrideKeyword {return dc::_getOrCreateBySid<$nonPointerReturnType>(_Type::${nonPointerReturnType/::/_}, $INTERNAL_NAME($passArgs));}" >> applib/digicron.h
 
         echo >> firmware/_api.cpp
 
@@ -540,6 +541,7 @@ void api::linkFunctions(IM3Runtime runtime) {
 
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_getGlobalI32", "i(*)", &dc_getGlobalI32);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_deleteBySid", "v(i)", &dc_deleteBySid);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_sidIsNull", "i(i)", &dc_sidIsNull);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_getBufferSize", "i(i)", &dc_getBufferSize);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_copyBufferInto", "v(i*)", &dc_copyBufferInto);
 
@@ -683,6 +685,15 @@ m3ApiRawFunction(api::dc_deleteBySid) {
     m3ApiSuccess();
 }
 
+m3ApiRawFunction(api::dc_sidIsNull) {
+    m3ApiReturnType(bool)
+    m3ApiGetArg(Sid, _sid)
+
+    StoredInstance* storedInstance = api::storedInstances[_sid];
+
+    m3ApiReturn(!storedInstance || !storedInstance->instance);
+}
+
 m3ApiRawFunction(api::dc_getBufferSize) {
     m3ApiReturnType(unsigned int)
     m3ApiGetArg(Sid, _sid)
@@ -738,6 +749,7 @@ namespace api {
 
     m3ApiRawFunction(dc_getGlobalI32);
     m3ApiRawFunction(dc_deleteBySid);
+    m3ApiRawFunction(dc_sidIsNull);
     m3ApiRawFunction(dc_getBufferSize);
     m3ApiRawFunction(dc_copyBufferInto);
 
@@ -783,6 +795,7 @@ extern "C" {
 
 WASM_IMPORT("digicron", "dc_getGlobalI32") uint32_t dc_getGlobalI32(const char* id);
 WASM_IMPORT("digicron", "dc_deleteBySid") void dc_deleteBySid(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_sidIsNull") bool dc_sidIsNull(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_getBufferSize") unsigned int dc_getBufferSize(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_copyBufferInto") void dc_copyBufferInto(dc::_Sid sid, void* destination);
 
@@ -803,6 +816,7 @@ echo >> applib/digicron.h
 
 echo dc_getGlobalI32 >> applib/digicron.syms
 echo dc_deleteBySid >> applib/digicron.syms
+echo dc_sidIsNull >> applib/digicron.syms
 echo dc_getBufferSize >> applib/digicron.syms
 echo dc_copyBufferInto >> applib/digicron.syms
 
@@ -837,6 +851,16 @@ template<typename T> T* _getBySid(_Type type, _Sid sid) {
     }
 
     return nullptr;
+}
+
+template<typename T> T* _getOrCreateBySid(_Type type, _Sid sid) {
+    T* instance = _getBySid<T>(type, sid);
+
+    if (!instance && !dc_sidIsNull(sid)) {
+        instance = new T((_Dummy) {}, sid);
+    }
+
+    return instance;
 }
 
 inline void _addStoredInstance(_Type type, void* instance) {

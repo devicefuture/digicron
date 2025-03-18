@@ -64,6 +64,7 @@ bool fs::FileHandle::_openFile(char* path) {
 
     if (_mode == FileMode::WRITE) {
         _file->truncate(0);
+        _file->seek(0);
     }
 
     return true;

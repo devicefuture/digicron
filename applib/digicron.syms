@@ -1,5 +1,6 @@
 dc_getGlobalI32
 dc_deleteBySid
+dc_sidIsNull
 dc_getBufferSize
 dc_copyBufferInto
 dc_utils_numberToStringUInt
@@ -114,10 +115,8 @@ dc_fs_FileHandle_isOpen
 dc_fs_FileHandle_isAvailable
 dc_fs_FileHandle_read
 dc_fs_FileHandle_readString
-dc_fs_FileHandle_readChars
 dc_fs_FileHandle_write
 dc_fs_FileHandle_writeString
-dc_fs_FileHandle_writeChars
 dc_fs_FileHandle_getSize
 dc_fs_FileHandle_tell
 dc_fs_FileHandle_seek

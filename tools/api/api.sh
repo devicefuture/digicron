@@ -186,10 +186,8 @@ namespace fs
         method "bool" isAvailable
         method "char" read
         method "String" readString
-        method "char*" readChars
         method "void" write "char" c
         INTERNAL_NAME=dc_fs_FileHandle_writeString method "void" write "String" string
-        INTERNAL_NAME=dc_fs_FileHandle_writeChars method "void" write "char*" chars
         method "unsigned int" getSize
         method "unsigned int" tell
         method "void" seek "int" position "ENUM fs::SeekOrigin" origins
@@ -198,7 +196,7 @@ namespace fs
         method "void" close
 
     fn "CLASSPTR fs::FileHandle" open "String" path "ENUM fs::FileMode" mode
-    fn "char*" getFileModeString "ENUM fs::FileMode" mode
+    fn "String" getFileModeString "ENUM fs::FileMode" mode
     fn "bool" isFileOpen "String" path
 
 namespace test

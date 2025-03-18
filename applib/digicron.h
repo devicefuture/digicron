@@ -30,6 +30,7 @@ extern "C" {
 
 WASM_IMPORT("digicron", "dc_getGlobalI32") uint32_t dc_getGlobalI32(const char* id);
 WASM_IMPORT("digicron", "dc_deleteBySid") void dc_deleteBySid(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_sidIsNull") bool dc_sidIsNull(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_getBufferSize") unsigned int dc_getBufferSize(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_copyBufferInto") void dc_copyBufferInto(dc::_Sid sid, void* destination);
 
@@ -145,10 +146,8 @@ WASM_IMPORT("digicron", "dc_fs_FileHandle_isOpen") bool dc_fs_FileHandle_isOpen(
 WASM_IMPORT("digicron", "dc_fs_FileHandle_isAvailable") bool dc_fs_FileHandle_isAvailable(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_fs_FileHandle_read") char dc_fs_FileHandle_read(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_fs_FileHandle_readString") dc::_Sid dc_fs_FileHandle_readString(dc::_Sid sid);
-WASM_IMPORT("digicron", "dc_fs_FileHandle_readChars") dc::_Sid dc_fs_FileHandle_readChars(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_fs_FileHandle_write") void dc_fs_FileHandle_write(dc::_Sid sid, char c);
 WASM_IMPORT("digicron", "dc_fs_FileHandle_writeString") void dc_fs_FileHandle_writeString(dc::_Sid sid, char* string);
-WASM_IMPORT("digicron", "dc_fs_FileHandle_writeChars") void dc_fs_FileHandle_writeChars(dc::_Sid sid, char* chars);
 WASM_IMPORT("digicron", "dc_fs_FileHandle_getSize") unsigned int dc_fs_FileHandle_getSize(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_fs_FileHandle_tell") unsigned int dc_fs_FileHandle_tell(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_fs_FileHandle_seek") void dc_fs_FileHandle_seek(dc::_Sid sid, int position, dc::_Enum origins);
@@ -367,6 +366,16 @@ template<typename T> T* _getBySid(_Type type, _Sid sid) {
     return nullptr;
 }
 
+template<typename T> T* _getOrCreateBySid(_Type type, _Sid sid) {
+    T* instance = _getBySid<T>(type, sid);
+
+    if (!instance && !dc_sidIsNull(sid)) {
+        instance = new T((_Dummy) {}, sid);
+    }
+
+    return instance;
+}
+
 inline void _addStoredInstance(_Type type, void* instance) {
     auto storedInstance = new _StoredInstance {
         .type = type,
@@ -423,11 +432,12 @@ namespace timing {
         protected:
             dc::_Sid _sid;
 
-            Time(_Dummy dummy) {}
+            Time(dc::_Dummy dummy) {}
 
         public:
             virtual dc::_Sid _getSid() {return _sid;}
 
+            Time(dc::_Dummy dummy, dc::_Sid sid) {_sid = sid; _addStoredInstance(_Type::timing_Time, this);}
             ~Time() {dc_deleteBySid(_sid); _removeStoredInstance(this);}
 
             Time() {_sid = dc_timing_Time_new(); _addStoredInstance(_Type::timing_Time, this);}
@@ -460,14 +470,14 @@ namespace timing {
 
     class EarthTime : public Time {
         protected:
-            EarthTime(_Dummy dummy) : Time(dummy) {}
+            EarthTime(dc::_Dummy dummy) : Time(dummy) {}
 
         public:
             using Time::Time;
 
-            EarthTime() : Time((_Dummy) {}) {_sid = dc_timing_EarthTime_new(); _addStoredInstance(_Type::timing_EarthTime, this);}
-            EarthTime(int year, unsigned int month, unsigned int day, unsigned int hour, unsigned int minute, unsigned int second) : Time((_Dummy) {}) {_sid = dc_timing_EarthTime_newUsingDate(year, month, day, hour, minute, second); _addStoredInstance(_Type::timing_EarthTime, this);}
-            EarthTime(int year, unsigned int month, unsigned int day, unsigned long millisecondOfDay) : Time((_Dummy) {}) {_sid = dc_timing_EarthTime_newUsingMilliseconds(year, month, day, millisecondOfDay); _addStoredInstance(_Type::timing_EarthTime, this);}
+            EarthTime() : Time((dc::_Dummy) {}) {_sid = dc_timing_EarthTime_new(); _addStoredInstance(_Type::timing_EarthTime, this);}
+            EarthTime(int year, unsigned int month, unsigned int day, unsigned int hour, unsigned int minute, unsigned int second) : Time((dc::_Dummy) {}) {_sid = dc_timing_EarthTime_newUsingDate(year, month, day, hour, minute, second); _addStoredInstance(_Type::timing_EarthTime, this);}
+            EarthTime(int year, unsigned int month, unsigned int day, unsigned long millisecondOfDay) : Time((dc::_Dummy) {}) {_sid = dc_timing_EarthTime_newUsingMilliseconds(year, month, day, millisecondOfDay); _addStoredInstance(_Type::timing_EarthTime, this);}
 
             void syncToSystemTime() {return dc_timing_EarthTime_syncToSystemTime(_sid);}
     };
@@ -518,11 +528,12 @@ namespace ui {
         protected:
             dc::_Sid _sid;
 
-            Icon(_Dummy dummy) {}
+            Icon(dc::_Dummy dummy) {}
 
         public:
             virtual dc::_Sid _getSid() {return _sid;}
 
+            Icon(dc::_Dummy dummy, dc::_Sid sid) {_sid = sid; _addStoredInstance(_Type::ui_Icon, this);}
             ~Icon() {dc_deleteBySid(_sid); _removeStoredInstance(this);}
 
             Icon() {_sid = dc_ui_Icon_new(); _addStoredInstance(_Type::ui_Icon, this);}
@@ -534,11 +545,12 @@ namespace ui {
         protected:
             dc::_Sid _sid;
 
-            Screen(_Dummy dummy) {}
+            Screen(dc::_Dummy dummy) {}
 
         public:
             virtual dc::_Sid _getSid() {return _sid;}
 
+            Screen(dc::_Dummy dummy, dc::_Sid sid) {_sid = sid; _addStoredInstance(_Type::ui_Screen, this);}
             ~Screen() {dc_deleteBySid(_sid); _removeStoredInstance(this);}
 
             Screen() {_sid = dc_ui_Screen_new(); _addStoredInstance(_Type::ui_Screen, this);}
@@ -570,12 +582,12 @@ namespace ui {
 
     class Menu : public Screen {
         protected:
-            Menu(_Dummy dummy) : Screen(dummy) {}
+            Menu(dc::_Dummy dummy) : Screen(dummy) {}
 
         public:
             using Screen::Screen;
 
-            Menu() : Screen((_Dummy) {}) {_sid = dc_ui_Menu_new(); _addStoredInstance(_Type::ui_Menu, this);}
+            Menu() : Screen((dc::_Dummy) {}) {_sid = dc_ui_Menu_new(); _addStoredInstance(_Type::ui_Menu, this);}
 
             void clearItems() {return dc_ui_Menu_clearItems(_sid);}
             void addItem(dataTypes::String item) {return dc_ui_Menu_addItem(_sid, item.c_str());}
@@ -587,12 +599,12 @@ namespace ui {
 
     class ContextualMenu : public Menu {
         protected:
-            ContextualMenu(_Dummy dummy) : Menu(dummy) {}
+            ContextualMenu(dc::_Dummy dummy) : Menu(dummy) {}
 
         public:
             using Menu::Menu;
 
-            ContextualMenu() : Menu((_Dummy) {}) {_sid = dc_ui_ContextualMenu_new(); _addStoredInstance(_Type::ui_ContextualMenu, this);}
+            ContextualMenu() : Menu((dc::_Dummy) {}) {_sid = dc_ui_ContextualMenu_new(); _addStoredInstance(_Type::ui_ContextualMenu, this);}
             ContextualMenu(dataTypes::String title) {_sid = dc_ui_ContextualMenu_newWithTitle(title.c_str()); _addStoredInstance(_Type::ui_ContextualMenu, this);}
 
             dataTypes::String getTitle() {dc::_Sid sid = dc_ui_ContextualMenu_getTitle(_sid); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
@@ -603,12 +615,12 @@ namespace ui {
 
     class ConfirmationMenu : public ContextualMenu {
         protected:
-            ConfirmationMenu(_Dummy dummy) : ContextualMenu(dummy) {}
+            ConfirmationMenu(dc::_Dummy dummy) : ContextualMenu(dummy) {}
 
         public:
             using ContextualMenu::ContextualMenu;
 
-            ConfirmationMenu() : ContextualMenu((_Dummy) {}) {_sid = dc_ui_ConfirmationMenu_new(); _addStoredInstance(_Type::ui_ConfirmationMenu, this);}
+            ConfirmationMenu() : ContextualMenu((dc::_Dummy) {}) {_sid = dc_ui_ConfirmationMenu_new(); _addStoredInstance(_Type::ui_ConfirmationMenu, this);}
             ConfirmationMenu(dataTypes::String title, bool swapYesNo) {_sid = dc_ui_ConfirmationMenu_newWithTitle(title.c_str(), swapYesNo); _addStoredInstance(_Type::ui_ConfirmationMenu, this);}
 
             bool yesSelected() {return dc_ui_ConfirmationMenu_yesSelected(_sid);}
@@ -616,22 +628,22 @@ namespace ui {
 
     class Popup : public Screen {
         protected:
-            Popup(_Dummy dummy) : Screen(dummy) {}
+            Popup(dc::_Dummy dummy) : Screen(dummy) {}
 
         public:
             using Screen::Screen;
 
-            Popup() : Screen((_Dummy) {}) {_sid = dc_ui_Popup_new(); _addStoredInstance(_Type::ui_Popup, this);}
+            Popup() : Screen((dc::_Dummy) {}) {_sid = dc_ui_Popup_new(); _addStoredInstance(_Type::ui_Popup, this);}
     };
 
     class TextInput : public ContextualMenu {
         protected:
-            TextInput(_Dummy dummy) : ContextualMenu(dummy) {}
+            TextInput(dc::_Dummy dummy) : ContextualMenu(dummy) {}
 
         public:
             using ContextualMenu::ContextualMenu;
 
-            TextInput() : ContextualMenu((_Dummy) {}) {_sid = dc_ui_TextInput_new(); _addStoredInstance(_Type::ui_TextInput, this);}
+            TextInput() : ContextualMenu((dc::_Dummy) {}) {_sid = dc_ui_TextInput_new(); _addStoredInstance(_Type::ui_TextInput, this);}
             TextInput(dataTypes::String value) {_sid = dc_ui_TextInput_newWithValue(value.c_str()); _addStoredInstance(_Type::ui_TextInput, this);}
 
             dataTypes::String getValue() {dc::_Sid sid = dc_ui_TextInput_getValue(_sid); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
@@ -643,12 +655,12 @@ namespace ui {
 
     class IntInput : public Screen {
         protected:
-            IntInput(_Dummy dummy) : Screen(dummy) {}
+            IntInput(dc::_Dummy dummy) : Screen(dummy) {}
 
         public:
             using Screen::Screen;
 
-            IntInput() : Screen((_Dummy) {}) {_sid = dc_ui_IntInput_new(); _addStoredInstance(_Type::ui_IntInput, this);}
+            IntInput() : Screen((dc::_Dummy) {}) {_sid = dc_ui_IntInput_new(); _addStoredInstance(_Type::ui_IntInput, this);}
             IntInput(dataTypes::String title, long value) {_sid = dc_ui_TextInput_newWithTitleAndValue(title.c_str(), value); _addStoredInstance(_Type::ui_IntInput, this);}
 
             dataTypes::String getTitle() {dc::_Sid sid = dc_ui_IntInput_getTitle(_sid); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
@@ -680,11 +692,12 @@ namespace fs {
         protected:
             dc::_Sid _sid;
 
-            FileHandle(_Dummy dummy) {}
+            FileHandle(dc::_Dummy dummy) {}
 
         public:
             virtual dc::_Sid _getSid() {return _sid;}
 
+            FileHandle(dc::_Dummy dummy, dc::_Sid sid) {_sid = sid; _addStoredInstance(_Type::fs_FileHandle, this);}
             ~FileHandle() {dc_deleteBySid(_sid); _removeStoredInstance(this);}
 
             FileHandle() {_sid = dc_fs_FileHandle_new(); _addStoredInstance(_Type::fs_FileHandle, this);}
@@ -696,10 +709,8 @@ namespace fs {
             bool isAvailable() {return dc_fs_FileHandle_isAvailable(_sid);}
             char read() {return dc_fs_FileHandle_read(_sid);}
             dataTypes::String readString() {dc::_Sid sid = dc_fs_FileHandle_readString(_sid); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
-            char* readChars() {dc::_Sid sid = dc_fs_FileHandle_readChars(_sid); char* array = (char*)malloc(dc_getBufferSize(sid)); dc_copyBufferInto(sid, array); dc_deleteBySid(sid); return array;}
             void write(char c) {return dc_fs_FileHandle_write(_sid, c);}
             void write(dataTypes::String string) {return dc_fs_FileHandle_writeString(_sid, string.c_str());}
-            void write(char* chars) {return dc_fs_FileHandle_writeChars(_sid, chars);}
             unsigned int getSize() {return dc_fs_FileHandle_getSize(_sid);}
             unsigned int tell() {return dc_fs_FileHandle_tell(_sid);}
             void seek(int position, fs::SeekOrigin origins) {return dc_fs_FileHandle_seek(_sid, position, origins);}
@@ -708,8 +719,8 @@ namespace fs {
             void close() {return dc_fs_FileHandle_close(_sid);}
     };
 
-    inline fs::FileHandle* open(dataTypes::String path, fs::FileMode mode) {return dc::_getBySid<fs::FileHandle>(_Type::fs_FileHandle, dc_fs_open(path.c_str(), mode));}
-    inline char* getFileModeString(fs::FileMode mode) {dc::_Sid sid = dc_fs_getFileModeString(mode); char* array = (char*)malloc(dc_getBufferSize(sid)); dc_copyBufferInto(sid, array); dc_deleteBySid(sid); return array;}
+    inline fs::FileHandle* open(dataTypes::String path, fs::FileMode mode) {return dc::_getOrCreateBySid<fs::FileHandle>(_Type::fs_FileHandle, dc_fs_open(path.c_str(), mode));}
+    inline dataTypes::String getFileModeString(fs::FileMode mode) {dc::_Sid sid = dc_fs_getFileModeString(mode); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
     inline bool isFileOpen(dataTypes::String path) {return dc_fs_isFileOpen(path.c_str());}
 }
 
@@ -718,11 +729,12 @@ namespace test {
         protected:
             dc::_Sid _sid;
 
-            TestClass(_Dummy dummy) {}
+            TestClass(dc::_Dummy dummy) {}
 
         public:
             virtual dc::_Sid _getSid() {return _sid;}
 
+            TestClass(dc::_Dummy dummy, dc::_Sid sid) {_sid = sid; _addStoredInstance(_Type::test_TestClass, this);}
             ~TestClass() {dc_deleteBySid(_sid); _removeStoredInstance(this);}
 
             TestClass(unsigned int seed) {_sid = dc_test_TestClass_new(seed); _addStoredInstance(_Type::test_TestClass, this);}
@@ -737,12 +749,12 @@ namespace test {
 
     class TestSubclass : public TestClass {
         protected:
-            TestSubclass(_Dummy dummy) : TestClass(dummy) {}
+            TestSubclass(dc::_Dummy dummy) : TestClass(dummy) {}
 
         public:
             using TestClass::TestClass;
 
-            TestSubclass(unsigned int seed) : TestClass((_Dummy) {}) {_sid = dc_test_TestSubclass_new(seed); _addStoredInstance(_Type::test_TestSubclass, this);}
+            TestSubclass(unsigned int seed) : TestClass((dc::_Dummy) {}) {_sid = dc_test_TestSubclass_new(seed); _addStoredInstance(_Type::test_TestSubclass, this);}
 
             void identify() override {return dc_test_TestSubclass_identify(_sid);}
             void subclass() {return dc_test_TestSubclass_subclass(_sid);}
@@ -750,7 +762,7 @@ namespace test {
 
     inline void sayHello() {return dc_test_sayHello();}
     inline int add(int a, int b) {return dc_test_add(a, b);}
-    inline test::TestClass* getMostRecentTest() {return dc::_getBySid<test::TestClass>(_Type::test_TestClass, dc_test_getMostRecentTest());}
+    inline test::TestClass* getMostRecentTest() {return dc::_getOrCreateBySid<test::TestClass>(_Type::test_TestClass, dc_test_getMostRecentTest());}
 }
 
 #ifndef DC_COMMON_CONSOLE_H_

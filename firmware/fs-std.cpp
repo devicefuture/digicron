@@ -63,7 +63,7 @@ void fs::FileHandle::truncate(unsigned int size) {
 }
 
 bool fs::FileHandle::_openFile(char* path) {
-    _file = fopen(path, getFileModeString(_mode));
+    _file = fopen(path, getFileModeString(_mode).c_str());
 
     return _file;
 }

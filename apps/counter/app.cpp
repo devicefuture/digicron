@@ -12,6 +12,20 @@ void setup() {
     counters.push(new Counter("Days since compiling DigiCron firmware", 0));
     counters.push(new Counter("Times I've spent hours debugging something trivial", 1000));
 
+    fs::FileHandle* file = fs::open("/test.txt", fs::FileMode::READ);
+
+    if (file) {
+        String counterName = file->readString();
+
+        console::log("Read from `/test.txt`:", counterName);
+
+        counters[0]->setName(counterName);
+
+        file->close();
+    } else {
+        console::log("Couldn't read from `/test.txt`");
+    }
+
     counterScreen = new CounterScreen();
     resetConfirmationMenu = new ResetConfirmationMenu();
     counterMenu = new CounterMenu();

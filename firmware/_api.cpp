@@ -166,6 +166,15 @@ m3ApiRawFunction(api::dc_deleteBySid) {
     m3ApiSuccess();
 }
 
+m3ApiRawFunction(api::dc_sidIsNull) {
+    m3ApiReturnType(bool)
+    m3ApiGetArg(Sid, _sid)
+
+    StoredInstance* storedInstance = api::storedInstances[_sid];
+
+    m3ApiReturn(!storedInstance || !storedInstance->instance);
+}
+
 m3ApiRawFunction(api::dc_getBufferSize) {
     m3ApiReturnType(unsigned int)
     m3ApiGetArg(Sid, _sid)
@@ -1248,15 +1257,6 @@ m3ApiRawFunction(api::dc_fs_FileHandle_readString) {
     m3ApiReturn(result);
 }
 
-m3ApiRawFunction(api::dc_fs_FileHandle_readChars) {
-    m3ApiReturnType(Sid)
-    m3ApiGetArg(Sid, _sid)
-
-    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->readChars()));
-
-    m3ApiReturn(result);
-}
-
 m3ApiRawFunction(api::dc_fs_FileHandle_write) {
     m3ApiGetArg(Sid, _sid)
     m3ApiGetArg(char, c)
@@ -1271,15 +1271,6 @@ m3ApiRawFunction(api::dc_fs_FileHandle_writeString) {
     m3ApiGetArgMem(char*, string)
 
     api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->write(String(string));
-
-    m3ApiSuccess();
-}
-
-m3ApiRawFunction(api::dc_fs_FileHandle_writeChars) {
-    m3ApiGetArg(Sid, _sid)
-    m3ApiGetArgMem(char*, chars)
-
-    api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->write(chars);
 
     m3ApiSuccess();
 }
@@ -1490,6 +1481,7 @@ void api::linkFunctions(IM3Runtime runtime) {
 
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_getGlobalI32", "i(*)", &dc_getGlobalI32);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_deleteBySid", "v(i)", &dc_deleteBySid);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_sidIsNull", "i(i)", &dc_sidIsNull);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_getBufferSize", "i(i)", &dc_getBufferSize);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_copyBufferInto", "v(i*)", &dc_copyBufferInto);
 
@@ -1605,10 +1597,8 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_isAvailable", "i(i)", &dc_fs_FileHandle_isAvailable);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_read", "i(i)", &dc_fs_FileHandle_read);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_readString", "i(i)", &dc_fs_FileHandle_readString);
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_readChars", "i(i)", &dc_fs_FileHandle_readChars);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_write", "v(ii)", &dc_fs_FileHandle_write);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_writeString", "v(ii)", &dc_fs_FileHandle_writeString);
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_writeChars", "v(i*)", &dc_fs_FileHandle_writeChars);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_getSize", "i(i)", &dc_fs_FileHandle_getSize);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_tell", "i(i)", &dc_fs_FileHandle_tell);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_seek", "v(iii)", &dc_fs_FileHandle_seek);

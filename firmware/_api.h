@@ -35,6 +35,7 @@ namespace api {
 
     m3ApiRawFunction(dc_getGlobalI32);
     m3ApiRawFunction(dc_deleteBySid);
+    m3ApiRawFunction(dc_sidIsNull);
     m3ApiRawFunction(dc_getBufferSize);
     m3ApiRawFunction(dc_copyBufferInto);
 
@@ -150,10 +151,8 @@ namespace api {
     m3ApiRawFunction(dc_fs_FileHandle_isAvailable);
     m3ApiRawFunction(dc_fs_FileHandle_read);
     m3ApiRawFunction(dc_fs_FileHandle_readString);
-    m3ApiRawFunction(dc_fs_FileHandle_readChars);
     m3ApiRawFunction(dc_fs_FileHandle_write);
     m3ApiRawFunction(dc_fs_FileHandle_writeString);
-    m3ApiRawFunction(dc_fs_FileHandle_writeChars);
     m3ApiRawFunction(dc_fs_FileHandle_getSize);
     m3ApiRawFunction(dc_fs_FileHandle_tell);
     m3ApiRawFunction(dc_fs_FileHandle_seek);

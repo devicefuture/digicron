@@ -41,11 +41,9 @@ namespace fs {
 
             char read();
             String readString();
-            const char* readChars();
 
             void write(char c);
             void write(String string);
-            void write(char* chars);
 
             unsigned int getSize();
             unsigned int tell();
@@ -57,8 +55,9 @@ namespace fs {
         protected:
             String _path;
             FileMode _mode;
-            bool _isOpen;
-            bool _errorOnOpen;
+            bool _isOpen = false;
+            bool _errorOnOpen = false;
+            bool _alreadyOpen = false;
 
             #ifndef DC_SIMULATOR
                 Adafruit_LittleFS_Namespace::File* _file;
@@ -73,7 +72,7 @@ namespace fs {
 
     bool init();
     FileHandle* open(String path, FileMode mode);
-    const char* getFileModeString(FileMode mode);
+    String getFileModeString(FileMode mode);
     bool isFileOpen(String path);
 }
 
