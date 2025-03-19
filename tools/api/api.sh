@@ -173,6 +173,7 @@ namespace ui
         method "void" setRange "long" minValue "long" maxValue
 
 namespace fs
+    enum EntryType "ERROR = 0" FILE DIRECTORY
     enum FileMode READ WRITE APPEND
     enum SeekOrigin START CURRENT END
 
@@ -195,9 +196,22 @@ namespace fs
         method "void" start
         method "void" close
 
-    fn "CLASSPTR fs::FileHandle" open "String" path "ENUM fs::FileMode" mode
+    class DirectoryListing
+        PASS_PROCESS=true constructor
+
+        method "void" start
+        method "String" next
+        method "unsigned int" length
+
+    PASS_PROCESS=true fn "CLASSPTR fs::FileHandle" open "String" path "ENUM fs::FileMode" mode
     fn "String" getFileModeString "ENUM fs::FileMode" mode
     fn "bool" isFileOpen "String" path
+    fn "bool" exists "String" path
+    fn "ENUM fs::EntryType" getEntryType "String" path
+    fn "bool" remove "String" path
+    fn "bool" rename "String" oldPath "String" newPath
+    fn "bool" createDirectory "String" path
+    PASS_PROCESS=true fn "CLASSPTR fs::DirectoryListing" listDirectory "String" path
 
 namespace test
     class TestClass

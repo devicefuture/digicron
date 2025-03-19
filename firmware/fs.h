@@ -9,9 +9,16 @@
     #include <stdio.h>
 #endif
 
+#include "datatypes.h"
 #include "proc.h"
 
 namespace fs {
+    enum EntryType {
+        ERROR = 0,
+        FILE,
+        DIRECTORY
+    };
+
     enum FileMode {
         READ,
         WRITE,
@@ -62,7 +69,7 @@ namespace fs {
             #ifndef DC_SIMULATOR
                 Adafruit_LittleFS_Namespace::File* _file;
             #else
-                FILE* _file;
+                ::FILE* _file;
             #endif
 
             bool _openFile(char* path);
@@ -70,10 +77,36 @@ namespace fs {
             void _closeFile();
     };
 
+    class DirectoryListing {
+        public:
+            proc::Process* ownerProcess = nullptr;
+
+            DirectoryListing() : DirectoryListing(dataTypes::List<String>()) {}
+            DirectoryListing(proc::Process* process);
+            DirectoryListing(dataTypes::List<String> entries);
+            DirectoryListing(proc::Process* process, dataTypes::List<String> entries);
+            ~DirectoryListing();
+
+            void start() {_entries.start();}
+            String next() {return *_entries.next();}
+            unsigned int length() {return _entries.length();}
+
+        protected:
+            dataTypes::List<String> _entries;
+    };
+
     bool init();
+    FileHandle* open(proc::Process* process, String path, FileMode mode);
     FileHandle* open(String path, FileMode mode);
     String getFileModeString(FileMode mode);
     bool isFileOpen(String path);
+    bool exists(String path);
+    EntryType getEntryType(String path);
+    bool remove(String path);
+    bool rename(String oldPath, String newPath);
+    bool createDirectory(String path);
+    DirectoryListing* listDirectory(proc::Process* process, String path);
+    DirectoryListing* listDirectory(String path);
 }
 
 #endif

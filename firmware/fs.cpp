@@ -122,14 +122,38 @@ void fs::FileHandle::close() {
     _closeFile();
 }
 
-fs::FileHandle* fs::open(String path, fs::FileMode mode) {
-    auto fileHandle = new FileHandle(path, mode);
+fs::DirectoryListing::DirectoryListing(proc::Process* process) : fs::DirectoryListing::DirectoryListing() {
+    ownerProcess = process;
+}
+
+fs::DirectoryListing::DirectoryListing(dataTypes::List<String> entries) {
+    _entries = entries;
+}
+
+fs::DirectoryListing::DirectoryListing(proc::Process* process, dataTypes::List<String> entries) : fs::DirectoryListing::DirectoryListing(entries) {
+    ownerProcess = process;
+}
+
+fs::DirectoryListing::~DirectoryListing() {
+    String* entry;
+
+    while ((entry = _entries.shift())) {
+        delete entry;
+    }
+}
+
+fs::FileHandle* fs::open(proc::Process* process, String path, fs::FileMode mode) {
+    auto fileHandle = new FileHandle(process, path, mode);
 
     if (!fileHandle->isOpen()) {
         return nullptr;
     }
 
     return fileHandle;
+}
+
+fs::FileHandle* fs::open(String path, fs::FileMode mode) {
+    return open(nullptr, path, mode);
 }
 
 String fs::getFileModeString(fs::FileMode mode) {

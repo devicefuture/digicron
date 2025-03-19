@@ -17,7 +17,7 @@
 namespace api {
     typedef int Sid;
 
-    enum Type {EMPTY, Buffer, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, ui_TextInput, ui_IntInput, fs_FileHandle, test_TestClass, test_TestSubclass};
+    enum Type {EMPTY, Buffer, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, ui_TextInput, ui_IntInput, fs_FileHandle, fs_DirectoryListing, test_TestClass, test_TestSubclass};
 
     struct StoredInstance {
         Type type;
@@ -159,9 +159,19 @@ namespace api {
     m3ApiRawFunction(dc_fs_FileHandle_truncate);
     m3ApiRawFunction(dc_fs_FileHandle_start);
     m3ApiRawFunction(dc_fs_FileHandle_close);
+    m3ApiRawFunction(dc_fs_DirectoryListing_new);
+    m3ApiRawFunction(dc_fs_DirectoryListing_start);
+    m3ApiRawFunction(dc_fs_DirectoryListing_next);
+    m3ApiRawFunction(dc_fs_DirectoryListing_length);
     m3ApiRawFunction(dc_fs_open);
     m3ApiRawFunction(dc_fs_getFileModeString);
     m3ApiRawFunction(dc_fs_isFileOpen);
+    m3ApiRawFunction(dc_fs_exists);
+    m3ApiRawFunction(dc_fs_getEntryType);
+    m3ApiRawFunction(dc_fs_remove);
+    m3ApiRawFunction(dc_fs_rename);
+    m3ApiRawFunction(dc_fs_createDirectory);
+    m3ApiRawFunction(dc_fs_listDirectory);
     m3ApiRawFunction(dc_test_TestClass_new);
     m3ApiRawFunction(dc_test_TestClass_identify);
     m3ApiRawFunction(dc_test_TestClass_add);

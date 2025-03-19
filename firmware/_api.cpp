@@ -115,6 +115,7 @@ void deleteStoredInstance(api::StoredInstance* storedInstance) {
         case api::Type::ui_TextInput: delete (ui::TextInput*)storedInstance->instance; break;
         case api::Type::ui_IntInput: delete (ui::IntInput*)storedInstance->instance; break;
         case api::Type::fs_FileHandle: delete (fs::FileHandle*)storedInstance->instance; break;
+        case api::Type::fs_DirectoryListing: delete (fs::DirectoryListing*)storedInstance->instance; break;
         case api::Type::test_TestClass: delete (test::TestClass*)storedInstance->instance; break;
         case api::Type::test_TestSubclass: delete (test::TestSubclass*)storedInstance->instance; break;
         default: delete storedInstance->instance; break;
@@ -1328,12 +1329,48 @@ m3ApiRawFunction(api::dc_fs_FileHandle_close) {
     m3ApiSuccess();
 }
 
+m3ApiRawFunction(api::dc_fs_DirectoryListing_new) {
+    m3ApiReturnType(Sid)
+
+    auto instance = new fs::DirectoryListing((proc::WasmProcess*)runtime->userdata);
+
+    Sid result = api::store<fs::DirectoryListing>(Type::fs_DirectoryListing, (proc::WasmProcess*)runtime->userdata, instance);
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_DirectoryListing_start) {
+    m3ApiGetArg(Sid, _sid)
+
+    api::getBySid<fs::DirectoryListing>(Type::fs_DirectoryListing, _sid)->start();
+
+    m3ApiSuccess();
+}
+
+m3ApiRawFunction(api::dc_fs_DirectoryListing_next) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(Sid, _sid)
+
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<fs::DirectoryListing>(Type::fs_DirectoryListing, _sid)->next()));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_DirectoryListing_length) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArg(Sid, _sid)
+
+    unsigned int result = api::getBySid<fs::DirectoryListing>(Type::fs_DirectoryListing, _sid)->length();
+
+    m3ApiReturn(result);
+}
+
 m3ApiRawFunction(api::dc_fs_open) {
     m3ApiReturnType(Sid)
     m3ApiGetArgMem(char*, path)
     m3ApiGetArg(unsigned int, mode)
 
-    Sid result = api::store<fs::FileHandle>(Type::fs_FileHandle, (proc::WasmProcess*)runtime->userdata, fs::open(String(path), (fs::FileMode)mode));
+    Sid result = api::store<fs::FileHandle>(Type::fs_FileHandle, (proc::WasmProcess*)runtime->userdata, fs::open((proc::WasmProcess*)runtime->userdata, String(path), (fs::FileMode)mode));
 
     m3ApiReturn(result);
 }
@@ -1352,6 +1389,61 @@ m3ApiRawFunction(api::dc_fs_isFileOpen) {
     m3ApiGetArgMem(char*, path)
 
     unsigned int result = fs::isFileOpen(String(path));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_exists) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArgMem(char*, path)
+
+    unsigned int result = fs::exists(String(path));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_getEntryType) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArgMem(char*, path)
+
+    unsigned int result = fs::getEntryType(String(path));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_remove) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArgMem(char*, path)
+
+    unsigned int result = fs::remove(String(path));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_rename) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArgMem(char*, oldPath)
+    m3ApiGetArgMem(char*, newPath)
+
+    unsigned int result = fs::rename(String(oldPath), String(newPath));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_createDirectory) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArgMem(char*, path)
+
+    unsigned int result = fs::createDirectory(String(path));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_fs_listDirectory) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArgMem(char*, path)
+
+    Sid result = api::store<fs::DirectoryListing>(Type::fs_DirectoryListing, (proc::WasmProcess*)runtime->userdata, fs::listDirectory((proc::WasmProcess*)runtime->userdata, String(path)));
 
     m3ApiReturn(result);
 }
@@ -1605,9 +1697,19 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_truncate", "v(ii)", &dc_fs_FileHandle_truncate);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_start", "v(i)", &dc_fs_FileHandle_start);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_FileHandle_close", "v(i)", &dc_fs_FileHandle_close);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_DirectoryListing_new", "i()", &dc_fs_DirectoryListing_new);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_DirectoryListing_start", "v(i)", &dc_fs_DirectoryListing_start);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_DirectoryListing_next", "i(i)", &dc_fs_DirectoryListing_next);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_DirectoryListing_length", "i(i)", &dc_fs_DirectoryListing_length);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_open", "i(ii)", &dc_fs_open);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_getFileModeString", "i(i)", &dc_fs_getFileModeString);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_isFileOpen", "i(i)", &dc_fs_isFileOpen);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_exists", "i(i)", &dc_fs_exists);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_getEntryType", "i(i)", &dc_fs_getEntryType);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_remove", "i(i)", &dc_fs_remove);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_rename", "i(ii)", &dc_fs_rename);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_createDirectory", "i(i)", &dc_fs_createDirectory);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_listDirectory", "i(i)", &dc_fs_listDirectory);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_new", "i(i)", &dc_test_TestClass_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_identify", "v(i)", &dc_test_TestClass_identify);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_add", "i(iii)", &dc_test_TestClass_add);

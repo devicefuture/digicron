@@ -154,9 +154,19 @@ WASM_IMPORT("digicron", "dc_fs_FileHandle_seek") void dc_fs_FileHandle_seek(dc::
 WASM_IMPORT("digicron", "dc_fs_FileHandle_truncate") void dc_fs_FileHandle_truncate(dc::_Sid sid, unsigned int size);
 WASM_IMPORT("digicron", "dc_fs_FileHandle_start") void dc_fs_FileHandle_start(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_fs_FileHandle_close") void dc_fs_FileHandle_close(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_fs_DirectoryListing_new") dc::_Sid dc_fs_DirectoryListing_new();
+WASM_IMPORT("digicron", "dc_fs_DirectoryListing_start") void dc_fs_DirectoryListing_start(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_fs_DirectoryListing_next") dc::_Sid dc_fs_DirectoryListing_next(dc::_Sid sid);
+WASM_IMPORT("digicron", "dc_fs_DirectoryListing_length") unsigned int dc_fs_DirectoryListing_length(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_fs_open") dc::_Sid dc_fs_open(char* path, dc::_Enum mode);
 WASM_IMPORT("digicron", "dc_fs_getFileModeString") dc::_Sid dc_fs_getFileModeString(dc::_Enum mode);
 WASM_IMPORT("digicron", "dc_fs_isFileOpen") bool dc_fs_isFileOpen(char* path);
+WASM_IMPORT("digicron", "dc_fs_exists") bool dc_fs_exists(char* path);
+WASM_IMPORT("digicron", "dc_fs_getEntryType") dc::_Enum dc_fs_getEntryType(char* path);
+WASM_IMPORT("digicron", "dc_fs_remove") bool dc_fs_remove(char* path);
+WASM_IMPORT("digicron", "dc_fs_rename") bool dc_fs_rename(char* oldPath, char* newPath);
+WASM_IMPORT("digicron", "dc_fs_createDirectory") bool dc_fs_createDirectory(char* path);
+WASM_IMPORT("digicron", "dc_fs_listDirectory") dc::_Sid dc_fs_listDirectory(char* path);
 WASM_IMPORT("digicron", "dc_test_TestClass_new") dc::_Sid dc_test_TestClass_new(unsigned int seed);
 WASM_IMPORT("digicron", "dc_test_TestClass_identify") void dc_test_TestClass_identify(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_test_TestClass_add") unsigned int dc_test_TestClass_add(dc::_Sid sid, unsigned int value, unsigned int value2);
@@ -324,7 +334,7 @@ namespace dataTypes {
 
 #endif
 
-enum _Type {EMPTY, Buffer, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, ui_TextInput, ui_IntInput, fs_FileHandle, test_TestClass, test_TestSubclass};
+enum _Type {EMPTY, Buffer, timing_Time, timing_EarthTime, ui_Icon, ui_Screen, ui_Menu, ui_ContextualMenu, ui_ConfirmationMenu, ui_Popup, ui_TextInput, ui_IntInput, fs_FileHandle, fs_DirectoryListing, test_TestClass, test_TestSubclass};
 
 struct _StoredInstance {
     _Type type;
@@ -676,6 +686,12 @@ namespace ui {
 }
 
 namespace fs {
+    enum EntryType {
+        ERROR = 0,
+        FILE,
+        DIRECTORY
+    };
+
     enum FileMode {
         READ,
         WRITE,
@@ -719,9 +735,34 @@ namespace fs {
             void close() {return dc_fs_FileHandle_close(_sid);}
     };
 
+    class DirectoryListing {
+        protected:
+            dc::_Sid _sid;
+
+            DirectoryListing(dc::_Dummy dummy) {}
+
+        public:
+            virtual dc::_Sid _getSid() {return _sid;}
+
+            DirectoryListing(dc::_Dummy dummy, dc::_Sid sid) {_sid = sid; _addStoredInstance(_Type::fs_DirectoryListing, this);}
+            ~DirectoryListing() {dc_deleteBySid(_sid); _removeStoredInstance(this);}
+
+            DirectoryListing() {_sid = dc_fs_DirectoryListing_new(); _addStoredInstance(_Type::fs_DirectoryListing, this);}
+
+            void start() {return dc_fs_DirectoryListing_start(_sid);}
+            dataTypes::String next() {dc::_Sid sid = dc_fs_DirectoryListing_next(_sid); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
+            unsigned int length() {return dc_fs_DirectoryListing_length(_sid);}
+    };
+
     inline fs::FileHandle* open(dataTypes::String path, fs::FileMode mode) {return dc::_getOrCreateBySid<fs::FileHandle>(_Type::fs_FileHandle, dc_fs_open(path.c_str(), mode));}
     inline dataTypes::String getFileModeString(fs::FileMode mode) {dc::_Sid sid = dc_fs_getFileModeString(mode); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
     inline bool isFileOpen(dataTypes::String path) {return dc_fs_isFileOpen(path.c_str());}
+    inline bool exists(dataTypes::String path) {return dc_fs_exists(path.c_str());}
+    inline fs::EntryType getEntryType(dataTypes::String path) {return (fs::EntryType)dc_fs_getEntryType(path.c_str());}
+    inline bool remove(dataTypes::String path) {return dc_fs_remove(path.c_str());}
+    inline bool rename(dataTypes::String oldPath, dataTypes::String newPath) {return dc_fs_rename(oldPath.c_str(), newPath.c_str());}
+    inline bool createDirectory(dataTypes::String path) {return dc_fs_createDirectory(path.c_str());}
+    inline fs::DirectoryListing* listDirectory(dataTypes::String path) {return dc::_getOrCreateBySid<fs::DirectoryListing>(_Type::fs_DirectoryListing, dc_fs_listDirectory(path.c_str()));}
 }
 
 namespace test {

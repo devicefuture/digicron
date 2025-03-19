@@ -62,6 +62,12 @@ bool fs::FileHandle::_openFile(char* path) {
         return false;
     }
 
+    if (_file->isDirectory()) {
+        _closeFile();
+
+        return false;
+    }
+
     if (_mode == FileMode::WRITE) {
         _file->truncate(0);
         _file->seek(0);
@@ -80,6 +86,76 @@ void fs::FileHandle::_closeFile() {
 
 bool fs::init() {
     return InternalFS.begin();
+}
+
+bool fs::exists(String path) {
+    return InternalFS.exists(path.c_str());
+}
+
+fs::EntryType fs::getEntryType(String path) {
+    lfs_info info;
+
+    if (lfs_stat(InternalFS._getFS(), path.c_str(), &info) < 0) {
+        return EntryType::ERROR;
+    }
+
+    return info.type == LFS_TYPE_DIR ? EntryType::DIRECTORY : EntryType::FILE;
+}
+
+bool fs::remove(String path) {
+    // `InternalFS` handles this for both files and directories recursively
+    return InternalFS.remove(path.c_str());
+}
+
+bool fs::rename(String oldPath, String newPath) {
+    return InternalFS.rename(oldPath.c_str(), newPath.c_str());
+}
+
+bool fs::createDirectory(String path) {
+    // `InternalFS` also automatically creates parent directories where required
+    return InternalFS.mkdir(path.c_str());
+}
+
+fs::DirectoryListing* fs::listDirectory(proc::Process* process, String path) {
+    dataTypes::List<String> entries;
+
+    if (getEntryType(path) != EntryType::DIRECTORY) {
+        return nullptr;
+    }
+
+    int result = 0;
+    lfs_t* fs = InternalFS._getFS();
+    lfs_dir_t dir;
+
+    if (lfs_dir_open(fs, &dir, path.c_str()) < 0) {
+        return nullptr;
+    }
+
+    while (true) {
+        lfs_info info;
+
+        if (lfs_dir_read(fs, &dir, &info) != 1) {
+            break;
+        }
+
+        String* name = new String(info.name);
+
+        if (*name == "." || *name == "..") {
+            continue;
+        }
+
+        entries.push(name);
+    }
+
+    if (lfs_dir_close(fs, &dir) < 0) {
+        return nullptr;
+    }
+
+    return new DirectoryListing(process, entries);
+}
+
+fs::DirectoryListing* fs::listDirectory(String path) {
+    return listDirectory(nullptr, path);
 }
 
 #endif

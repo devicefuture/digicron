@@ -80,4 +80,34 @@ bool fs::init() {
     return true;
 }
 
+// TODO: Implement file operations for stdlib
+
+bool fs::exists(String path) {
+    return false;
+}
+
+fs::EntryType fs::getEntryType(String path) {
+    return EntryType::ERROR;
+}
+
+bool fs::remove(String path) {
+    return false;
+}
+
+bool fs::rename(String oldPath, String newPath) {
+    return false;
+}
+
+bool fs::createDirectory(String path) {
+    return false;
+}
+
+fs::DirectoryListing* fs::listDirectory(proc::Process* process, String path) {
+    return nullptr;
+}
+
+fs::DirectoryListing* fs::listDirectory(String path) {
+    return listDirectory(nullptr, path);
+}
+
 #endif
