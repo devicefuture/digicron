@@ -1,6 +1,11 @@
 #ifdef DC_SIMULATOR
 
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <dirent.h>
+#include <ftw.h>
 
 #include "fs.h"
 
@@ -80,30 +85,107 @@ bool fs::init() {
     return true;
 }
 
-// TODO: Implement file operations for stdlib
-
 bool fs::exists(String path) {
-    return false;
+    return getEntryType(path) != EntryType::ERROR;
 }
 
 fs::EntryType fs::getEntryType(String path) {
-    return EntryType::ERROR;
+    struct stat s;
+
+    if (stat(path.c_str(), &s) != 0) {
+        return EntryType::ERROR;
+    }
+
+    return S_ISDIR(s.st_mode) ? EntryType::DIRECTORY : EntryType::FILE;
+}
+
+// @source reference https://stackoverflow.com/a/5467788
+int removerCallback(const char* fpath, const struct stat *sb, int typeflag, FTW* ftwbuf) {
+    return remove(fpath);
 }
 
 bool fs::remove(String path) {
-    return false;
+    EntryType type = getEntryType(path);
+
+    if (type == EntryType::DIRECTORY) {
+        return nftw(path.c_str(), removerCallback, 64, FTW_DEPTH | FTW_PHYS) == 0;
+    }
+
+    return remove(path.c_str()) == 0;
 }
 
 bool fs::rename(String oldPath, String newPath) {
-    return false;
+    return ::rename(oldPath.c_str(), newPath.c_str()) == 0;
+}
+
+// @source reference https://gist.github.com/JonathonReinhart/8c0d90191c38af2dcadb102c4e202950
+bool createDirectoryPart(String path) {
+    if (mkdir(path.c_str(), 0777) == 0) {
+        return true;
+    }
+
+    // If error is unrelated to file existence, then fail
+    if (errno != EEXIST) {
+        return false;
+    }
+
+    // Fail if the existing entry is not a directory
+    if (fs::getEntryType(path) != fs::EntryType::DIRECTORY) {
+        return false;
+    }
+
+    return true;
 }
 
 bool fs::createDirectory(String path) {
-    return false;
+    unsigned int lastIndex = 0;
+
+    while (true) {
+        int currentIndex = path.indexOf('/', lastIndex);
+
+        if (currentIndex <= 0) {
+            if (!createDirectoryPart(path)) {
+                return false;
+            }
+
+            break;
+        }
+
+        lastIndex = currentIndex;
+
+        if (!createDirectoryPart(path.substring(0, currentIndex - 1))) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
+// @source reference https://stackoverflow.com/a/12506
 fs::DirectoryListing* fs::listDirectory(proc::Process* process, String path) {
-    return nullptr;
+    dataTypes::List<String> entries;
+
+    if (getEntryType(path) != EntryType::DIRECTORY) {
+        return nullptr;
+    }
+
+    DIR* dir = opendir(path.c_str());
+
+    if (!dir) {
+        return nullptr;
+    }
+
+    struct dirent *entry;
+
+    while ((entry = readdir(dir)) != nullptr) {
+        entries.push(new String(entry->d_name));
+    }
+
+    if (closedir(dir) != 0) {
+        return nullptr;
+    }
+
+    return new DirectoryListing(process, entries);
 }
 
 fs::DirectoryListing* fs::listDirectory(String path) {

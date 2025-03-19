@@ -123,7 +123,6 @@ fs::DirectoryListing* fs::listDirectory(proc::Process* process, String path) {
         return nullptr;
     }
 
-    int result = 0;
     lfs_t* fs = InternalFS._getFS();
     lfs_dir_t dir;
 
