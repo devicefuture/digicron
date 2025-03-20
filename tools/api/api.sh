@@ -204,7 +204,6 @@ namespace fs
         method "unsigned int" length
 
     PASS_PROCESS=true fn "CLASSPTR fs::FileHandle" open "String" path "ENUM fs::FileMode" mode
-    fn "String" getFileModeString "ENUM fs::FileMode" mode
     fn "bool" isFileOpen "String" path
     fn "bool" exists "String" path
     fn "ENUM fs::EntryType" getEntryType "String" path

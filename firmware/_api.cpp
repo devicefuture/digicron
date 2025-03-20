@@ -1375,15 +1375,6 @@ m3ApiRawFunction(api::dc_fs_open) {
     m3ApiReturn(result);
 }
 
-m3ApiRawFunction(api::dc_fs_getFileModeString) {
-    m3ApiReturnType(Sid)
-    m3ApiGetArg(unsigned int, mode)
-
-    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(fs::getFileModeString((fs::FileMode)mode)));
-
-    m3ApiReturn(result);
-}
-
 m3ApiRawFunction(api::dc_fs_isFileOpen) {
     m3ApiReturnType(unsigned int)
     m3ApiGetArgMem(char*, path)
@@ -1702,7 +1693,6 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_DirectoryListing_next", "i(i)", &dc_fs_DirectoryListing_next);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_DirectoryListing_length", "i(i)", &dc_fs_DirectoryListing_length);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_open", "i(ii)", &dc_fs_open);
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_getFileModeString", "i(i)", &dc_fs_getFileModeString);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_isFileOpen", "i(i)", &dc_fs_isFileOpen);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_exists", "i(i)", &dc_fs_exists);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_getEntryType", "i(i)", &dc_fs_getEntryType);

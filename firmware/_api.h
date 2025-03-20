@@ -164,7 +164,6 @@ namespace api {
     m3ApiRawFunction(dc_fs_DirectoryListing_next);
     m3ApiRawFunction(dc_fs_DirectoryListing_length);
     m3ApiRawFunction(dc_fs_open);
-    m3ApiRawFunction(dc_fs_getFileModeString);
     m3ApiRawFunction(dc_fs_isFileOpen);
     m3ApiRawFunction(dc_fs_exists);
     m3ApiRawFunction(dc_fs_getEntryType);

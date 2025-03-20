@@ -67,8 +67,16 @@ void fs::FileHandle::truncate(unsigned int size) {
     ftruncate(fileno(_file), size);
 }
 
+const char* getFileModeString(fs::FileMode mode) {
+    switch (mode) {
+        case fs::FileMode::READ: default: return "r";
+        case fs::FileMode::WRITE: return "w";
+        case fs::FileMode::APPEND: return "a";
+    }
+}
+
 bool fs::FileHandle::_openFile(char* path) {
-    _file = fopen(path, getFileModeString(_mode).c_str());
+    _file = fopen(path, getFileModeString(_mode));
 
     return _file;
 }

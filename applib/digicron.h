@@ -159,7 +159,6 @@ WASM_IMPORT("digicron", "dc_fs_DirectoryListing_start") void dc_fs_DirectoryList
 WASM_IMPORT("digicron", "dc_fs_DirectoryListing_next") dc::_Sid dc_fs_DirectoryListing_next(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_fs_DirectoryListing_length") unsigned int dc_fs_DirectoryListing_length(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_fs_open") dc::_Sid dc_fs_open(char* path, dc::_Enum mode);
-WASM_IMPORT("digicron", "dc_fs_getFileModeString") dc::_Sid dc_fs_getFileModeString(dc::_Enum mode);
 WASM_IMPORT("digicron", "dc_fs_isFileOpen") bool dc_fs_isFileOpen(char* path);
 WASM_IMPORT("digicron", "dc_fs_exists") bool dc_fs_exists(char* path);
 WASM_IMPORT("digicron", "dc_fs_getEntryType") dc::_Enum dc_fs_getEntryType(char* path);
@@ -755,7 +754,6 @@ namespace fs {
     };
 
     inline fs::FileHandle* open(dataTypes::String path, fs::FileMode mode) {return dc::_getOrCreateBySid<fs::FileHandle>(_Type::fs_FileHandle, dc_fs_open(path.c_str(), mode));}
-    inline dataTypes::String getFileModeString(fs::FileMode mode) {dc::_Sid sid = dc_fs_getFileModeString(mode); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
     inline bool isFileOpen(dataTypes::String path) {return dc_fs_isFileOpen(path.c_str());}
     inline bool exists(dataTypes::String path) {return dc_fs_exists(path.c_str());}
     inline fs::EntryType getEntryType(dataTypes::String path) {return (fs::EntryType)dc_fs_getEntryType(path.c_str());}

@@ -98,7 +98,6 @@ namespace fs {
     bool init();
     FileHandle* open(proc::Process* process, String path, FileMode mode);
     FileHandle* open(String path, FileMode mode);
-    String getFileModeString(FileMode mode);
     bool isFileOpen(String path);
     bool exists(String path);
     EntryType getEntryType(String path);

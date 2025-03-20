@@ -156,14 +156,6 @@ fs::FileHandle* fs::open(String path, fs::FileMode mode) {
     return open(nullptr, path, mode);
 }
 
-String fs::getFileModeString(fs::FileMode mode) {
-    switch (mode) {
-        case FileMode::READ: default: return "r";
-        case FileMode::WRITE: return "w";
-        case FileMode::APPEND: return "a";
-    }
-}
-
 bool fs::isFileOpen(String path) {
     openFileHandles.start();
 

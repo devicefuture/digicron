@@ -128,7 +128,6 @@ dc_fs_DirectoryListing_start
 dc_fs_DirectoryListing_next
 dc_fs_DirectoryListing_length
 dc_fs_open
-dc_fs_getFileModeString
 dc_fs_isFileOpen
 dc_fs_exists
 dc_fs_getEntryType
