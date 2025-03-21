@@ -25,6 +25,8 @@ To build the firmware and upload it to the target device over USB, run:
 ./build.sh --upload
 ```
 
+You can also check for compilation errors without uploading by removing the `--upload` flag.
+
 To build the firmware and the simulator, run:
 
 ```bash
