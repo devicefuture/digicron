@@ -214,6 +214,8 @@ void ui::TextInput::update() {
     for (unsigned int i = 0; i < display::COLUMNS - 1; i++) {
         if (i >= currentItem.length()) {
             print(' ');
+
+            continue;
         }
 
         if (currentItem[i] == TEXTINPUTS_SHIFT[0]) {
