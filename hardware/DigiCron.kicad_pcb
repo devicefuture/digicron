@@ -2675,7 +2675,7 @@
 		(at 202.3138 91.4925 90)
 		(tags "AO3401A ")
 		(property "Reference" "Q200"
-			(at -0.5475 4.3062 0)
+			(at -3.0475 0.8062 0)
 			(unlocked yes)
 			(layer "B.SilkS")
 			(uuid "519e75b1-0acd-4a21-9623-171196a668fa")
@@ -4595,7 +4595,7 @@
 		(zone
 			(net 0)
 			(net_name "")
-			(layers "*.Cu")
+			(layers "F&B.Cu")
 			(uuid "90d487e3-fc7e-4084-9e7c-7ed30578ff75")
 			(hatch full 0.508)
 			(connect_pads
@@ -5365,7 +5365,7 @@
 		(descr "Resistor SMD 0201 (0603 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: https://www.vishay.com/docs/20052/crcw0201e3.pdf), generated with kicad-footprint-generator")
 		(tags "resistor handsolder")
 		(property "Reference" "R202"
-			(at -1.0675 -1.5 0)
+			(at 0.4325 -2.5 -90)
 			(layer "B.SilkS")
 			(uuid "de40a9e9-319c-48b8-acfd-35505a02ab74")
 			(effects
@@ -7579,7 +7579,7 @@
 		(descr "JST PH series connector, S2B-PH-SM4-TB (http://www.jst-mfg.com/product/pdf/eng/ePH.pdf), generated with kicad-footprint-generator")
 		(tags "connector JST PH horizontal")
 		(property "Reference" "J200"
-			(at 5.5 3.1 0)
+			(at 0 -5.9 -90)
 			(layer "B.SilkS")
 			(uuid "dba4400d-431b-4947-b7bc-1104aa5a74d0")
 			(effects
@@ -8836,11 +8836,11 @@
 	(footprint "Resistor_SMD:R_0201_0603Metric_Pad0.64x0.40mm_HandSolder"
 		(layer "B.Cu")
 		(uuid "cd3b4b22-9c76-4903-a6e4-31d35731827b")
-		(at 209.1875 89.04 180)
+		(at 208.12 81.54 180)
 		(descr "Resistor SMD 0201 (0603 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: https://www.vishay.com/docs/20052/crcw0201e3.pdf), generated with kicad-footprint-generator")
 		(tags "resistor handsolder")
 		(property "Reference" "R201"
-			(at 0.0675 -1.5 0)
+			(at 0.0675 1 0)
 			(layer "B.SilkS")
 			(uuid "8e0eba87-192d-4fdf-89d4-43ae0a2e4f0c")
 			(effects
@@ -10196,9 +10196,9 @@
 	(footprint "USB-C:12401598E4#2A"
 		(layer "B.Cu")
 		(uuid "e15c143a-2908-4a22-a514-c8cd38d66e8c")
-		(at 207.87 83.53 -90)
+		(at 208.08 87.54 -90)
 		(property "Reference" "X200"
-			(at 5.51 -4.75 0)
+			(at -7 -7.04 -90)
 			(layer "B.SilkS")
 			(uuid "c26236ce-45c6-4413-91c7-e48404fb7d24")
 			(effects
