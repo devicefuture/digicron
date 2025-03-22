@@ -1,6 +1,28 @@
 #include "textinputs.h"
 #include "../timing.h"
 
+#define TEXTINPUTS_SHIFT "\x0F"
+
+ui::Icon* ui::textInputShiftLowerIcon = ui::constructIcon(
+    "  #  "
+    " # # "
+    "#   #"
+    "## ##"
+    " # # "
+    " # # "
+    " ### "
+);
+
+ui::Icon* ui::textInputShiftUpperIcon = ui::constructIcon(
+    "  #  "
+    " ### "
+    "#####"
+    " ### "
+    " ### "
+    " ### "
+    " ### "
+);
+
 ui::TextInputConfirmationMenu::TextInputConfirmationMenu(TextInput* textInput) : ConfirmationMenu(textInput->getValue()) {
     _textInput = textInput;
 
@@ -76,8 +98,6 @@ void ui::TextInput::setValue(String value) {
     _caretPosition = 0;
     _scrollPosition = 0;
     _selectedAll = false;
-
-    // TODO: Reset text scroll
 }
 
 void ui::TextInput::typeText(char text) {
@@ -150,13 +170,13 @@ void ui::TextInput::update() {
         return ContextualMenu::update();
     }
 
+    String currentItem = *items[_currentIndex];
+
     if (_choosingColumn) {
         if (timing::getCurrentTick() - _timeSinceColumnChange > 1000) {
             char selectedChar = items[_currentIndex]->charAt(_currentColumn);
 
-            if (selectedChar == '^') {
-                // TODO: Use better character representation of shift symbol
-
+            if (selectedChar == TEXTINPUTS_SHIFT[0]) {
                 _shiftEnabled = !_shiftEnabled;
 
                 _updateItems();
@@ -179,13 +199,30 @@ void ui::TextInput::update() {
         }
 
         setPosition(_currentColumn, 1);
-        print(items[_currentIndex]->charAt(_currentColumn));
+
+        if (currentItem[_currentColumn] == TEXTINPUTS_SHIFT[0]) {
+            print(_shiftEnabled ? textInputShiftUpperIcon : textInputShiftLowerIcon);
+        } else {
+            print(currentItem[_currentColumn]);
+        }
 
         return;
     }
 
     setPosition(0, 1);
-    scroll(*items[_currentIndex], display::COLUMNS - 1);
+
+    for (unsigned int i = 0; i < display::COLUMNS - 1; i++) {
+        if (i >= currentItem.length()) {
+            print(' ');
+        }
+
+        if (currentItem[i] == TEXTINPUTS_SHIFT[0]) {
+            print(_shiftEnabled ? textInputShiftUpperIcon : textInputShiftLowerIcon);
+        } else {
+            print(currentItem[i]);
+        }
+    }
+
     print(menuScrollableIcon);
 }
 
@@ -316,12 +353,12 @@ void ui::TextInput::_updateItems() {
     clearItems();
 
     if (_shiftEnabled) {
-        addItem("EAOIU^!");
+        addItem("EAOIU" TEXTINPUTS_SHIFT "!");
         addItem("TNRCFPJ");
         addItem("SHLMWBX");
         addItem("DGYVKQZ");
     } else {
-        addItem("eaoiu^.");
+        addItem("eaoiu" TEXTINPUTS_SHIFT ".");
         addItem("tnrcfpj");
         addItem("shlmwbx");
         addItem("dgyvkqz");

@@ -57,6 +57,9 @@ namespace ui {
             void _init();
             void _updateItems();
     };
+
+    extern Icon* textInputShiftLowerIcon;
+    extern Icon* textInputShiftUpperIcon;
 }
 
 #endif
