@@ -49,6 +49,11 @@ namespace dataTypes {
                 const bool equals(const String& other);
                 const bool equals(const char* other);
 
+                unsigned char concat(const String& other);
+                unsigned char concat(const char* value, unsigned int length);
+                unsigned char concat(const char* value);
+                unsigned char concat(char c);
+
                 long toInt();
                 long toLong();
                 float toFloat();

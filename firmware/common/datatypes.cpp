@@ -124,6 +124,47 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         return true;
     }
 
+    inline unsigned char dataTypes::String::concat(const dataTypes::String& other) {
+        return concat(other.c_str(), other.length());
+    }
+
+    inline unsigned char dataTypes::String::concat(const char* value, unsigned int length) {
+        unsigned int newLength = _length + length;
+
+        if (!value) {
+            return 0;
+        }
+
+        if (length == 0) {
+            return 1;
+        }
+
+        char* newValue = (char*)realloc(_value, newLength + 1);
+
+        if (!newValue) {
+            return 0;
+        }
+
+        _value = newValue;
+
+        for (unsigned int i = 0; i < length; i++) {
+            _value[_length + i] = value[i];
+        }
+
+        _value[newLength] = '\0';
+        _length = newLength;
+
+        return 1;
+    }
+
+    inline unsigned char dataTypes::String::concat(const char* value) {
+        return concat(String(value));
+    }
+
+    inline unsigned char dataTypes::String::concat(char c) {
+        return concat(&c, 1);
+    }
+
     inline long dataTypes::String::toInt() {
         return utils::stringToLong(String(c_str()));
     }

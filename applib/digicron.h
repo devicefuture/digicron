@@ -262,6 +262,11 @@ namespace dataTypes {
                 const bool equals(const String& other);
                 const bool equals(const char* other);
 
+                unsigned char concat(const String& other);
+                unsigned char concat(const char* value, unsigned int length);
+                unsigned char concat(const char* value);
+                unsigned char concat(char c);
+
                 long toInt();
                 long toLong();
                 float toFloat();
@@ -804,6 +809,39 @@ namespace test {
     inline test::TestClass* getMostRecentTest() {return dc::_getOrCreateBySid<test::TestClass>(_Type::test_TestClass, dc_test_getMostRecentTest());}
 }
 
+#ifndef DC_COMMON_CONFIG_H_
+#define DC_COMMON_CONFIG_H_
+
+#ifndef DIGICRON_H_
+    #include "../datatypes.h"
+#endif
+
+namespace config {
+    struct Property {
+        dataTypes::String section = "";
+        dataTypes::String key = "";
+        dataTypes::String value = "";
+    };
+
+    class Config {
+        public:
+            Config();
+            ~Config();
+
+            dataTypes::String getStringOrDefault(dataTypes::String section, dataTypes::String key, dataTypes::String defaultValue);
+            dataTypes::String getString(dataTypes::String section, dataTypes::String key);
+
+            void setString(dataTypes::String section, dataTypes::String key, dataTypes::String value);
+
+            void fromIni(dataTypes::String ini);
+
+        private:
+            dataTypes::List<Property> _properties;
+    };
+}
+
+#endif
+
 #ifndef DC_COMMON_CONSOLE_H_
 #define DC_COMMON_CONSOLE_H_
 
@@ -862,6 +900,140 @@ namespace maths {
 
 namespace ui {
     ONCE Icon* constructIcon(dataTypes::String pixels);
+}
+
+#endif
+
+#ifndef DC_COMMON_CONFIG_CPP_
+#define DC_COMMON_CONFIG_CPP_
+
+#ifndef DIGICRON_H_
+    #include "config.h"
+#endif
+
+inline config::Config::Config() {}
+
+inline config::Config::~Config() {
+    _properties.start();
+
+    while (Property* property = _properties.next()) {
+        delete property;
+    }
+}
+
+inline dataTypes::String config::Config::getStringOrDefault(dataTypes::String section, dataTypes::String key, dataTypes::String defaultValue) {
+    _properties.start();
+
+    while (Property* property = _properties.next()) {
+        if (property->section == section && property->key == key) {
+            return property->value;
+        }
+    }
+
+    return defaultValue;
+}
+
+inline dataTypes::String config::Config::getString(dataTypes::String section, dataTypes::String key) {
+    return getStringOrDefault(section, key, "");
+}
+
+inline void config::Config::setString(dataTypes::String section, dataTypes::String key, dataTypes::String value) {
+    _properties.start();
+
+    while (Property* property = _properties.next()) {
+        if (property->section == section && property->key == key) {
+            property->value = value;
+        }
+    }
+
+    Property* newProperty = new Property();
+
+    newProperty->section = section;
+    newProperty->key = key;
+    newProperty->value = value;
+
+    _properties.push(newProperty);
+}
+
+inline void config::Config::fromIni(dataTypes::String ini) {
+    dataTypes::String section = "";
+    dataTypes::String propertyKey = "";
+    dataTypes::String propertyValue = "";
+
+    bool inComment = false;
+    bool inSection = false;
+    bool inPropertyValue = false;
+    bool enteredPropertyBody = false;
+    bool hadAssignmentOperator = false;
+
+    for (unsigned int i = 0; i < ini.length(); i++) {
+        if (inComment && ini[i] != '\n') {
+            continue;
+        }
+
+        if (!inSection && ini[i] == '[') {
+            inSection = true;
+            section = "";
+            continue;
+        }
+
+        if (inSection && ini[i] == ']' && ini[i + 1] == '\n') {
+            inSection = false;
+            continue;
+        }
+
+        if (ini[i] == '\n') {
+            if (propertyKey != "" && inPropertyValue) {
+                setString(section, propertyKey, propertyValue);
+            }
+
+            inComment = false;
+            inPropertyValue = false;
+            hadAssignmentOperator = false;
+            propertyKey = "";
+
+            continue;
+        }
+
+        if (inSection) {
+            section.concat(ini[i]);
+            continue;
+        }
+
+        if (!inPropertyValue && ini[i] == ' ') {
+            continue;
+        }
+
+        if (!inPropertyValue) {
+            propertyKey.concat(ini[i]);
+            continue;
+        }
+
+        if (!inPropertyValue && ini[i] == '=') {
+            inPropertyValue = true;
+            hadAssignmentOperator = true;
+
+            propertyValue = "";
+
+            continue;
+        }
+
+        if (inPropertyValue && hadAssignmentOperator && ini[i] == ' ') {
+            continue;
+        }
+
+        if (inPropertyValue) {
+            propertyValue.concat(ini[i]);
+
+            hadAssignmentOperator = false;
+
+            continue;
+        }
+    }
+
+    if (propertyKey != "" && inPropertyValue) {
+        setString(section, propertyKey, propertyValue);
+    }
 }
 
 #endif
@@ -1011,6 +1183,47 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         }
 
         return true;
+    }
+
+    inline unsigned char dataTypes::String::concat(const dataTypes::String& other) {
+        return concat(other.c_str(), other.length());
+    }
+
+    inline unsigned char dataTypes::String::concat(const char* value, unsigned int length) {
+        unsigned int newLength = _length + length;
+
+        if (!value) {
+            return 0;
+        }
+
+        if (length == 0) {
+            return 1;
+        }
+
+        char* newValue = (char*)realloc(_value, newLength + 1);
+
+        if (!newValue) {
+            return 0;
+        }
+
+        _value = newValue;
+
+        for (unsigned int i = 0; i < length; i++) {
+            _value[_length + i] = value[i];
+        }
+
+        _value[newLength] = '\0';
+        _length = newLength;
+
+        return 1;
+    }
+
+    inline unsigned char dataTypes::String::concat(const char* value) {
+        return concat(String(value));
+    }
+
+    inline unsigned char dataTypes::String::concat(char c) {
+        return concat(&c, 1);
     }
 
     inline long dataTypes::String::toInt() {
