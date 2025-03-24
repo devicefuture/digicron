@@ -160,6 +160,10 @@ extern "C" {
     }
 
     void free(void* ptr) {
+        if (!ptr) {
+            return;
+        }
+
         dc::heap::Block* block = (dc::heap::Block*)ptr - sizeof(dc::heap::Block);
 
         _DC_DEBUG_HEAP_LOG("> free");
@@ -204,14 +208,16 @@ extern "C" {
     void* realloc(void* ptr, size_t size) {
         _DC_DEBUG_HEAP_LOG("> realloc");
 
-        if (!ptr || size & _DC_FLAG_USED) {
+        if (size & _DC_FLAG_USED) {
             return nullptr;
         }
 
-        if (size == 0) {
-            free(ptr);
+        if (!ptr) {
+            return malloc(size);
+        }
 
-            return nullptr;
+        if (size == 0) {
+            size = _DC_ALIGN_SIZE;
         }
 
         size = _DC_ALIGN(size);
@@ -230,7 +236,15 @@ extern "C" {
 
             _DC_DEBUG_HEAP_LOG("Modify last block");
 
-            *block = _DC_FLAG_USED | _DC_ALIGN(size);
+            if (blockPtr + _DC_BLOCK_SIZE(block) == dc::heap::firstFreeBlock) {
+                // Push pointer to first free block further down if it currently lies in the extended space
+
+                _DC_DEBUG_HEAP_LOG("  Increase first free block pointer");
+
+                dc::heap::firstFreeBlock = blockPtr + size;
+            }
+
+            *block = _DC_FLAG_USED | size;
             *(blockPtr + size) = 0; // Set new position for last block
 
             return ptr;
