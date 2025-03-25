@@ -129,6 +129,8 @@ extern "C" {
                     _DC_DEBUG_HEAP_LOG("  Using last block");
 
                     *(currentBlock + sizeof(dc::heap::Block) + size) = 0; // Create a new last block after this one
+                } else {
+                    *currentBlock = totalUsableSize;
                 }
             }
 
@@ -146,7 +148,7 @@ extern "C" {
             *currentBlock |= _DC_FLAG_USED;
 
             if (currentBlock == dc::heap::firstFreeBlock) {
-            _DC_DEBUG_HEAP_LOG("Search for a new first free block");
+                _DC_DEBUG_HEAP_LOG("Search for a new first free block");
 
                 while (_DC_BLOCK_IS_USED(dc::heap::firstFreeBlock)) {
                     _DC_DEBUG_HEAP_LOG("  Search next");
@@ -239,7 +241,7 @@ extern "C" {
             if (blockPtr + _DC_BLOCK_SIZE(block) == dc::heap::firstFreeBlock) {
                 // Push pointer to first free block further down if it currently lies in the extended space
 
-                _DC_DEBUG_HEAP_LOG("  Increase first free block pointer");
+                _DC_DEBUG_HEAP_LOG("  Increase first free block");
 
                 dc::heap::firstFreeBlock = blockPtr + size;
             }
