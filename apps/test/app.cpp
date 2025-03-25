@@ -8,6 +8,7 @@ int count = 0;
 test::TestClass* testClass;
 test::TestSubclass* testSubclass;
 timing::EarthTime* currentTime;
+config::Config* configFile;
 ui::Screen* screen;
 ui::Popup* popup;
 ui::Menu* menu;
@@ -178,6 +179,26 @@ void setup() {
     testSubclass->subclass();
 
     currentTime = new timing::EarthTime();
+
+    configFile = new config::Config();
+
+    configFile->fromIni(
+        "Test=Hello, world!\n"
+        "SpacedTest = This is a test!\n"
+        "; This is a comment!\n"
+        "\n"
+        "[TestSection]\n"
+        "TestSectionKey=This is a key in a section!\n"
+        "AnotherTestSectionKey=Another one!\n"
+        "[AnotherTestSection]\n"
+        "AnotherTestSectionKey=This is another section! ; Another comment!"
+    );
+
+    console::log("Config value: Test =", configFile->getString("", "Test"));
+    console::log("Config value: SpacedTest =", configFile->getString("", "SpacedTest"));
+    console::log("Config value: TestSection.TestSectionKey =", configFile->getString("TestSection", "TestSectionKey"));
+    console::log("Config value: TestSection.AnotherTestSectionKey =", configFile->getString("TestSection", "AnotherTestSectionKey"));
+    console::log("Config value: AnotherTestSection.AnotherTestSectionKey =", configFile->getString("AnotherTestSection", "AnotherTestSectionKey"));
 
     screen = new HelloScreen();
     popup = new HelloPopup();

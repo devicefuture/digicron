@@ -135,9 +135,9 @@ fs::DirectoryListing::DirectoryListing(proc::Process* process, dataTypes::List<S
 }
 
 fs::DirectoryListing::~DirectoryListing() {
-    String* entry;
+    _entries.start();
 
-    while ((entry = _entries.shift())) {
+    while (String* entry = _entries.next()) {
         delete entry;
     }
 }

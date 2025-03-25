@@ -971,7 +971,7 @@ inline void config::Config::fromIni(dataTypes::String ini) {
             continue;
         }
 
-        if (!inSection && ini[i] == '[') {
+        if (!inPropertyValue && !inSection && ini[i] == '[') {
             inSection = true;
             section = "";
             continue;
@@ -1000,12 +1000,12 @@ inline void config::Config::fromIni(dataTypes::String ini) {
             continue;
         }
 
-        if (!inPropertyValue && ini[i] == ' ') {
+        if (ini[i] == ';') {
+            inComment = true;
             continue;
         }
 
-        if (!inPropertyValue) {
-            propertyKey.concat(ini[i]);
+        if (!inPropertyValue && ini[i] == ' ') {
             continue;
         }
 
@@ -1019,6 +1019,11 @@ inline void config::Config::fromIni(dataTypes::String ini) {
         }
 
         if (inPropertyValue && hadAssignmentOperator && ini[i] == ' ') {
+            continue;
+        }
+
+        if (!inPropertyValue) {
+            propertyKey.concat(ini[i]);
             continue;
         }
 
