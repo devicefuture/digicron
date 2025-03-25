@@ -967,22 +967,24 @@ inline void config::Config::fromIni(dataTypes::String ini) {
     bool hadAssignmentOperator = false;
 
     for (unsigned int i = 0; i < ini.length(); i++) {
-        if (inComment && ini[i] != '\n') {
+        char c = ini[i];
+
+        if (inComment && c != '\n') {
             continue;
         }
 
-        if (!inPropertyValue && !inSection && ini[i] == '[') {
+        if (!inPropertyValue && !inSection && c == '[') {
             inSection = true;
             section = "";
             continue;
         }
 
-        if (inSection && ini[i] == ']' && ini[i + 1] == '\n') {
+        if (inSection && c == ']' && ini[i + 1] == '\n') {
             inSection = false;
             continue;
         }
 
-        if (ini[i] == '\n') {
+        if (c == '\n') {
             if (propertyKey != "" && inPropertyValue) {
                 setString(section, propertyKey, propertyValue);
             }
@@ -996,20 +998,20 @@ inline void config::Config::fromIni(dataTypes::String ini) {
         }
 
         if (inSection) {
-            section.concat(ini[i]);
+            section.concat(c);
             continue;
         }
 
-        if (ini[i] == ';') {
+        if (c == ';') {
             inComment = true;
             continue;
         }
 
-        if (!inPropertyValue && ini[i] == ' ') {
+        if (!inPropertyValue && c == ' ') {
             continue;
         }
 
-        if (!inPropertyValue && ini[i] == '=') {
+        if (!inPropertyValue && c == '=') {
             inPropertyValue = true;
             hadAssignmentOperator = true;
 
@@ -1018,17 +1020,17 @@ inline void config::Config::fromIni(dataTypes::String ini) {
             continue;
         }
 
-        if (inPropertyValue && hadAssignmentOperator && ini[i] == ' ') {
+        if (inPropertyValue && hadAssignmentOperator && c == ' ') {
             continue;
         }
 
         if (!inPropertyValue) {
-            propertyKey.concat(ini[i]);
+            propertyKey.concat(c);
             continue;
         }
 
         if (inPropertyValue) {
-            propertyValue.concat(ini[i]);
+            propertyValue.concat(c);
 
             hadAssignmentOperator = false;
 
@@ -1112,6 +1114,7 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         _value = (char*)malloc(2);
         _value[0] = c;
         _value[1] = '\0';
+        _length = 1;
     }
 
     inline dataTypes::String::String(unsigned int value, unsigned char base) : String(utils::numberToString(value, base)) {}
@@ -1134,7 +1137,7 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         char* otherCstr = other.c_str();
 
         _length = other.length();
-        _value = (char*)malloc(_length + 1);
+        _value = (char*)realloc(_value, _length + 1);
 
         for (unsigned int i = 0; i <= _length; i++) {
             _value[i] = otherCstr[i];

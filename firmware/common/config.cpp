@@ -61,22 +61,24 @@ inline void config::Config::fromIni(dataTypes::String ini) {
     bool hadAssignmentOperator = false;
 
     for (unsigned int i = 0; i < ini.length(); i++) {
-        if (inComment && ini[i] != '\n') {
+        char c = ini[i];
+
+        if (inComment && c != '\n') {
             continue;
         }
 
-        if (!inPropertyValue && !inSection && ini[i] == '[') {
+        if (!inPropertyValue && !inSection && c == '[') {
             inSection = true;
             section = "";
             continue;
         }
 
-        if (inSection && ini[i] == ']' && ini[i + 1] == '\n') {
+        if (inSection && c == ']' && ini[i + 1] == '\n') {
             inSection = false;
             continue;
         }
 
-        if (ini[i] == '\n') {
+        if (c == '\n') {
             if (propertyKey != "" && inPropertyValue) {
                 setString(section, propertyKey, propertyValue);
             }
@@ -90,20 +92,20 @@ inline void config::Config::fromIni(dataTypes::String ini) {
         }
 
         if (inSection) {
-            section.concat(ini[i]);
+            section.concat(c);
             continue;
         }
 
-        if (ini[i] == ';') {
+        if (c == ';') {
             inComment = true;
             continue;
         }
 
-        if (!inPropertyValue && ini[i] == ' ') {
+        if (!inPropertyValue && c == ' ') {
             continue;
         }
 
-        if (!inPropertyValue && ini[i] == '=') {
+        if (!inPropertyValue && c == '=') {
             inPropertyValue = true;
             hadAssignmentOperator = true;
 
@@ -112,17 +114,17 @@ inline void config::Config::fromIni(dataTypes::String ini) {
             continue;
         }
 
-        if (inPropertyValue && hadAssignmentOperator && ini[i] == ' ') {
+        if (inPropertyValue && hadAssignmentOperator && c == ' ') {
             continue;
         }
 
         if (!inPropertyValue) {
-            propertyKey.concat(ini[i]);
+            propertyKey.concat(c);
             continue;
         }
 
         if (inPropertyValue) {
-            propertyValue.concat(ini[i]);
+            propertyValue.concat(c);
 
             hadAssignmentOperator = false;
 

@@ -46,6 +46,7 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         _value = (char*)malloc(2);
         _value[0] = c;
         _value[1] = '\0';
+        _length = 1;
     }
 
     inline dataTypes::String::String(unsigned int value, unsigned char base) : String(utils::numberToString(value, base)) {}
@@ -68,7 +69,7 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         char* otherCstr = other.c_str();
 
         _length = other.length();
-        _value = (char*)malloc(_length + 1);
+        _value = (char*)realloc(_value, _length + 1);
 
         for (unsigned int i = 0; i <= _length; i++) {
             _value[i] = otherCstr[i];
