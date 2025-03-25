@@ -137,4 +137,72 @@ inline void config::Config::fromIni(dataTypes::String ini) {
     }
 }
 
+inline dataTypes::String config::Config::toIni() {
+    dataTypes::String ini = "";
+    dataTypes::List<dataTypes::String> sections;
+    bool firstSection = true;
+
+    _properties.start();
+
+    while (Property* property = _properties.next()) {
+        if (property->section == "") {
+            firstSection = false;
+
+            ini.concat(property->key);
+            ini.concat('=');
+            ini.concat(property->value);
+            ini.concat('\n');
+
+            continue;
+        }
+
+        bool shouldAddSection = true;
+
+        sections.start();
+
+        while (dataTypes::String* section = sections.next()) {
+            if (*section == property->section) {
+                shouldAddSection = false;
+
+                break;
+            }
+        }
+
+        if (shouldAddSection) {
+            sections.push(new dataTypes::String(property->section));
+        }
+    }
+
+    sections.start();
+
+    while (dataTypes::String* section = sections.next()) {
+        if (firstSection) {
+            firstSection = false;
+        } else {
+            ini.concat('\n');
+        }
+
+        ini.concat('[');
+        ini.concat(*section);
+        ini.concat("]\n");
+
+        _properties.start();
+
+        while (Property* property = _properties.next()) {
+            if (property->section != *section) {
+                continue;
+            }
+
+            ini.concat(property->key);
+            ini.concat('=');
+            ini.concat(property->value);
+            ini.concat('\n');
+        }
+
+        delete section;
+    }
+
+    return ini;
+}
+
 #endif

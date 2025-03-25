@@ -200,6 +200,9 @@ void setup() {
     console::log("Config value: TestSection.AnotherTestSectionKey =", configFile->getString("TestSection", "AnotherTestSectionKey"));
     console::log("Config value: AnotherTestSection.AnotherTestSectionKey =", configFile->getString("AnotherTestSection", "AnotherTestSectionKey"));
 
+    console::log("Regenerated INI:");
+    console::log(configFile->toIni());
+
     screen = new HelloScreen();
     popup = new HelloPopup();
     menu = new HelloMenu();

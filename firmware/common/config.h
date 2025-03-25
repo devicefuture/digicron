@@ -23,6 +23,7 @@ namespace config {
             void setString(dataTypes::String section, dataTypes::String key, dataTypes::String value);
 
             void fromIni(dataTypes::String ini);
+            dataTypes::String toIni();
 
         private:
             dataTypes::List<Property> _properties;
