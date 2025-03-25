@@ -82,6 +82,8 @@ void fs::FileHandle::_seekFile(unsigned int position) {
 
 void fs::FileHandle::_closeFile() {
     _file->close();
+
+    delete _file;
 }
 
 bool fs::init() {

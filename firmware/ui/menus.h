@@ -15,7 +15,9 @@ namespace ui {
                 items = menuItems;
             }
 
-            void clearItems() {items.empty();}
+            ~Menu();
+
+            void clearItems();
             void addItem(String item) {items.push(new String(item));}
             unsigned int getCurrentIndex() {return _currentIndex;}
             void setCurrentIndex(unsigned int index) {_currentIndex = index;}

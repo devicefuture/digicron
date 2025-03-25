@@ -23,6 +23,24 @@ ui::Icon* ui::menuScrollableIcon = ui::constructIcon(
     "  #  "
 );
 
+ui::Menu::~Menu() {
+    clearItems();
+}
+
+void ui::Menu::clearItems() {
+    items.start();
+
+    while (auto item = items.next()) {
+        if (item == ui::yesOption || item == ui::noOption) {
+            continue;
+        }
+
+        delete item;
+    }
+
+    items.empty();
+}
+
 void ui::Menu::update() {
     clear();
 

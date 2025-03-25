@@ -34,6 +34,7 @@ proc::Process* apps::SystemWasmApp::launch() {
     }
 
     auto process = new proc::WasmProcess(_code, _codeSize);
+
     process->onStop = [](proc::Process* process) {
         if (primaryAppProcess == process) {
             primaryAppProcess = nullptr;
