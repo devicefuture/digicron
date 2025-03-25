@@ -102,9 +102,9 @@ void loop() {
         // proc::WasmProcess testProcess((char*)apptest_app_wasm, apptest_app_wasm_len);
     }
 
-    #ifndef DC_SIMULATOR
-        Serial.printf("Free heap: %d\r\n", dbgHeapFree());
-    #endif
+    // #ifndef DC_SIMULATOR
+    //     Serial.printf("Free heap: %d\r\n", dbgHeapFree());
+    // #endif
 
     proc::stepProcesses();
     ui::renderCurrentScreen();
