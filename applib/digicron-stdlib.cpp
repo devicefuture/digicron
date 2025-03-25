@@ -96,7 +96,7 @@ extern "C" {
                 _DC_DEBUG_HEAP_LOG("Attempt resize");
 
                 do {
-                    currentBlock += sizeof(dc::heap::Block) + originalBlockSize;
+                    currentBlock += sizeof(dc::heap::Block) + _DC_BLOCK_SIZE(currentBlock);
 
                     if (_DC_BLOCK_IS_USED(currentBlock)) {
                         _DC_DEBUG_HEAP_LOG("  Encountered used block");
