@@ -122,23 +122,21 @@ void fs::FileHandle::close() {
     _closeFile();
 }
 
-fs::DirectoryListing::DirectoryListing(proc::Process* process) : fs::DirectoryListing::DirectoryListing() {
-    ownerProcess = process;
-}
-
-fs::DirectoryListing::DirectoryListing(dataTypes::List<String> entries) {
-    _entries = entries;
-}
-
-fs::DirectoryListing::DirectoryListing(proc::Process* process, dataTypes::List<String> entries) : fs::DirectoryListing::DirectoryListing(entries) {
-    ownerProcess = process;
-}
-
 fs::DirectoryListing::~DirectoryListing() {
     _entries.start();
 
     while (String* entry = _entries.next()) {
         delete entry;
+    }
+}
+
+String fs::DirectoryListing::next() {
+    String* entry = _entries.next();
+
+    if (entry) {
+        return *entry;
+    } else {
+        return "";
     }
 }
 

@@ -180,6 +180,24 @@ void setup() {
 
     currentTime = new timing::EarthTime();
 
+    fs::DirectoryListing* listing = fs::listDirectory("/");
+
+    if (listing) {
+        listing->start();
+
+        console::log("Count of entries in /:", listing->length());
+
+        String entry;
+
+        while ((entry = listing->next()).length() > 0) {
+            console::log("-", entry);
+        }
+
+        delete listing;
+    } else {
+        console::log("Couldn't list contents of /");
+    }
+
     configFile = new config::Config();
 
     configFile->fromIni(

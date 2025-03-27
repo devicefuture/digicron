@@ -119,8 +119,6 @@ bool fs::createDirectory(String path) {
 }
 
 fs::DirectoryListing* fs::listDirectory(proc::Process* process, String path) {
-    dataTypes::List<String> entries;
-
     if (getEntryType(path) != EntryType::DIRECTORY) {
         return nullptr;
     }
@@ -132,27 +130,31 @@ fs::DirectoryListing* fs::listDirectory(proc::Process* process, String path) {
         return nullptr;
     }
 
-    while (true) {
-        lfs_info info;
+    lfs_info info;
 
+    auto listing = new DirectoryListing(process);
+
+    while (true) {
         if (lfs_dir_read(fs, &dir, &info) != 1) {
             break;
         }
 
-        String* name = new String(info.name);
+        String name = String(info.name);
 
-        if (*name == "." || *name == "..") {
+        if (name == "." || name == "..") {
             continue;
         }
 
-        entries.push(name);
+        listing->_addEntry(name);
     }
 
     if (lfs_dir_close(fs, &dir) < 0) {
+        delete listing;
+
         return nullptr;
     }
 
-    return new DirectoryListing(process, entries);
+    return listing;
 }
 
 fs::DirectoryListing* fs::listDirectory(String path) {

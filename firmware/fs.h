@@ -81,15 +81,15 @@ namespace fs {
         public:
             proc::Process* ownerProcess = nullptr;
 
-            DirectoryListing() : DirectoryListing(dataTypes::List<String>()) {}
-            DirectoryListing(proc::Process* process);
-            DirectoryListing(dataTypes::List<String> entries);
-            DirectoryListing(proc::Process* process, dataTypes::List<String> entries);
+            DirectoryListing() {}
+            DirectoryListing(proc::Process* process) : DirectoryListing() {ownerProcess = process;}
             ~DirectoryListing();
 
             void start() {_entries.start();}
-            String next() {return *_entries.next();}
+            String next();
             unsigned int length() {return _entries.length();}
+
+            void _addEntry(String entry) {_entries.push(new String(entry));}
 
         protected:
             dataTypes::List<String> _entries;

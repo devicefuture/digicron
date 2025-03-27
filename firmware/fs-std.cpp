@@ -171,8 +171,6 @@ bool fs::createDirectory(String path) {
 
 // @source reference https://stackoverflow.com/a/12506
 fs::DirectoryListing* fs::listDirectory(proc::Process* process, String path) {
-    dataTypes::List<String> entries;
-
     if (getEntryType(path) != EntryType::DIRECTORY) {
         return nullptr;
     }
@@ -185,15 +183,25 @@ fs::DirectoryListing* fs::listDirectory(proc::Process* process, String path) {
 
     struct dirent *entry;
 
+    auto listing = new DirectoryListing(process);
+
     while ((entry = readdir(dir)) != nullptr) {
-        entries.push(new String(entry->d_name));
+        String name = String(entry->d_name);
+
+        if (name == "." || name == "..") {
+            continue;
+        }
+
+        listing->_addEntry(name);
     }
 
     if (closedir(dir) != 0) {
+        delete listing;
+
         return nullptr;
     }
 
-    return new DirectoryListing(process, entries);
+    return listing;
 }
 
 fs::DirectoryListing* fs::listDirectory(String path) {
