@@ -234,6 +234,12 @@ function method {
 
             "String"|"char*")
                 shortReturnType=i ;;
+
+            "float")
+                shortReturnType="f" ;;
+
+            "double")
+                shortReturnType="F" ;;
         esac
 
         passArgs=

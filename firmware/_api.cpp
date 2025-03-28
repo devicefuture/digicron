@@ -1574,7 +1574,7 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_numberToStringLong", "i(ii)", &dc_utils_numberToStringLong);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_numberToStringDouble", "i(Fi)", &dc_utils_numberToStringDouble);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_stringToLong", "i(i)", &dc_utils_stringToLong);
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_stringToDouble", "i(i)", &dc_utils_stringToDouble);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_stringToDouble", "F(i)", &dc_utils_stringToDouble);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_proc_stop", "v()", &dc_proc_stop);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_console_logPart", "v(i)", &dc_console_logPart);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_console_logPartChars", "v(*)", &dc_console_logPartChars);

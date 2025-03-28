@@ -31,12 +31,42 @@ inline dataTypes::String config::Config::getString(dataTypes::String section, da
     return getStringOrDefault(section, key, "");
 }
 
+inline long config::Config::getLongOrDefault(dataTypes::String section, dataTypes::String key, long defaultValue) {
+    dataTypes::String stringValue = getStringOrDefault(section, key, utils::numberToString(defaultValue, 10));
+
+    return utils::stringToLong(stringValue);
+}
+
+inline long config::Config::getLong(dataTypes::String section, dataTypes::String key) {
+    return getLongOrDefault(section, key, 0);
+}
+
+inline double config::Config::getDoubleOrDefault(dataTypes::String section, dataTypes::String key, double defaultValue) {
+    dataTypes::String stringValue = getStringOrDefault(section, key, utils::numberToString(defaultValue, 10));
+
+    return utils::stringToDouble(stringValue);
+}
+
+inline double config::Config::getDouble(dataTypes::String section, dataTypes::String key) {
+    return getDoubleOrDefault(section, key, 0);
+}
+
+inline bool config::Config::getBoolOrDefault(dataTypes::String section, dataTypes::String key, bool defaultValue) {
+    return getStringOrDefault(section, key, defaultValue ? "true" : "false") == "true";
+}
+
+inline bool config::Config::getBool(dataTypes::String section, dataTypes::String key) {
+    return getBoolOrDefault(section, key, false);
+}
+
 inline void config::Config::setString(dataTypes::String section, dataTypes::String key, dataTypes::String value) {
     _properties.start();
 
     while (Property* property = _properties.next()) {
         if (property->section == section && property->key == key) {
             property->value = value;
+
+            return;
         }
     }
 
@@ -47,6 +77,18 @@ inline void config::Config::setString(dataTypes::String section, dataTypes::Stri
     newProperty->value = value;
 
     _properties.push(newProperty);
+}
+
+inline void config::Config::setLong(dataTypes::String section, dataTypes::String key, long value) {
+    setString(section, key, utils::numberToString(value, 10));
+}
+
+inline void config::Config::setDouble(dataTypes::String section, dataTypes::String key, double value) {
+    setString(section, key, utils::numberToString(value, 10));
+}
+
+inline void config::Config::setBool(dataTypes::String section, dataTypes::String key, bool value) {
+    setString(section, key, value ? "true" : "false");
 }
 
 inline void config::Config::fromIni(dataTypes::String ini) {

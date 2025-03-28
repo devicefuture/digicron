@@ -203,6 +203,9 @@ void setup() {
     configFile->fromIni(
         "Test=Hello, world!\n"
         "SpacedTest = This is a test!\n"
+        "LongTest = -123\n"
+        "DoubleTest = -1.23e4\n"
+        "BoolTest = true\n"
         "; This is a comment!\n"
         "\n"
         "[TestSection]\n"
@@ -214,9 +217,17 @@ void setup() {
 
     console::log("Config value: Test =", configFile->getString("", "Test"));
     console::log("Config value: SpacedTest =", configFile->getString("", "SpacedTest"));
+    console::log("Config value: LongTest =", configFile->getLong("", "LongTest"));
+    console::log("Config value: DoubleTest =", configFile->getDouble("", "DoubleTest"));
+    console::log("Config value: BoolTest =", configFile->getBool("", "BoolTest"));
     console::log("Config value: TestSection.TestSectionKey =", configFile->getString("TestSection", "TestSectionKey"));
     console::log("Config value: TestSection.AnotherTestSectionKey =", configFile->getString("TestSection", "AnotherTestSectionKey"));
     console::log("Config value: AnotherTestSection.AnotherTestSectionKey =", configFile->getString("AnotherTestSection", "AnotherTestSectionKey"));
+
+    configFile->setString("", "Test", "Hello, new world!");
+    configFile->setLong("", "LongTest", -456);
+    configFile->setDouble("", "DoubleTest", -4.56e7);
+    configFile->setBool("", "BoolTest", false);
 
     console::log("Regenerated INI:");
     console::log(configFile->toIni());
