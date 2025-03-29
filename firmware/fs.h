@@ -104,6 +104,7 @@ namespace fs {
     bool remove(String path);
     bool rename(String oldPath, String newPath);
     bool createDirectory(String path);
+    bool ensureParentDirectories(String path);
     DirectoryListing* listDirectory(proc::Process* process, String path);
     DirectoryListing* listDirectory(String path);
 }

@@ -145,13 +145,17 @@ bool createDirectoryPart(String path) {
     return true;
 }
 
-bool fs::createDirectory(String path) {
+bool createDirectoryIncludingParents(String path, bool parentsOnly) {
     unsigned int lastIndex = 0;
 
     while (true) {
         int currentIndex = path.indexOf('/', lastIndex);
 
-        if (currentIndex <= 0) {
+        if (currentIndex < 0) {
+            if (parentsOnly) {
+                break;
+            }
+
             if (!createDirectoryPart(path)) {
                 return false;
             }
@@ -161,12 +165,25 @@ bool fs::createDirectory(String path) {
 
         lastIndex = currentIndex;
 
+        if (currentIndex == 0) {
+            // Currently looking at root part of path; skip it
+            continue;
+        }
+
         if (!createDirectoryPart(path.substring(0, currentIndex - 1))) {
             return false;
         }
     }
 
     return true;
+}
+
+bool fs::createDirectory(String path) {
+    return createDirectoryIncludingParents(path, false);
+}
+
+bool fs::ensureParentDirectories(String path) {
+    return createDirectoryIncludingParents(path, true);
 }
 
 // @source reference https://stackoverflow.com/a/12506

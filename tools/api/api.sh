@@ -210,6 +210,7 @@ namespace fs
     fn "bool" remove "String" path
     fn "bool" rename "String" oldPath "String" newPath
     fn "bool" createDirectory "String" path
+    fs "bool" ensureParentDirectories "String" path
     PASS_PROCESS=true fn "CLASSPTR fs::DirectoryListing" listDirectory "String" path
 
 namespace test

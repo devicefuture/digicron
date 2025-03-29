@@ -118,6 +118,12 @@ bool fs::createDirectory(String path) {
     return InternalFS.mkdir(path.c_str());
 }
 
+bool fs::ensureParentDirectories(String path) {
+    int lastIndex = path.lastIndexOf('/');
+
+    return InternalFS.mkdir(lastIndex > 0 ? path.substring(0, lastIndex - 1).c_str() : path.c_str());
+}
+
 fs::DirectoryListing* fs::listDirectory(proc::Process* process, String path) {
     if (getEntryType(path) != EntryType::DIRECTORY) {
         return nullptr;
