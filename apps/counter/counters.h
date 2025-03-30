@@ -10,6 +10,7 @@ class Counter {
     public:
         Counter(String name, long value = 0);
 
+        String getId();
         String getName();
         void setName(String name);
         long getValue();
@@ -20,13 +21,22 @@ class Counter {
         long getResetValue();
         void setResetValue(long resetValue);
 
+        bool checkIfShouldSave();
+        void triggerSave();
+
+        bool loadFromFile(String id);
+        bool saveToFile();
+
     private:
+        String _id;
         String _name;
         long _value;
         unsigned int _base = 10;
         long _resetValue = 0;
+        unsigned char _savePendingState = 0;
 };
 
 extern List<Counter> counters;
+extern bool saveTriggered;
 
 #endif

@@ -10,6 +10,7 @@
 #include "proc.h"
 #include "console.h"
 #include "timing.h"
+#include "rng.h"
 #include "input.h"
 #include "ui.h"
 #include "fs.h"
@@ -635,6 +636,32 @@ m3ApiRawFunction(api::dc_timing_EarthTime_syncToSystemTime) {
 m3ApiRawFunction(api::dc_timing_getCurrentTick) {
     m3ApiReturnType(unsigned long)
     unsigned long result = timing::getCurrentTick();
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_rng_getLongInRange) {
+    m3ApiReturnType(long)
+    m3ApiGetArg(long, min)
+    m3ApiGetArg(long, max)
+
+    long result = rng::getLongInRange(min, max);
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_rng_getLong) {
+    m3ApiReturnType(long)
+    long result = rng::getLong();
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_rng_getKey) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(unsigned int, length)
+
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(rng::getKey(length)));
 
     m3ApiReturn(result);
 }
@@ -1430,6 +1457,15 @@ m3ApiRawFunction(api::dc_fs_createDirectory) {
     m3ApiReturn(result);
 }
 
+m3ApiRawFunction(api::dc_fs_ensureParentDirectories) {
+    m3ApiReturnType(unsigned int)
+    m3ApiGetArgMem(char*, path)
+
+    unsigned int result = fs::ensureParentDirectories(String(path));
+
+    m3ApiReturn(result);
+}
+
 m3ApiRawFunction(api::dc_fs_listDirectory) {
     m3ApiReturnType(Sid)
     m3ApiGetArgMem(char*, path)
@@ -1615,6 +1651,9 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_timing_EarthTime_newUsingMilliseconds", "i(iiii)", &dc_timing_EarthTime_newUsingMilliseconds);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_timing_EarthTime_syncToSystemTime", "v(i)", &dc_timing_EarthTime_syncToSystemTime);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_timing_getCurrentTick", "i()", &dc_timing_getCurrentTick);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_rng_getLongInRange", "i(ii)", &dc_rng_getLongInRange);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_rng_getLong", "i()", &dc_rng_getLong);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_rng_getKey", "i(i)", &dc_rng_getKey);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_Icon_new", "i()", &dc_ui_Icon_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_Icon_setPixel", "v(iiii)", &dc_ui_Icon_setPixel);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_Screen_new", "i()", &dc_ui_Screen_new);
@@ -1699,6 +1738,7 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_remove", "i(i)", &dc_fs_remove);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_rename", "i(ii)", &dc_fs_rename);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_createDirectory", "i(i)", &dc_fs_createDirectory);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_ensureParentDirectories", "i(i)", &dc_fs_ensureParentDirectories);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_fs_listDirectory", "i(i)", &dc_fs_listDirectory);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_new", "i(i)", &dc_test_TestClass_new);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_test_TestClass_identify", "v(i)", &dc_test_TestClass_identify);

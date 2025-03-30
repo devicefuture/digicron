@@ -178,6 +178,14 @@ void setup() {
     testSubclass->identify();
     testSubclass->subclass();
 
+    long rngA = rng::getLong();
+    long rngB = rng::getLongInRange(1, 10);
+    String rngC = rng::getKey(8);
+
+    console::log("RNG value A:", rngA);
+    console::log("RNG value B:", rngB);
+    console::log("RNG value C:", rngC);
+
     currentTime = new timing::EarthTime();
 
     fs::DirectoryListing* listing = fs::listDirectory("/");

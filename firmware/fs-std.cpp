@@ -149,7 +149,7 @@ bool createDirectoryIncludingParents(String path, bool parentsOnly) {
     unsigned int lastIndex = 0;
 
     while (true) {
-        int currentIndex = path.indexOf('/', lastIndex);
+        int currentIndex = path.indexOf('/', lastIndex + 1);
 
         if (currentIndex < 0) {
             if (parentsOnly) {
@@ -170,7 +170,7 @@ bool createDirectoryIncludingParents(String path, bool parentsOnly) {
             continue;
         }
 
-        if (!createDirectoryPart(path.substring(0, currentIndex - 1))) {
+        if (!createDirectoryPart(path.substring(0, currentIndex))) {
             return false;
         }
     }

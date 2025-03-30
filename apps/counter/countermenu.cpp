@@ -55,19 +55,6 @@ void CounterNameInput::handleEvent(ui::Event event) {
     if (event.type == ui::EventType::CONFIRM_VALUE) {
         _counter->setName(getValue());
 
-        if (_counter == counters[0]) {
-            fs::FileHandle* file = fs::open("/test.txt", fs::FileMode::WRITE);
-
-            if (file) {
-                console::log("Writing to `/test.txt`:", getValue());
-
-                file->write(getValue());
-                file->close();
-            } else {
-                console::log("Couldn't write to `/test.txt`");
-            }
-        }
-
         if (_counterMenu) {
             _counterMenu->setTitle(getValue());
         }
@@ -145,6 +132,10 @@ void DeleteConfirmationMenu::handleEvent(ui::Event event) {
 
             if (index >= 0) {
                 counters.remove(index);
+            }
+
+            if (!fs::remove(String("/data/devicefuture/counter/") + _counter->getId() + ".ini")) {
+                console::log("Unable to delete counter:", _counter->getId());
             }
 
             delete _counter;

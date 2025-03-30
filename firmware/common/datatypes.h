@@ -43,6 +43,8 @@ namespace dataTypes {
                 const bool operator!=(const String& other) {return !equals(other);}
                 const bool operator!=(const char* other) {return !equals(other);}
 
+                String& operator+(const String& other);
+
                 char* c_str() const;
                 unsigned int length() const;
                 char charAt(int index);
@@ -53,6 +55,9 @@ namespace dataTypes {
                 unsigned char concat(const char* value, unsigned int length);
                 unsigned char concat(const char* value);
                 unsigned char concat(char c);
+
+                String substring(unsigned int start) {return substring(start, _length);}
+                String substring(unsigned int start, unsigned int end);
 
                 long toInt();
                 long toLong();

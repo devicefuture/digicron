@@ -3,6 +3,7 @@
 
 #ifndef DIGICRON_H_
     #include "config.h"
+    #include "../fs.h"
 #endif
 
 inline config::Config::Config() {}
@@ -245,6 +246,37 @@ inline dataTypes::String config::Config::toIni() {
     }
 
     return ini;
+}
+
+inline bool config::Config::loadFromFile(dataTypes::String path) {
+    fs::FileHandle* file = fs::open(path, fs::FileMode::READ);
+
+    if (!file) {
+        return false;
+    }
+
+    fromIni(file->readString());
+
+    file->close();
+
+    return true;
+}
+
+inline bool config::Config::saveToFile(dataTypes::String path) {
+    if (!fs::ensureParentDirectories(path)) {
+        return false;
+    }
+
+    fs::FileHandle* file = fs::open(path, fs::FileMode::WRITE);
+
+    if (!file) {
+        return false;
+    }
+
+    file->write(toIni());
+    file->close();
+
+    return true;
 }
 
 #endif

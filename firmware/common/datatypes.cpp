@@ -78,6 +78,14 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         return *this;
     }
 
+    inline dataTypes::String& dataTypes::String::operator+(const dataTypes::String& other) {
+        String& combined = *this;
+
+        combined.concat(other);
+
+        return combined;
+    }
+
     inline char* dataTypes::String::c_str() const {
         return _value;
     }
@@ -164,6 +172,27 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
 
     inline unsigned char dataTypes::String::concat(char c) {
         return concat(&c, 1);
+    }
+
+    inline dataTypes::String dataTypes::String::substring(unsigned int start, unsigned int end) {
+        if (start > end) {
+            unsigned int temp = start;
+
+            start = end;
+            end = temp;
+        }
+
+        if (end > _length) {
+            end = _length;
+        }
+
+        char newValue[end - start + 1];
+
+        memcpy(newValue, _value + start, end - start);
+
+        newValue[end - start] = '\0';
+
+        return String(newValue);
     }
 
     inline long dataTypes::String::toInt() {

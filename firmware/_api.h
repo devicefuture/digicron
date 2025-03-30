@@ -9,6 +9,7 @@
 #include "proc.h"
 #include "console.h"
 #include "timing.h"
+#include "rng.h"
 #include "input.h"
 #include "ui.h"
 #include "fs.h"
@@ -86,6 +87,9 @@ namespace api {
     m3ApiRawFunction(dc_timing_EarthTime_newUsingMilliseconds);
     m3ApiRawFunction(dc_timing_EarthTime_syncToSystemTime);
     m3ApiRawFunction(dc_timing_getCurrentTick);
+    m3ApiRawFunction(dc_rng_getLongInRange);
+    m3ApiRawFunction(dc_rng_getLong);
+    m3ApiRawFunction(dc_rng_getKey);
     m3ApiRawFunction(dc_ui_Icon_new);
     m3ApiRawFunction(dc_ui_Icon_setPixel);
     m3ApiRawFunction(dc_ui_Screen_new);
@@ -170,6 +174,7 @@ namespace api {
     m3ApiRawFunction(dc_fs_remove);
     m3ApiRawFunction(dc_fs_rename);
     m3ApiRawFunction(dc_fs_createDirectory);
+    m3ApiRawFunction(dc_fs_ensureParentDirectories);
     m3ApiRawFunction(dc_fs_listDirectory);
     m3ApiRawFunction(dc_test_TestClass_new);
     m3ApiRawFunction(dc_test_TestClass_identify);

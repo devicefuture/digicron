@@ -81,6 +81,9 @@ WASM_IMPORT("digicron", "dc_timing_EarthTime_newUsingDate") dc::_Sid dc_timing_E
 WASM_IMPORT("digicron", "dc_timing_EarthTime_newUsingMilliseconds") dc::_Sid dc_timing_EarthTime_newUsingMilliseconds(int year, unsigned int month, unsigned int day, unsigned long millisecondOfDay);
 WASM_IMPORT("digicron", "dc_timing_EarthTime_syncToSystemTime") void dc_timing_EarthTime_syncToSystemTime(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_timing_getCurrentTick") unsigned long dc_timing_getCurrentTick();
+WASM_IMPORT("digicron", "dc_rng_getLongInRange") long dc_rng_getLongInRange(long min, long max);
+WASM_IMPORT("digicron", "dc_rng_getLong") long dc_rng_getLong();
+WASM_IMPORT("digicron", "dc_rng_getKey") dc::_Sid dc_rng_getKey(unsigned int length);
 WASM_IMPORT("digicron", "dc_ui_Icon_new") dc::_Sid dc_ui_Icon_new();
 WASM_IMPORT("digicron", "dc_ui_Icon_setPixel") void dc_ui_Icon_setPixel(dc::_Sid sid, unsigned int x, unsigned int y, dc::_Enum value);
 WASM_IMPORT("digicron", "dc_ui_Screen_new") dc::_Sid dc_ui_Screen_new();
@@ -165,6 +168,7 @@ WASM_IMPORT("digicron", "dc_fs_getEntryType") dc::_Enum dc_fs_getEntryType(char*
 WASM_IMPORT("digicron", "dc_fs_remove") bool dc_fs_remove(char* path);
 WASM_IMPORT("digicron", "dc_fs_rename") bool dc_fs_rename(char* oldPath, char* newPath);
 WASM_IMPORT("digicron", "dc_fs_createDirectory") bool dc_fs_createDirectory(char* path);
+WASM_IMPORT("digicron", "dc_fs_ensureParentDirectories") bool dc_fs_ensureParentDirectories(char* path);
 WASM_IMPORT("digicron", "dc_fs_listDirectory") dc::_Sid dc_fs_listDirectory(char* path);
 WASM_IMPORT("digicron", "dc_test_TestClass_new") dc::_Sid dc_test_TestClass_new(unsigned int seed);
 WASM_IMPORT("digicron", "dc_test_TestClass_identify") void dc_test_TestClass_identify(dc::_Sid sid);
@@ -256,6 +260,8 @@ namespace dataTypes {
                 const bool operator!=(const String& other) {return !equals(other);}
                 const bool operator!=(const char* other) {return !equals(other);}
 
+                String& operator+(const String& other);
+
                 char* c_str() const;
                 unsigned int length() const;
                 char charAt(int index);
@@ -266,6 +272,9 @@ namespace dataTypes {
                 unsigned char concat(const char* value, unsigned int length);
                 unsigned char concat(const char* value);
                 unsigned char concat(char c);
+
+                String substring(unsigned int start) {return substring(start, _length);}
+                String substring(unsigned int start, unsigned int end);
 
                 long toInt();
                 long toLong();
@@ -497,6 +506,12 @@ namespace timing {
     };
 
     inline unsigned long getCurrentTick() {return dc_timing_getCurrentTick();}
+}
+
+namespace rng {
+    inline long getLongInRange(long min, long max) {return dc_rng_getLongInRange(min, max);}
+    inline long getLong() {return dc_rng_getLong();}
+    inline dataTypes::String getKey(unsigned int length) {dc::_Sid sid = dc_rng_getKey(length); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
 }
 
 namespace input {
@@ -765,6 +780,7 @@ namespace fs {
     inline bool remove(dataTypes::String path) {return dc_fs_remove(path.c_str());}
     inline bool rename(dataTypes::String oldPath, dataTypes::String newPath) {return dc_fs_rename(oldPath.c_str(), newPath.c_str());}
     inline bool createDirectory(dataTypes::String path) {return dc_fs_createDirectory(path.c_str());}
+    inline bool ensureParentDirectories(dataTypes::String path) {return dc_fs_ensureParentDirectories(path.c_str());}
     inline fs::DirectoryListing* listDirectory(dataTypes::String path) {return dc::_getOrCreateBySid<fs::DirectoryListing>(_Type::fs_DirectoryListing, dc_fs_listDirectory(path.c_str()));}
 }
 
@@ -846,6 +862,9 @@ namespace config {
             void fromIni(dataTypes::String ini);
             dataTypes::String toIni();
 
+            bool loadFromFile(dataTypes::String path);
+            bool saveToFile(dataTypes::String path);
+
         private:
             dataTypes::List<Property> _properties;
     };
@@ -920,6 +939,7 @@ namespace ui {
 
 #ifndef DIGICRON_H_
     #include "config.h"
+    #include "../fs.h"
 #endif
 
 inline config::Config::Config() {}
@@ -1164,6 +1184,37 @@ inline dataTypes::String config::Config::toIni() {
     return ini;
 }
 
+inline bool config::Config::loadFromFile(dataTypes::String path) {
+    fs::FileHandle* file = fs::open(path, fs::FileMode::READ);
+
+    if (!file) {
+        return false;
+    }
+
+    fromIni(file->readString());
+
+    file->close();
+
+    return true;
+}
+
+inline bool config::Config::saveToFile(dataTypes::String path) {
+    if (!fs::ensureParentDirectories(path)) {
+        return false;
+    }
+
+    fs::FileHandle* file = fs::open(path, fs::FileMode::WRITE);
+
+    if (!file) {
+        return false;
+    }
+
+    file->write(toIni());
+    file->close();
+
+    return true;
+}
+
 #endif
 
 #ifndef DC_COMMON_CONSOLE_CPP_
@@ -1267,6 +1318,14 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         return *this;
     }
 
+    inline dataTypes::String& dataTypes::String::operator+(const dataTypes::String& other) {
+        String& combined = *this;
+
+        combined.concat(other);
+
+        return combined;
+    }
+
     inline char* dataTypes::String::c_str() const {
         return _value;
     }
@@ -1353,6 +1412,27 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
 
     inline unsigned char dataTypes::String::concat(char c) {
         return concat(&c, 1);
+    }
+
+    inline dataTypes::String dataTypes::String::substring(unsigned int start, unsigned int end) {
+        if (start > end) {
+            unsigned int temp = start;
+
+            start = end;
+            end = temp;
+        }
+
+        if (end > _length) {
+            end = _length;
+        }
+
+        char newValue[end - start + 1];
+
+        memcpy(newValue, _value + start, end - start);
+
+        newValue[end - start] = '\0';
+
+        return String(newValue);
     }
 
     inline long dataTypes::String::toInt() {

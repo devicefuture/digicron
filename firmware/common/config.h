@@ -35,6 +35,9 @@ namespace config {
             void fromIni(dataTypes::String ini);
             dataTypes::String toIni();
 
+            bool loadFromFile(dataTypes::String path);
+            bool saveToFile(dataTypes::String path);
+
         private:
             dataTypes::List<Property> _properties;
     };

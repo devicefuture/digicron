@@ -50,6 +50,9 @@ dc_timing_EarthTime_newUsingDate
 dc_timing_EarthTime_newUsingMilliseconds
 dc_timing_EarthTime_syncToSystemTime
 dc_timing_getCurrentTick
+dc_rng_getLongInRange
+dc_rng_getLong
+dc_rng_getKey
 dc_ui_Icon_new
 dc_ui_Icon_setPixel
 dc_ui_Screen_new
@@ -134,6 +137,7 @@ dc_fs_getEntryType
 dc_fs_remove
 dc_fs_rename
 dc_fs_createDirectory
+dc_fs_ensureParentDirectories
 dc_fs_listDirectory
 dc_test_TestClass_new
 dc_test_TestClass_identify

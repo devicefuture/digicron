@@ -66,6 +66,12 @@ namespace timing
 
     fn "unsigned long" getCurrentTick
 
+namespace rng
+    fn "long" getLongInRange "long" min "long" max
+    fn "long" getLong
+
+    fn "String" getKey "unsigned int" length
+
 namespace input
     enum Button \
         "NONE = 0" \
@@ -210,7 +216,7 @@ namespace fs
     fn "bool" remove "String" path
     fn "bool" rename "String" oldPath "String" newPath
     fn "bool" createDirectory "String" path
-    fs "bool" ensureParentDirectories "String" path
+    fn "bool" ensureParentDirectories "String" path
     PASS_PROCESS=true fn "CLASSPTR fs::DirectoryListing" listDirectory "String" path
 
 namespace test
