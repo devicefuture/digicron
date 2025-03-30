@@ -270,7 +270,7 @@ struct timing::LeapAdjustment timing::EarthTime::leapAdjustmentToday() {
 
     _cachedLeapAdjustment = NO_LEAP_ADJUSTMENT;
 
-    EarthTimeNonLeaping adjust_2025_06_30(2025, 6, 30, 23, 59, 59);
+    EarthTimeNonLeaping adjust_2025_06_30(2025, 6, 30, 23, 59, 59); // TODO: Remove this since no leap second has been announced for 2025
 
     adjust_2025_06_30.toLocalTime(_timeShift);
 
