@@ -113,13 +113,17 @@ int removerCallback(const char* fpath, const struct stat *sb, int typeflag, FTW*
 }
 
 bool fs::remove(String path) {
+    if (isFileOpen(path)) {
+        return false;
+    }
+
     EntryType type = getEntryType(path);
 
     if (type == EntryType::DIRECTORY) {
         return nftw(path.c_str(), removerCallback, 64, FTW_DEPTH | FTW_PHYS) == 0;
     }
 
-    return remove(path.c_str()) == 0;
+    return ::remove(path.c_str()) == 0;
 }
 
 bool fs::rename(String oldPath, String newPath) {

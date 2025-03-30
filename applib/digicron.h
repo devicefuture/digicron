@@ -1677,7 +1677,7 @@ template<typename T> unsigned int dataTypes::List<T>::insert(unsigned int index,
         return unshift(valuePtr);
     }
 
-    if (index == _length) {
+    if (index >= _length) {
         return push(valuePtr);
     }
 

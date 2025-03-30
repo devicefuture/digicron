@@ -39,20 +39,6 @@ void setup() {
         console::log("Unable to read counter entries from filesystem");
     }
 
-    fs::FileHandle* file = fs::open("/test.txt", fs::FileMode::READ);
-
-    if (file) {
-        String counterName = file->readString();
-
-        console::log("Read from `/test.txt`:", counterName);
-
-        counters[0]->setName(counterName);
-
-        file->close();
-    } else {
-        console::log("Couldn't read from `/test.txt`");
-    }
-
     counterScreen = new CounterScreen();
     resetConfirmationMenu = new ResetConfirmationMenu();
     counterMenu = new CounterMenu();
