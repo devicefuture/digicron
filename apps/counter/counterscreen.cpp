@@ -47,9 +47,9 @@ void CounterScreen::update() {
 
     if (display::COLUMNS == 8 && counterBase == 16) {
         pad(4, '0');
-        print(utils::numberToString(((counterValue & 0xFFFF0000) >> 16) & 0xFFFF, counterBase));
+        print(utils::longToString(((counterValue & 0xFFFF0000) >> 16) & 0xFFFF, counterBase));
         pad(4, '0');
-        print(utils::numberToString(counterValue & 0xFFFF, counterBase));
+        print(utils::longToString(counterValue & 0xFFFF, counterBase));
 
         return;
     }
@@ -58,7 +58,7 @@ void CounterScreen::update() {
     long boundedValue = displayValue % (displayValue < 0 ? -_minDisplayValue + 1 : _maxDisplayValue + 1);
 
     pad(display::COLUMNS, counterBase == 10 ? ' ' : '0');
-    print(utils::numberToString(boundedValue, counterBase));
+    print(utils::longToString(boundedValue, counterBase));
 }
 
 void CounterScreen::handleEvent(ui::Event event) {

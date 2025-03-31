@@ -33,9 +33,9 @@ inline dataTypes::String config::Config::getString(dataTypes::String section, da
 }
 
 inline long config::Config::getLongOrDefault(dataTypes::String section, dataTypes::String key, long defaultValue) {
-    dataTypes::String stringValue = getStringOrDefault(section, key, utils::numberToString(defaultValue, 10));
+    dataTypes::String stringValue = getStringOrDefault(section, key, utils::longToString(defaultValue, 10));
 
-    return utils::stringToLong(stringValue);
+    return utils::stringToLong(stringValue, 10);
 }
 
 inline long config::Config::getLong(dataTypes::String section, dataTypes::String key) {
@@ -43,7 +43,7 @@ inline long config::Config::getLong(dataTypes::String section, dataTypes::String
 }
 
 inline double config::Config::getDoubleOrDefault(dataTypes::String section, dataTypes::String key, double defaultValue) {
-    dataTypes::String stringValue = getStringOrDefault(section, key, utils::numberToString(defaultValue, 10));
+    dataTypes::String stringValue = getStringOrDefault(section, key, utils::doubleToString(defaultValue, 15));
 
     return utils::stringToDouble(stringValue);
 }
@@ -81,11 +81,11 @@ inline void config::Config::setString(dataTypes::String section, dataTypes::Stri
 }
 
 inline void config::Config::setLong(dataTypes::String section, dataTypes::String key, long value) {
-    setString(section, key, utils::numberToString(value, 10));
+    setString(section, key, utils::longToString(value, 10));
 }
 
 inline void config::Config::setDouble(dataTypes::String section, dataTypes::String key, double value) {
-    setString(section, key, utils::numberToString(value, 10));
+    setString(section, key, utils::doubleToString(value, 15));
 }
 
 inline void config::Config::setBool(dataTypes::String section, dataTypes::String key, bool value) {

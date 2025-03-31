@@ -33,7 +33,7 @@ namespace dataTypes {
                 String(int value, unsigned char base = 10);
                 String(unsigned long value, unsigned char base = 10);
                 String(long value, unsigned char base = 10);
-                String(double value, unsigned char base = 10);
+                String(double value, unsigned char decimalPlaces = 2);
                 ~String();
 
                 String& operator=(const String& other);

@@ -37,6 +37,7 @@ class Counter {
 };
 
 extern List<Counter> counters;
+extern unsigned int nextNumericCounterId;
 extern bool saveTriggered;
 
 #endif

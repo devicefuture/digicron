@@ -1,12 +1,12 @@
 #!/bin/bash
 
 namespace utils
-    INTERNAL_NAME=dc_utils_numberToStringUInt fn "String" numberToString "unsigned int" number "unsigned int" base
-    INTERNAL_NAME=dc_utils_numberToStringInt fn "String" numberToString "int" number "unsigned int" base
-    INTERNAL_NAME=dc_utils_numberToStringULong fn "String" numberToString "unsigned long" number "unsigned int" base
-    INTERNAL_NAME=dc_utils_numberToStringLong fn "String" numberToString "long" number "unsigned int" base
-    INTERNAL_NAME=dc_utils_numberToStringDouble fn "String" numberToString "double" number "unsigned int" base
-    fn "long" stringToLong "String" string
+    fn "String" longToString "long" number "unsigned int" base
+    fn "String" unsignedLongToString "unsigned long" number "unsigned int" base
+    fn "String" doubleToString "double" number "unsigned int" decimalPlaces
+
+    fn "long" stringToLong "String" string "unsigned int" base
+    fn "unsigned long" stringToUnsignedLong "String" string "unsigned int" base
     fn "double" stringToDouble "String" string
 
 namespace proc

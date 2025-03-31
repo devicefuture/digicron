@@ -196,12 +196,9 @@ void CounterMenu::handleEvent(ui::Event event) {
         }
 
         if (selectedItem == "+NEW") {
-            int newCounterIndex = counterScreen->getCounterIndex() + 1;
+            counters.push(new Counter(String("Counter") + (counters.length() + 1)));
 
-            // TODO: Add number to end of string to differentiate from existing counters
-            counters.insert(newCounterIndex, new Counter("Counter"));
-
-            counterScreen->setCounterIndex(newCounterIndex);
+            counterScreen->setCounterIndex(counters.length() - 1);
 
             close();
         }

@@ -49,11 +49,11 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         _length = 1;
     }
 
-    inline dataTypes::String::String(unsigned int value, unsigned char base) : String(utils::numberToString(value, base)) {}
-    inline dataTypes::String::String(int value, unsigned char base) : String(utils::numberToString(value, base)) {}
-    inline dataTypes::String::String(unsigned long value, unsigned char base) : String(utils::numberToString(value, base)) {}
-    inline dataTypes::String::String(long value, unsigned char base) : String(utils::numberToString(value, base)) {}
-    inline dataTypes::String::String(double value, unsigned char base) : String(utils::numberToString(value, base)) {}
+    inline dataTypes::String::String(unsigned int value, unsigned char base) : String(utils::unsignedLongToString(value, base)) {}
+    inline dataTypes::String::String(int value, unsigned char base) : String(utils::longToString(value, base)) {}
+    inline dataTypes::String::String(unsigned long value, unsigned char base) : String(utils::unsignedLongToString(value, base)) {}
+    inline dataTypes::String::String(long value, unsigned char base) : String(utils::longToString(value, base)) {}
+    inline dataTypes::String::String(double value, unsigned char decimalPlaces) : String(utils::doubleToString(value, decimalPlaces)) {}
 
     inline dataTypes::String::~String() {
         if (_value) {
@@ -196,7 +196,7 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
     }
 
     inline long dataTypes::String::toInt() {
-        return utils::stringToLong(String(c_str()));
+        return utils::stringToLong(String(c_str()), 10);
     }
 
     inline float dataTypes::String::toFloat() {

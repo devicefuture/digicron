@@ -2,6 +2,7 @@
 
 List<Counter> counters;
 bool saveTriggered = false;
+unsigned int nextNumericCounterId = 0;
 
 unsigned int clampBase(unsigned int base) {
     if (base != 2 && base != 8 && base != 10 && base != 16) {
@@ -15,7 +16,7 @@ Counter::Counter(String name, long value) {
     _name = name;
     _value = value;
 
-    _id = rng::getKey(8);
+    _id = "";
 }
 
 String Counter::getId() {
@@ -110,6 +111,14 @@ bool Counter::loadFromFile(String id) {
 
 bool Counter::saveToFile() {
     config::Config configFile;
+
+    if (_id == "") {
+        _id = utils::unsignedLongToString(nextNumericCounterId++, 16) + rng::getKey(4);
+
+        while (_id.length() < 8) {
+            _id = String("0") + _id;
+        }
+    }
 
     console::log("Saving counter:", _id);
 

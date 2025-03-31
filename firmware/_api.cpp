@@ -199,52 +199,32 @@ m3ApiRawFunction(api::dc_copyBufferInto) {
     m3ApiSuccess();
 }
 
-m3ApiRawFunction(api::dc_utils_numberToStringUInt) {
-    m3ApiReturnType(Sid)
-    m3ApiGetArg(unsigned int, number)
-    m3ApiGetArg(unsigned int, base)
-
-    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::numberToString(number, base)));
-
-    m3ApiReturn(result);
-}
-
-m3ApiRawFunction(api::dc_utils_numberToStringInt) {
-    m3ApiReturnType(Sid)
-    m3ApiGetArg(int, number)
-    m3ApiGetArg(unsigned int, base)
-
-    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::numberToString(number, base)));
-
-    m3ApiReturn(result);
-}
-
-m3ApiRawFunction(api::dc_utils_numberToStringULong) {
-    m3ApiReturnType(Sid)
-    m3ApiGetArg(unsigned long, number)
-    m3ApiGetArg(unsigned int, base)
-
-    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::numberToString(number, base)));
-
-    m3ApiReturn(result);
-}
-
-m3ApiRawFunction(api::dc_utils_numberToStringLong) {
+m3ApiRawFunction(api::dc_utils_longToString) {
     m3ApiReturnType(Sid)
     m3ApiGetArg(long, number)
     m3ApiGetArg(unsigned int, base)
 
-    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::numberToString(number, base)));
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::longToString(number, base)));
 
     m3ApiReturn(result);
 }
 
-m3ApiRawFunction(api::dc_utils_numberToStringDouble) {
+m3ApiRawFunction(api::dc_utils_unsignedLongToString) {
     m3ApiReturnType(Sid)
-    m3ApiGetArg(double, number)
+    m3ApiGetArg(unsigned long, number)
     m3ApiGetArg(unsigned int, base)
 
-    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::numberToString(number, base)));
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::unsignedLongToString(number, base)));
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_utils_doubleToString) {
+    m3ApiReturnType(Sid)
+    m3ApiGetArg(double, number)
+    m3ApiGetArg(unsigned int, decimalPlaces)
+
+    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(utils::doubleToString(number, decimalPlaces)));
 
     m3ApiReturn(result);
 }
@@ -252,8 +232,19 @@ m3ApiRawFunction(api::dc_utils_numberToStringDouble) {
 m3ApiRawFunction(api::dc_utils_stringToLong) {
     m3ApiReturnType(long)
     m3ApiGetArgMem(char*, string)
+    m3ApiGetArg(unsigned int, base)
 
-    long result = utils::stringToLong(String(string));
+    long result = utils::stringToLong(String(string), base);
+
+    m3ApiReturn(result);
+}
+
+m3ApiRawFunction(api::dc_utils_stringToUnsignedLong) {
+    m3ApiReturnType(unsigned long)
+    m3ApiGetArgMem(char*, string)
+    m3ApiGetArg(unsigned int, base)
+
+    unsigned long result = utils::stringToUnsignedLong(String(string), base);
 
     m3ApiReturn(result);
 }
@@ -1604,12 +1595,11 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_getBufferSize", "i(i)", &dc_getBufferSize);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_copyBufferInto", "v(i*)", &dc_copyBufferInto);
 
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_numberToStringUInt", "i(ii)", &dc_utils_numberToStringUInt);
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_numberToStringInt", "i(ii)", &dc_utils_numberToStringInt);
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_numberToStringULong", "i(ii)", &dc_utils_numberToStringULong);
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_numberToStringLong", "i(ii)", &dc_utils_numberToStringLong);
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_numberToStringDouble", "i(Fi)", &dc_utils_numberToStringDouble);
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_stringToLong", "i(i)", &dc_utils_stringToLong);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_longToString", "i(ii)", &dc_utils_longToString);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_unsignedLongToString", "i(ii)", &dc_utils_unsignedLongToString);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_doubleToString", "i(Fi)", &dc_utils_doubleToString);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_stringToLong", "i(ii)", &dc_utils_stringToLong);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_stringToUnsignedLong", "i(ii)", &dc_utils_stringToUnsignedLong);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_utils_stringToDouble", "F(i)", &dc_utils_stringToDouble);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_proc_stop", "v()", &dc_proc_stop);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_console_logPart", "v(i)", &dc_console_logPart);

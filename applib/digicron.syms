@@ -3,12 +3,11 @@ dc_deleteBySid
 dc_sidIsNull
 dc_getBufferSize
 dc_copyBufferInto
-dc_utils_numberToStringUInt
-dc_utils_numberToStringInt
-dc_utils_numberToStringULong
-dc_utils_numberToStringLong
-dc_utils_numberToStringDouble
+dc_utils_longToString
+dc_utils_unsignedLongToString
+dc_utils_doubleToString
 dc_utils_stringToLong
+dc_utils_stringToUnsignedLong
 dc_utils_stringToDouble
 dc_proc_stop
 dc_console_logPart

@@ -19,7 +19,12 @@ void setup() {
 
         while ((entry = listing->next()).length() > 0) {
             String id = entry.substring(0, 8);
+            unsigned int numericCounterId = utils::stringToLong(entry.substring(0, 4), 16);
             Counter* newCounter = new Counter("Counter", 0);
+
+            if (numericCounterId >= nextNumericCounterId) {
+                nextNumericCounterId = numericCounterId + 1;
+            }
 
             console::log("Loading counter:", id);
 

@@ -34,12 +34,11 @@ WASM_IMPORT("digicron", "dc_sidIsNull") bool dc_sidIsNull(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_getBufferSize") unsigned int dc_getBufferSize(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_copyBufferInto") void dc_copyBufferInto(dc::_Sid sid, void* destination);
 
-WASM_IMPORT("digicron", "dc_utils_numberToStringUInt") dc::_Sid dc_utils_numberToStringUInt(unsigned int number, unsigned int base);
-WASM_IMPORT("digicron", "dc_utils_numberToStringInt") dc::_Sid dc_utils_numberToStringInt(int number, unsigned int base);
-WASM_IMPORT("digicron", "dc_utils_numberToStringULong") dc::_Sid dc_utils_numberToStringULong(unsigned long number, unsigned int base);
-WASM_IMPORT("digicron", "dc_utils_numberToStringLong") dc::_Sid dc_utils_numberToStringLong(long number, unsigned int base);
-WASM_IMPORT("digicron", "dc_utils_numberToStringDouble") dc::_Sid dc_utils_numberToStringDouble(double number, unsigned int base);
-WASM_IMPORT("digicron", "dc_utils_stringToLong") long dc_utils_stringToLong(char* string);
+WASM_IMPORT("digicron", "dc_utils_longToString") dc::_Sid dc_utils_longToString(long number, unsigned int base);
+WASM_IMPORT("digicron", "dc_utils_unsignedLongToString") dc::_Sid dc_utils_unsignedLongToString(unsigned long number, unsigned int base);
+WASM_IMPORT("digicron", "dc_utils_doubleToString") dc::_Sid dc_utils_doubleToString(double number, unsigned int decimalPlaces);
+WASM_IMPORT("digicron", "dc_utils_stringToLong") long dc_utils_stringToLong(char* string, unsigned int base);
+WASM_IMPORT("digicron", "dc_utils_stringToUnsignedLong") unsigned long dc_utils_stringToUnsignedLong(char* string, unsigned int base);
 WASM_IMPORT("digicron", "dc_utils_stringToDouble") double dc_utils_stringToDouble(char* string);
 WASM_IMPORT("digicron", "dc_proc_stop") void dc_proc_stop();
 WASM_IMPORT("digicron", "dc_console_logPart") void dc_console_logPart(char* value);
@@ -250,7 +249,7 @@ namespace dataTypes {
                 String(int value, unsigned char base = 10);
                 String(unsigned long value, unsigned char base = 10);
                 String(long value, unsigned char base = 10);
-                String(double value, unsigned char base = 10);
+                String(double value, unsigned char decimalPlaces = 2);
                 ~String();
 
                 String& operator=(const String& other);
@@ -425,12 +424,11 @@ inline void _removeStoredInstance(void* instance) {
 }
 
 namespace utils {
-    inline dataTypes::String numberToString(unsigned int number, unsigned int base) {dc::_Sid sid = dc_utils_numberToStringUInt(number, base); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
-    inline dataTypes::String numberToString(int number, unsigned int base) {dc::_Sid sid = dc_utils_numberToStringInt(number, base); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
-    inline dataTypes::String numberToString(unsigned long number, unsigned int base) {dc::_Sid sid = dc_utils_numberToStringULong(number, base); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
-    inline dataTypes::String numberToString(long number, unsigned int base) {dc::_Sid sid = dc_utils_numberToStringLong(number, base); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
-    inline dataTypes::String numberToString(double number, unsigned int base) {dc::_Sid sid = dc_utils_numberToStringDouble(number, base); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
-    inline long stringToLong(dataTypes::String string) {return dc_utils_stringToLong(string.c_str());}
+    inline dataTypes::String longToString(long number, unsigned int base) {dc::_Sid sid = dc_utils_longToString(number, base); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
+    inline dataTypes::String unsignedLongToString(unsigned long number, unsigned int base) {dc::_Sid sid = dc_utils_unsignedLongToString(number, base); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
+    inline dataTypes::String doubleToString(double number, unsigned int decimalPlaces) {dc::_Sid sid = dc_utils_doubleToString(number, decimalPlaces); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
+    inline long stringToLong(dataTypes::String string, unsigned int base) {return dc_utils_stringToLong(string.c_str(), base);}
+    inline unsigned long stringToUnsignedLong(dataTypes::String string, unsigned int base) {return dc_utils_stringToUnsignedLong(string.c_str(), base);}
     inline double stringToDouble(dataTypes::String string) {return dc_utils_stringToDouble(string.c_str());}
 }
 
@@ -969,9 +967,9 @@ inline dataTypes::String config::Config::getString(dataTypes::String section, da
 }
 
 inline long config::Config::getLongOrDefault(dataTypes::String section, dataTypes::String key, long defaultValue) {
-    dataTypes::String stringValue = getStringOrDefault(section, key, utils::numberToString(defaultValue, 10));
+    dataTypes::String stringValue = getStringOrDefault(section, key, utils::longToString(defaultValue, 10));
 
-    return utils::stringToLong(stringValue);
+    return utils::stringToLong(stringValue, 10);
 }
 
 inline long config::Config::getLong(dataTypes::String section, dataTypes::String key) {
@@ -979,7 +977,7 @@ inline long config::Config::getLong(dataTypes::String section, dataTypes::String
 }
 
 inline double config::Config::getDoubleOrDefault(dataTypes::String section, dataTypes::String key, double defaultValue) {
-    dataTypes::String stringValue = getStringOrDefault(section, key, utils::numberToString(defaultValue, 10));
+    dataTypes::String stringValue = getStringOrDefault(section, key, utils::doubleToString(defaultValue, 15));
 
     return utils::stringToDouble(stringValue);
 }
@@ -1017,11 +1015,11 @@ inline void config::Config::setString(dataTypes::String section, dataTypes::Stri
 }
 
 inline void config::Config::setLong(dataTypes::String section, dataTypes::String key, long value) {
-    setString(section, key, utils::numberToString(value, 10));
+    setString(section, key, utils::longToString(value, 10));
 }
 
 inline void config::Config::setDouble(dataTypes::String section, dataTypes::String key, double value) {
-    setString(section, key, utils::numberToString(value, 10));
+    setString(section, key, utils::doubleToString(value, 15));
 }
 
 inline void config::Config::setBool(dataTypes::String section, dataTypes::String key, bool value) {
@@ -1289,11 +1287,11 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
         _length = 1;
     }
 
-    inline dataTypes::String::String(unsigned int value, unsigned char base) : String(utils::numberToString(value, base)) {}
-    inline dataTypes::String::String(int value, unsigned char base) : String(utils::numberToString(value, base)) {}
-    inline dataTypes::String::String(unsigned long value, unsigned char base) : String(utils::numberToString(value, base)) {}
-    inline dataTypes::String::String(long value, unsigned char base) : String(utils::numberToString(value, base)) {}
-    inline dataTypes::String::String(double value, unsigned char base) : String(utils::numberToString(value, base)) {}
+    inline dataTypes::String::String(unsigned int value, unsigned char base) : String(utils::unsignedLongToString(value, base)) {}
+    inline dataTypes::String::String(int value, unsigned char base) : String(utils::longToString(value, base)) {}
+    inline dataTypes::String::String(unsigned long value, unsigned char base) : String(utils::unsignedLongToString(value, base)) {}
+    inline dataTypes::String::String(long value, unsigned char base) : String(utils::longToString(value, base)) {}
+    inline dataTypes::String::String(double value, unsigned char decimalPlaces) : String(utils::doubleToString(value, decimalPlaces)) {}
 
     inline dataTypes::String::~String() {
         if (_value) {
@@ -1436,7 +1434,7 @@ template<typename T> dataTypes::StoredValue<T>::~StoredValue() {}
     }
 
     inline long dataTypes::String::toInt() {
-        return utils::stringToLong(String(c_str()));
+        return utils::stringToLong(String(c_str()), 10);
     }
 
     inline float dataTypes::String::toFloat() {

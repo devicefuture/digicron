@@ -32,7 +32,7 @@ void ui::IntInput::update() {
         long boundedValue = _value % (_value < 0 ? -_minDisplayValue + 1 : _maxDisplayValue + 1);
 
         pad(display::COLUMNS - 1, _base == 10 ? ' ' : '0');
-        print(utils::numberToString(boundedValue, _base));
+        print(utils::longToString(boundedValue, _base));
     } else {
         setPosition(display::COLUMNS - 1, 1);
     }

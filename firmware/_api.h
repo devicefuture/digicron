@@ -40,12 +40,11 @@ namespace api {
     m3ApiRawFunction(dc_getBufferSize);
     m3ApiRawFunction(dc_copyBufferInto);
 
-    m3ApiRawFunction(dc_utils_numberToStringUInt);
-    m3ApiRawFunction(dc_utils_numberToStringInt);
-    m3ApiRawFunction(dc_utils_numberToStringULong);
-    m3ApiRawFunction(dc_utils_numberToStringLong);
-    m3ApiRawFunction(dc_utils_numberToStringDouble);
+    m3ApiRawFunction(dc_utils_longToString);
+    m3ApiRawFunction(dc_utils_unsignedLongToString);
+    m3ApiRawFunction(dc_utils_doubleToString);
     m3ApiRawFunction(dc_utils_stringToLong);
+    m3ApiRawFunction(dc_utils_stringToUnsignedLong);
     m3ApiRawFunction(dc_utils_stringToDouble);
     m3ApiRawFunction(dc_proc_stop);
     m3ApiRawFunction(dc_console_logPart);
