@@ -4,7 +4,7 @@
 - [x] Allow resetting a counter (will be done in the menu with an 'are you sure' prompt)
 - [x] Allow changing value to reset to
 - [ ] Allow changing actions of up, down and select buttons
-    - [ ] Choose action to be increment, decrement, set or reset
+    - [ ] Choose action to be increment, decrement, set, reset, or set reset value
     - [ ] Allow incrementation and decrementation by specified amount
     - [ ] Add an undo action for use after set or reset (also available in menu)
 - [ ] Allow day counting instead of click counting
