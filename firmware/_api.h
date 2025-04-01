@@ -136,7 +136,7 @@ namespace api {
     m3ApiRawFunction(dc_ui_TextInput_typeText);
     m3ApiRawFunction(dc_ui_TextInput_selectAll);
     m3ApiRawFunction(dc_ui_IntInput_new);
-    m3ApiRawFunction(dc_ui_TextInput_newWithTitleAndValue);
+    m3ApiRawFunction(dc_ui_IntInput_newWithTitleAndValue);
     m3ApiRawFunction(dc_ui_IntInput_getTitle);
     m3ApiRawFunction(dc_ui_IntInput_setTitle);
     m3ApiRawFunction(dc_ui_IntInput_getValue);

@@ -138,7 +138,7 @@ namespace ui
 
     class ContextualMenu extends Menu Screen
         OVERRIDE=true PASS_PROCESS=true constructor
-        INTERNAL_NAME=dc_ui_ContextualMenu_newWithTitle PASS_PROCESS=true constructor "String" title
+        OVERRIDE=true INTERNAL_NAME=dc_ui_ContextualMenu_newWithTitle PASS_PROCESS=true constructor "String" title
 
         method "String" getTitle
         method "void" setTitle "String" title
@@ -147,7 +147,7 @@ namespace ui
 
     class ConfirmationMenu extends ContextualMenu Menu Screen
         OVERRIDE=true PASS_PROCESS=true constructor
-        INTERNAL_NAME=dc_ui_ConfirmationMenu_newWithTitle PASS_PROCESS=true constructor "String" title "bool" swapYesNo
+        OVERRIDE=true INTERNAL_NAME=dc_ui_ConfirmationMenu_newWithTitle PASS_PROCESS=true constructor "String" title "bool" swapYesNo
 
         method "bool" yesSelected
 
@@ -156,7 +156,7 @@ namespace ui
 
     class TextInput extends ContextualMenu Menu Screen
         OVERRIDE=true PASS_PROCESS=true constructor
-        INTERNAL_NAME=dc_ui_TextInput_newWithValue PASS_PROCESS=true constructor "String" value
+        OVERRIDE=true INTERNAL_NAME=dc_ui_TextInput_newWithValue PASS_PROCESS=true constructor "String" value
 
         method "String" getValue
         method "void" setValue "String" value
@@ -166,7 +166,7 @@ namespace ui
 
     class IntInput extends Screen
         OVERRIDE=true PASS_PROCESS=true constructor
-        INTERNAL_NAME=dc_ui_TextInput_newWithTitleAndValue PASS_PROCESS=true constructor "String" title "long" value
+        OVERRIDE=true INTERNAL_NAME=dc_ui_IntInput_newWithTitleAndValue PASS_PROCESS=true constructor "String" title "long" value
 
         method "String" getTitle
         method "void" setTitle "String" title

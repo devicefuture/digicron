@@ -99,7 +99,7 @@ dc_ui_TextInput_typeTextChar
 dc_ui_TextInput_typeText
 dc_ui_TextInput_selectAll
 dc_ui_IntInput_new
-dc_ui_TextInput_newWithTitleAndValue
+dc_ui_IntInput_newWithTitleAndValue
 dc_ui_IntInput_getTitle
 dc_ui_IntInput_setTitle
 dc_ui_IntInput_getValue

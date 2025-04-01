@@ -130,7 +130,7 @@ WASM_IMPORT("digicron", "dc_ui_TextInput_typeTextChar") void dc_ui_TextInput_typ
 WASM_IMPORT("digicron", "dc_ui_TextInput_typeText") void dc_ui_TextInput_typeText(dc::_Sid sid, char* text);
 WASM_IMPORT("digicron", "dc_ui_TextInput_selectAll") void dc_ui_TextInput_selectAll(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_ui_IntInput_new") dc::_Sid dc_ui_IntInput_new();
-WASM_IMPORT("digicron", "dc_ui_TextInput_newWithTitleAndValue") dc::_Sid dc_ui_TextInput_newWithTitleAndValue(char* title, long value);
+WASM_IMPORT("digicron", "dc_ui_IntInput_newWithTitleAndValue") dc::_Sid dc_ui_IntInput_newWithTitleAndValue(char* title, long value);
 WASM_IMPORT("digicron", "dc_ui_IntInput_getTitle") dc::_Sid dc_ui_IntInput_getTitle(dc::_Sid sid);
 WASM_IMPORT("digicron", "dc_ui_IntInput_setTitle") void dc_ui_IntInput_setTitle(dc::_Sid sid, char* title);
 WASM_IMPORT("digicron", "dc_ui_IntInput_getValue") long dc_ui_IntInput_getValue(dc::_Sid sid);
@@ -632,7 +632,7 @@ namespace ui {
             using Menu::Menu;
 
             ContextualMenu() : Menu((dc::_Dummy) {}) {_sid = dc_ui_ContextualMenu_new(); _addStoredInstance(_Type::ui_ContextualMenu, this);}
-            ContextualMenu(dataTypes::String title) {_sid = dc_ui_ContextualMenu_newWithTitle(title.c_str()); _addStoredInstance(_Type::ui_ContextualMenu, this);}
+            ContextualMenu(dataTypes::String title) : Menu((dc::_Dummy) {}) {_sid = dc_ui_ContextualMenu_newWithTitle(title.c_str()); _addStoredInstance(_Type::ui_ContextualMenu, this);}
 
             dataTypes::String getTitle() {dc::_Sid sid = dc_ui_ContextualMenu_getTitle(_sid); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
             void setTitle(dataTypes::String title) {return dc_ui_ContextualMenu_setTitle(_sid, title.c_str());}
@@ -648,7 +648,7 @@ namespace ui {
             using ContextualMenu::ContextualMenu;
 
             ConfirmationMenu() : ContextualMenu((dc::_Dummy) {}) {_sid = dc_ui_ConfirmationMenu_new(); _addStoredInstance(_Type::ui_ConfirmationMenu, this);}
-            ConfirmationMenu(dataTypes::String title, bool swapYesNo) {_sid = dc_ui_ConfirmationMenu_newWithTitle(title.c_str(), swapYesNo); _addStoredInstance(_Type::ui_ConfirmationMenu, this);}
+            ConfirmationMenu(dataTypes::String title, bool swapYesNo) : ContextualMenu((dc::_Dummy) {}) {_sid = dc_ui_ConfirmationMenu_newWithTitle(title.c_str(), swapYesNo); _addStoredInstance(_Type::ui_ConfirmationMenu, this);}
 
             bool yesSelected() {return dc_ui_ConfirmationMenu_yesSelected(_sid);}
     };
@@ -671,7 +671,7 @@ namespace ui {
             using ContextualMenu::ContextualMenu;
 
             TextInput() : ContextualMenu((dc::_Dummy) {}) {_sid = dc_ui_TextInput_new(); _addStoredInstance(_Type::ui_TextInput, this);}
-            TextInput(dataTypes::String value) {_sid = dc_ui_TextInput_newWithValue(value.c_str()); _addStoredInstance(_Type::ui_TextInput, this);}
+            TextInput(dataTypes::String value) : ContextualMenu((dc::_Dummy) {}) {_sid = dc_ui_TextInput_newWithValue(value.c_str()); _addStoredInstance(_Type::ui_TextInput, this);}
 
             dataTypes::String getValue() {dc::_Sid sid = dc_ui_TextInput_getValue(_sid); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
             void setValue(dataTypes::String value) {return dc_ui_TextInput_setValue(_sid, value.c_str());}
@@ -688,7 +688,7 @@ namespace ui {
             using Screen::Screen;
 
             IntInput() : Screen((dc::_Dummy) {}) {_sid = dc_ui_IntInput_new(); _addStoredInstance(_Type::ui_IntInput, this);}
-            IntInput(dataTypes::String title, long value) {_sid = dc_ui_TextInput_newWithTitleAndValue(title.c_str(), value); _addStoredInstance(_Type::ui_IntInput, this);}
+            IntInput(dataTypes::String title, long value) : Screen((dc::_Dummy) {}) {_sid = dc_ui_IntInput_newWithTitleAndValue(title.c_str(), value); _addStoredInstance(_Type::ui_IntInput, this);}
 
             dataTypes::String getTitle() {dc::_Sid sid = dc_ui_IntInput_getTitle(_sid); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}
             void setTitle(dataTypes::String title) {return dc_ui_IntInput_setTitle(_sid, title.c_str());}

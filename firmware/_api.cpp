@@ -1106,7 +1106,7 @@ m3ApiRawFunction(api::dc_ui_IntInput_new) {
     m3ApiReturn(result);
 }
 
-m3ApiRawFunction(api::dc_ui_TextInput_newWithTitleAndValue) {
+m3ApiRawFunction(api::dc_ui_IntInput_newWithTitleAndValue) {
     m3ApiReturnType(Sid)
     m3ApiGetArgMem(char*, title)
     m3ApiGetArg(long, value)
@@ -1691,7 +1691,7 @@ void api::linkFunctions(IM3Runtime runtime) {
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_typeText", "v(ii)", &dc_ui_TextInput_typeText);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_selectAll", "v(i)", &dc_ui_TextInput_selectAll);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_new", "i()", &dc_ui_IntInput_new);
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_TextInput_newWithTitleAndValue", "i(ii)", &dc_ui_TextInput_newWithTitleAndValue);
+    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_newWithTitleAndValue", "i(ii)", &dc_ui_IntInput_newWithTitleAndValue);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_getTitle", "i(i)", &dc_ui_IntInput_getTitle);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_setTitle", "v(ii)", &dc_ui_IntInput_setTitle);
     m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_ui_IntInput_getValue", "i(i)", &dc_ui_IntInput_getValue);
