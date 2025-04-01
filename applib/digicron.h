@@ -1193,6 +1193,8 @@ inline bool config::Config::loadFromFile(dataTypes::String path) {
 
     file->close();
 
+    delete file;
+
     return true;
 }
 
@@ -1209,6 +1211,8 @@ inline bool config::Config::saveToFile(dataTypes::String path) {
 
     file->write(toIni());
     file->close();
+
+    delete file;
 
     return true;
 }
