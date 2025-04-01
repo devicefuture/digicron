@@ -17,6 +17,13 @@ Counter::Counter(String name, long value) {
     _value = value;
 
     _id = "";
+
+    _buttonActions[Button::SELECT] = Action::INCREMENT;
+    _buttonActionArguments[Button::SELECT] = 1;
+    _buttonActions[Button::UP] = Action::INCREMENT;
+    _buttonActionArguments[Button::UP] = 1;
+    _buttonActions[Button::DOWN] = Action::DECREMENT;
+    _buttonActionArguments[Button::DOWN] = 1;
 }
 
 String Counter::getId() {
@@ -69,6 +76,81 @@ void Counter::setResetValue(long resetValue) {
     saveToFile();
 }
 
+Action Counter::getButtonAction(Button button) {
+    if (button >= BUTTONS_COUNT) {
+        return Action::NONE;
+    }
+
+    return _buttonActions[button];
+}
+
+long Counter::getButtonActionArgument(Button button) {
+    if (button >= BUTTONS_COUNT) {
+        return Action::NONE;
+    }
+
+    return _buttonActionArguments[button];
+}
+
+void Counter::setButtonAction(Button button, Action action) {
+    if (button >= BUTTONS_COUNT) {
+        return;
+    }
+
+    _buttonActions[button] = action;
+
+    saveToFile();
+}
+
+void Counter::setButtonActionWithArgument(Button button, Action action, long argument) {
+    if (button >= BUTTONS_COUNT) {
+        return;
+    }
+
+    _buttonActions[button] = action;
+    _buttonActionArguments[button] = argument;
+
+    saveToFile();
+}
+
+void Counter::performButtonAction(Button button) {
+    if (button >= BUTTONS_COUNT) {
+        return;
+    }
+
+    long argument = _buttonActionArguments[button];
+
+    switch (_buttonActions[button]) {
+        case Action::NONE:
+            break;
+
+        case Action::INCREMENT:
+            incrementValue(argument);
+            break;
+
+        case Action::DECREMENT:
+            incrementValue(-argument);
+            break;
+
+        case Action::SET_VALUE:
+            setValue(argument);
+            break;
+
+        case Action::RESET:
+            setValue(getResetValue());
+            break;
+
+        case Action::SET_RESET_VALUE:
+            // Do this one manually since we want to defer saving
+
+            _resetValue = getValue();
+
+            triggerSave();
+
+            break;
+    }
+}
+
 bool Counter::checkIfShouldSave() {
     if (_savePendingState == 0) {
         return false;
@@ -88,7 +170,6 @@ bool Counter::checkIfShouldSave() {
 
 void Counter::triggerSave() {
     _savePendingState = 3;
-
     saveTriggered = true;
 }
 

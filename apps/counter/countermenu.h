@@ -36,6 +36,45 @@ class CounterNameInput : public ui::TextInput {
         CounterMenu* _counterMenu = nullptr;
 };
 
+class ButtonSelectionMenu : public ui::ContextualMenu {
+    public:
+        ButtonSelectionMenu();
+
+        void openForCounter(Counter* counter);
+
+        void handleEvent(ui::Event event) override;
+
+    private:
+        Counter* _counter = nullptr;
+};
+
+class ActionSelectionMenu : public ui::ContextualMenu {
+    public:
+        ActionSelectionMenu();
+
+        void openForCounterAndButton(Counter* counter, Button button);
+
+        void handleEvent(ui::Event event) override;
+
+    private:
+        Counter* _counter = nullptr;
+        Button _button = Button::SELECT;
+};
+
+class ActionArgumentInput : public ui::IntInput {
+    public:
+        ActionArgumentInput() : IntInput("Value?", 1) {}
+
+        void openForCounterButtonAndAction(Counter* counter, Button button, Action action);
+
+        void handleEvent(ui::Event event) override;
+
+    private:
+        Counter* _counter = nullptr;
+        Button _button = Button::SELECT;
+        Action _action = Action::SET_VALUE;
+};
+
 class ChangeBaseMenu : public ui::ContextualMenu {
     public:
         ChangeBaseMenu();
@@ -87,6 +126,9 @@ class CounterMenu : public ui::ContextualMenu {
 extern ResetConfirmationMenu* resetConfirmationMenu;
 extern CounterMenu* counterMenu;
 extern CounterNameInput* counterNameInput;
+extern ButtonSelectionMenu* buttonSelectionMenu;
+extern ActionSelectionMenu* actionSelectionMenu;
+extern ActionArgumentInput* actionArgumentInput;
 extern ChangeBaseMenu* changeBaseMenu;
 extern ChangeResetValueInput* changeResetValueInput;
 extern DeleteConfirmationMenu* deleteConfirmationMenu;

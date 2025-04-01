@@ -69,7 +69,15 @@ void CounterScreen::handleEvent(ui::Event event) {
                 break;
 
             case input::Button::SELECT:
-                getCounter()->incrementValue(1);
+                getCounter()->performButtonAction(Button::SELECT);
+                break;
+
+            case input::Button::UP:
+                getCounter()->performButtonAction(Button::UP);
+                break;
+
+            case input::Button::DOWN:
+                getCounter()->performButtonAction(Button::DOWN);
                 break;
 
             case input::Button::LEFT:

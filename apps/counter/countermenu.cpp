@@ -2,9 +2,13 @@
 #include "counterscreen.h"
 
 const unsigned int BASES_MAP[] = {2, 8, 10, 16};
+const String ACTIONS_ARGUMENT_QUESTION_MAP[] = {"", "Incr by?", "Decr by?", "Set to?", "", ""};
 
 ResetConfirmationMenu* resetConfirmationMenu;
 CounterMenu* counterMenu;
+ButtonSelectionMenu* buttonSelectionMenu;
+ActionSelectionMenu* actionSelectionMenu;
+ActionArgumentInput* actionArgumentInput;
 CounterNameInput* counterNameInput;
 ChangeBaseMenu* changeBaseMenu;
 ChangeResetValueInput* changeResetValueInput;
@@ -61,6 +65,102 @@ void CounterNameInput::handleEvent(ui::Event event) {
     }
 }
 
+ButtonSelectionMenu::ButtonSelectionMenu() : ui::ContextualMenu("Button?") {
+    items.push(new String("SELECT"));
+    items.push(new String("UP"));
+    items.push(new String("DOWN"));
+
+    updateItems();
+}
+
+void ButtonSelectionMenu::openForCounter(Counter* counter) {
+    _counter = counter;
+
+    open(false);
+}
+
+void ButtonSelectionMenu::handleEvent(ui::Event event) {
+    if (event.type == ui::EventType::ITEM_SELECT) {
+        actionSelectionMenu->openForCounterAndButton(_counter, (Button)event.data.index);
+        close();
+    }
+}
+
+ActionSelectionMenu::ActionSelectionMenu() : ui::ContextualMenu("Action?") {
+    items.push(new String("NONE"));
+    items.push(new String("INCRMNT"));
+    items.push(new String("DECRMNT"));
+    items.push(new String("SET"));
+    items.push(new String("RESET"));
+    items.push(new String("SETRVAL"));
+
+    updateItems();
+    setSelectionBlinking(true);
+}
+
+void ActionSelectionMenu::openForCounterAndButton(Counter* counter, Button button) {
+    _counter = counter;
+    _button = button;
+
+    open(false);
+
+    unsigned int actionIndex = counter->getButtonAction(button);
+
+    if (actionIndex < items.length()) {
+        setCurrentIndex(actionIndex);
+    }
+}
+
+void ActionSelectionMenu::handleEvent(ui::Event event) {
+    if (!_counter) {
+        return;
+    }
+
+    if (event.type == ui::EventType::ITEM_SELECT) {
+        Action action = (Action)event.data.index;
+
+        if (action == Action::INCREMENT || action == Action::DECREMENT || action == Action::SET_VALUE) {
+            actionArgumentInput->openForCounterButtonAndAction(_counter, _button, action);
+        } else {
+            _counter->setButtonAction(_button, action);
+        }
+
+        close();
+    }
+}
+
+void ActionArgumentInput::openForCounterButtonAndAction(Counter* counter, Button button, Action action) {
+    if (!counter) {
+        return;
+    }
+
+    _counter = counter;
+    _button = button;
+    _action = action;
+
+    setTitle(ACTIONS_ARGUMENT_QUESTION_MAP[action]);
+    setValue(action == Action::INCREMENT || action == Action::DECREMENT ? 1 : 0);
+    setValueBlinking(true);
+    setBase(_counter->getBase());
+
+    if (action == counter->getButtonAction(button)) {
+        setValue(counter->getButtonActionArgument(button));
+    }
+
+    open(false);
+}
+
+void ActionArgumentInput::handleEvent(ui::Event event) {
+    if (!_counter) {
+        return;
+    }
+
+    if (event.type == ui::EventType::CONFIRM_VALUE) {
+        _counter->setButtonActionWithArgument(_button, _action, getValue());
+        close();
+    }
+}
+
 ChangeBaseMenu::ChangeBaseMenu() : ui::ContextualMenu("Base-n?") {
     items.push(new String("2 (BIN)"));
     items.push(new String("8 (OCT)"));
@@ -97,6 +197,10 @@ void ChangeBaseMenu::handleEvent(ui::Event event) {
 }
 
 void ChangeResetValueInput::openForCounter(Counter* counter) {
+    if (!counter) {
+        return;
+    }
+
     _counter = counter;
 
     setValue(_counter->getResetValue());
@@ -181,6 +285,10 @@ void CounterMenu::handleEvent(ui::Event event) {
 
         if (selectedItem == "RENAME") {
             counterNameInput->openForCounterMenu(this, _counter);
+        }
+
+        if (selectedItem == "BTNACTS") {
+            buttonSelectionMenu->openForCounter(_counter);
         }
 
         if (selectedItem == "BASE-N") {

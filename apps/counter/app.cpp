@@ -48,6 +48,9 @@ void setup() {
     resetConfirmationMenu = new ResetConfirmationMenu();
     counterMenu = new CounterMenu();
     counterNameInput = new CounterNameInput();
+    buttonSelectionMenu = new ButtonSelectionMenu();
+    actionSelectionMenu = new ActionSelectionMenu();
+    actionArgumentInput = new ActionArgumentInput();
     changeBaseMenu = new ChangeBaseMenu();
     changeResetValueInput = new ChangeResetValueInput();
     deleteConfirmationMenu = new DeleteConfirmationMenu();
