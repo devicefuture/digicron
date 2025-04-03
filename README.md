@@ -1,7 +1,7 @@
 # DigiCron
 Software and hardware for the DigiCron retro smartwatch.
 
-Want to try out the software on your device? Just visit the [DigiCron Simulator](simulator)!
+Want to try out the software on your device? Just visit the [DigiCron Simulator](https://digicron.devicefuture.org/simulator)!
 
 ## Getting the code
 You must clone this repo like this:
