@@ -289,19 +289,19 @@ void ui::Screen::_handleEvent(ui::Event event) {
 
     if (ownerProcess && ownerProcess->getType() == proc::ProcessType::WASM) {
         if (event.type == EventType::BUTTON_UP || event.type == EventType::BUTTON_DOWN) {
-            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleButtonEvent", event.type, event.data.button);
+            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleButtonEvent", (int)event.type, (int)event.data.button);
         }
 
         if (event.type == EventType::ITEM_SELECT) {
-            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleItemEvent", event.type, event.data.index);
+            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleItemEvent", (int)event.type, (int)event.data.index);
         }
 
         if (event.type == EventType::CANCEL) {
-            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleSimpleEvent", event.type);
+            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleSimpleEvent", (int)event.type);
         }
 
         if (event.type == EventType::CONFIRM_VALUE) {
-            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleSimpleEvent", event.type);
+            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleSimpleEvent", (int)event.type);
         }
     }
 }

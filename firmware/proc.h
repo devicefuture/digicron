@@ -1,7 +1,8 @@
 #ifndef PROC_H_
 #define PROC_H_
 
-#include <wasm3.h>
+#include <wasmu-config.h>
+#include <wasmu.h>
 #include <Arduino.h>
 
 #include "datatypes.h"
@@ -60,11 +61,23 @@ namespace proc {
             template<typename T, typename ...Args> T callOn(void* instance, const char* name, T defaultValue, Args... args);
 
         protected:
-            IM3Environment _environment;
-            IM3Runtime _runtime;
-            IM3Module _module;
-            IM3Function _stepFunction;
+            wasmu_Context* _context;
+            wasmu_Module* _nativeModule;
+            wasmu_Module* _processModule;
+            wasmu_Function* _stepFunction;
             WasmError _error = WasmError::NONE;
+
+            void _addArg(int value);
+            void _addArg(long value);
+            void _addArg(float value);
+            void _addArg(double value);
+            template<typename T, typename ...Args> void _addArgs(T value, Args... args);
+            void _addArgs() {}
+
+            int _getResult(int defaultValue);
+            long _getResult(long defaultValue);
+            float _getResult(float defaultValue);
+            double _getResult(double defaultValue);
     };
 
     extern dataTypes::List<Process> processes;

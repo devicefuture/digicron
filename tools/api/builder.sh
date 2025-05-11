@@ -145,6 +145,7 @@ function method {
 
     name="$2"
     returnType="$1"
+    returnValueType=WASMU_VALUE_TYPE_I32
     virtualKeyword=
     overrideKeyword=
     superConstructorCall=
@@ -155,6 +156,18 @@ function method {
 
     if [ "$returnType" = "bool" ]; then
         firmwareReturnType="unsigned int"
+    fi
+
+    if [ "$returnType" = "long" ] || [ "$returnType" = "unsigned long" ]; then
+        returnValueType=WASMU_VALUE_TYPE_I64
+    fi
+
+    if [ "$returnType" = "float" ]; then
+        returnValueType=WASMU_VALUE_TYPE_F32
+    fi
+
+    if [ "$returnType" = "double" ]; then
+        returnValueType=WASMU_VALUE_TYPE_F64
     fi
 
     if [ "$returnType" = "String" ]; then
@@ -210,19 +223,20 @@ function method {
         echo -n "            $virtualKeyword$nameAndType(" >> applib/digicron.h
     fi
 
-    echo "    m3ApiRawFunction($INTERNAL_NAME);" >> firmware/_api.h
+    echo "    int $INTERNAL_NAME(wasmu_Context* context);" >> firmware/_api.h
 
-    echo "m3ApiRawFunction(api::$INTERNAL_NAME) {" >> firmware/_api.cpp
+    echo "int api::$INTERNAL_NAME(wasmu_Context* context) {" >> firmware/_api.cpp
 
     firmwareArgs=
+    anyArgsAdded=false
+
+    echo > tools/api/_api-args.h
 
     if [ "$IN_CONSTRUCTOR" = true ]; then
         passArgs=
         shortReturnType=i
 
         echo -n "WASM_IMPORT(\"digicron\", \"$INTERNAL_NAME\") dc::_Sid $INTERNAL_NAME(" >> tools/api/_digicron-imports.h
-        echo -n "    m3_LinkRawFunction(runtime->modules, MODULE_NAME, \"$INTERNAL_NAME\", \"i(" >> tools/api/_api-linker.h
-        echo "    m3ApiReturnType(Sid)" >> firmware/_api.cpp
 
         shift
     else
@@ -245,22 +259,18 @@ function method {
         passArgs=
         prependArg=
         prependShortArg=
-
-        if [ "$internalReturnType" != "void" ]; then
-            echo "    m3ApiReturnType($firmwareReturnType)" >> firmware/_api.cpp
-        fi
     
         if [ "$OUT_OF_CLASS" != true ]; then
             passArgs="_sid"
             prependArg="dc::_Sid sid"
             prependShortArg=i
+            anyArgsAdded=true
 
-            echo "    m3ApiGetArg(Sid, _sid)" >> firmware/_api.cpp
+            echo "    Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);" > tools/api/_api-args.h
+            echo >> tools/api/_api-args.h
         fi
 
         echo -n "WASM_IMPORT(\"digicron\", \"$INTERNAL_NAME\") $internalReturnType $INTERNAL_NAME($prependArg" >> tools/api/_digicron-imports.h
-
-        echo -n "    m3_LinkRawFunction(runtime->modules, MODULE_NAME, \"$INTERNAL_NAME\", \"$shortReturnType($prependShortArg" >> tools/api/_api-linker.h
 
         shift
         shift
@@ -270,6 +280,8 @@ function method {
             passArgs="$passArgs, "
         fi
     fi
+
+    echo "    wasmu_addNativeFunction(module, (wasmu_U8*)\"$INTERNAL_NAME\", &$INTERNAL_NAME);" >> tools/api/_api-linker.h
 
     if [ "$OUT_OF_CLASS" = true ]; then
         echo -n "Including function: $returnType dc::$NAMESPACE::$name("
@@ -283,6 +295,7 @@ function method {
         argType=$1
         internalArgType=$argType
         shortArgType=i
+        argValueType=WASMU_VALUE_TYPE_I32
         argName=$2
         internalArgCall=$argName
         firmwareArgType=$internalArgType
@@ -290,13 +303,22 @@ function method {
 
         case "$argType" in
             "char*"|"STRING"|"void*")
-                shortArgType="*" ;;
+                shortArgType="*"
+                ;;
+
+            "long"|"unsigned long")
+                argValueType=WASMU_VALUE_TYPE_I64
+                ;;
 
             "float")
-                shortArgType="f" ;;
+                shortArgType="f"
+                argValueType=WASMU_VALUE_TYPE_F32
+                ;;
 
             "double")
-                shortArgType="F" ;;
+                shortArgType="F"
+                argValueType=WASMU_VALUE_TYPE_F64
+                ;;
         esac
 
         if [[ "$argType" =~ ^ENUM\  ]]; then
@@ -333,15 +355,17 @@ function method {
 
         echo -n "$argType $argName" >> applib/digicron.h
         echo -n "$internalArgType $argName" >> tools/api/_digicron-imports.h
-        echo -n "$shortArgType" >> tools/api/_api-linker.h
+        # echo -n "$shortArgType" >> tools/api/_api-linker.h
         passArgs="$passArgs$internalArgCall"
         firmwareArgs="$firmwareArgs$firmwareArgCall"
         echo -n "$argType $argName"
 
+        anyArgsAdded=true
+
         if [ "$firmwareArgType" = "char*" ]; then
-            echo "    m3ApiGetArgMem(char*, $argName)" >> firmware/_api.cpp
+            sed -i "1s/^/    char* $argName = (char*)wasmu_popPtr(context); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);\n/" tools/api/_api-args.h
         else
-            echo "    m3ApiGetArg($firmwareArgType, $argName)" >> firmware/_api.cpp
+            sed -i "1s/^/    $firmwareArgType $argName = ($firmwareArgType)wasmu_popInt(context, sizeof($firmwareArgType)); WASMU_ASSERT_POP_TYPE($argValueType);\n/" tools/api/_api-args.h
         fi
 
         shift
@@ -356,13 +380,14 @@ function method {
         fi
     done
 
+    if [ "$anyArgsAdded" = true ]; then
+        cat tools/api/_api-args.h >> firmware/_api.cpp
+    fi
+
     if [ "$IN_CONSTRUCTOR" = true ]; then
         echo ")$superConstructorCall {_sid = $INTERNAL_NAME($passArgs); _addStoredInstance(_Type::${NAMESPACE}_$CLASS, this);}" >> applib/digicron.h
 
-        (
-            echo
-            echo -n "    auto instance = new $NAMESPACE::$CLASS("
-        ) >> firmware/_api.cpp
+        echo -n "    auto instance = new $NAMESPACE::$CLASS(" >> firmware/_api.cpp
     elif [ "$returnType" = "String" ] || [ "$returnType" = "char*" ]; then
         if [ "$returnType" = "String" ]; then
             echo ")$overrideKeyword {dc::_Sid sid = $INTERNAL_NAME($passArgs); char array[dc_getBufferSize(sid)]; dc_copyBufferInto(sid, array); dataTypes::String str(array); dc_deleteBySid(sid); return str;}" >> applib/digicron.h
@@ -370,32 +395,24 @@ function method {
             echo ")$overrideKeyword {dc::_Sid sid = $INTERNAL_NAME($passArgs); char* array = (char*)malloc(dc_getBufferSize(sid)); dc_copyBufferInto(sid, array); dc_deleteBySid(sid); return array;}" >> applib/digicron.h
         fi
 
-        echo >> firmware/_api.cpp
-
         if [ "$OUT_OF_CLASS" = true ]; then
-            echo -n "    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer($NAMESPACE::$name(" >> firmware/_api.cpp
+            echo -n "    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)context->userData, new dataTypes::Buffer($NAMESPACE::$name(" >> firmware/_api.cpp
         else
-            echo -n "    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)runtime->userdata, new dataTypes::Buffer(api::getBySid<$NAMESPACE::$CLASS>(Type::${NAMESPACE}_$CLASS, _sid)->$name(" >> firmware/_api.cpp
+            echo -n "    Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)context->userData, new dataTypes::Buffer(api::getBySid<$NAMESPACE::$CLASS>(Type::${NAMESPACE}_$CLASS, _sid)->$name(" >> firmware/_api.cpp
         fi
     elif [ "$internalReturnType" = "dc::_Sid" ]; then
         echo ")$overrideKeyword {return dc::_getOrCreateBySid<$nonPointerReturnType>(_Type::${nonPointerReturnType/::/_}, $INTERNAL_NAME($passArgs));}" >> applib/digicron.h
 
-        echo >> firmware/_api.cpp
-
         if [ "$OUT_OF_CLASS" = true ]; then
-            echo -n "    Sid result = api::store<$nonPointerReturnType>(Type::${nonPointerReturnType/::/_}, (proc::WasmProcess*)runtime->userdata, $NAMESPACE::$name(" >> firmware/_api.cpp
+            echo -n "    Sid result = api::store<$nonPointerReturnType>(Type::${nonPointerReturnType/::/_}, (proc::WasmProcess*)context->userData, $NAMESPACE::$name(" >> firmware/_api.cpp
         else
-            echo -n "    Sid result = api::store<$nonPointerReturnType>(Type::${nonPointerReturnType/::/_}, (proc::WasmProcess*)runtime->userdata, api::getBySid<$NAMESPACE::$CLASS>(Type::${NAMESPACE}_$CLASS, _sid)->$name(" >> firmware/_api.cpp
+            echo -n "    Sid result = api::store<$nonPointerReturnType>(Type::${nonPointerReturnType/::/_}, (proc::WasmProcess*)context->userData, api::getBySid<$NAMESPACE::$CLASS>(Type::${NAMESPACE}_$CLASS, _sid)->$name(" >> firmware/_api.cpp
         fi
     else
         if [ "$customReturn" = "" ]; then
             echo ")$overrideKeyword {return $INTERNAL_NAME($passArgs);}" >> applib/digicron.h
         else
             echo ")$overrideKeyword {return ${customReturn//PASSARGS/$passArgs};}" >> applib/digicron.h
-        fi
-
-        if [ "$passArgs" != "" ]; then
-            echo >> firmware/_api.cpp
         fi
 
         if [ "$returnType" != "void" ]; then
@@ -414,7 +431,7 @@ function method {
     fi
 
     if [ "$PASS_PROCESS" = true ]; then
-        echo -n "(proc::WasmProcess*)runtime->userdata" >> firmware/_api.cpp
+        echo -n "(proc::WasmProcess*)context->userData" >> firmware/_api.cpp
 
         if [ "$firmwareArgs" != "" ]; then
             echo -n ", " >> firmware/_api.cpp
@@ -422,7 +439,6 @@ function method {
     fi
 
     echo ");" >> tools/api/_digicron-imports.h
-    echo ")\", &$INTERNAL_NAME);" >> tools/api/_api-linker.h
 
     if [ "$returnType" = "String" ] || [ "$returnType" = "char*" ]; then
         echo "$firmwareArgs)));" >> firmware/_api.cpp
@@ -432,22 +448,23 @@ function method {
         echo "$firmwareArgs);" >> firmware/_api.cpp
     fi
 
-    echo "" >> firmware/_api.cpp
     echo ")"
 
     if [ "$IN_CONSTRUCTOR" = true ]; then
-        echo "    Sid result = api::store<$NAMESPACE::$CLASS>(Type::${NAMESPACE}_$CLASS, (proc::WasmProcess*)runtime->userdata, instance);" >> firmware/_api.cpp
+        echo "    Sid result = api::store<$NAMESPACE::$CLASS>(Type::${NAMESPACE}_$CLASS, (proc::WasmProcess*)context->userData, instance);" >> firmware/_api.cpp
+    fi
+
+    if [ "$returnType" != "void" ]; then
         echo >> firmware/_api.cpp
+        echo "    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE($returnValueType);" >> firmware/_api.cpp
     fi
 
-    if [ "$returnType" = "void" ]; then
-        echo "    m3ApiSuccess();" >> firmware/_api.cpp
-    else
-        echo "    m3ApiReturn(result);" >> firmware/_api.cpp
-    fi
-
-    echo "}" >> firmware/_api.cpp
-    echo >> firmware/_api.cpp
+    (
+        echo
+        echo "    return true;"
+        echo "}"
+        echo
+    ) >> firmware/_api.cpp
 
     echo $INTERNAL_NAME >> applib/digicron.syms
 }
@@ -542,14 +559,12 @@ function struct {
 > firmware/_api.h
 
 tee -a tools/api/_api-linker.h > /dev/null << EOF
-void api::linkFunctions(IM3Runtime runtime) {
-    const char* MODULE_NAME = "digicron";
-
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_getGlobalI32", "i(*)", &dc_getGlobalI32);
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_deleteBySid", "v(i)", &dc_deleteBySid);
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_sidIsNull", "i(i)", &dc_sidIsNull);
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_getBufferSize", "i(i)", &dc_getBufferSize);
-    m3_LinkRawFunction(runtime->modules, MODULE_NAME, "dc_copyBufferInto", "v(i*)", &dc_copyBufferInto);
+void api::linkFunctions(wasmu_Module* module) {
+    wasmu_addNativeFunction(module, (wasmu_U8*)"dc_getGlobalI32", &dc_getGlobalI32);
+    wasmu_addNativeFunction(module, (wasmu_U8*)"dc_deleteBySid", &dc_deleteBySid);
+    wasmu_addNativeFunction(module, (wasmu_U8*)"dc_sidIsNull", &dc_sidIsNull);
+    wasmu_addNativeFunction(module, (wasmu_U8*)"dc_getBufferSize", &dc_getBufferSize);
+    wasmu_addNativeFunction(module, (wasmu_U8*)"dc_copyBufferInto", &dc_copyBufferInto);
 
 EOF
 
@@ -557,7 +572,7 @@ tee -a firmware/_api.cpp > /dev/null << EOF
 // Autogenerated by \`tools/api/builder.sh\` using declarations from \`tools/api/api.sh\`
 
 #include <Arduino.h>
-#include <m3_env.h>
+#include <wasmu.h>
 
 #include "_api.h"
 #include "proc.h"
@@ -666,52 +681,49 @@ void api::deleteAllByOwnerProcess(proc::Process* ownerProcess) {
     }
 }
 
-m3ApiRawFunction(api::dc_getGlobalI32) {
-    m3ApiReturnType(uint32_t)
-    m3ApiGetArgMem(char*, id)
+int api::dc_getGlobalI32(wasmu_Context* context) {
+    char* id = (char*)wasmu_popPtr(context); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
-    IM3Global global = m3_FindGlobal(runtime->modules, id);
+    wasmu_TypedValue* global = wasmu_getExportedGlobal(context->activeModule, (wasmu_U8*)id);
 
-    if (global) {
-        M3TaggedValue globalValue;
+    int result = global && global->type == WASMU_VALUE_TYPE_I32 ? global->value.asInt : 0;
 
-        m3_GetGlobal(global, &globalValue);
+    wasmu_pushInt(context, 4, result); wasmu_pushType(context, WASMU_VALUE_TYPE_I32);
 
-        m3ApiReturn(globalValue.value.i32);
-    } else {
-        m3ApiReturn(0);
-    }
+    return true;
 }
 
-m3ApiRawFunction(api::dc_deleteBySid) {
-    m3ApiGetArg(Sid, _sid)
+int api::dc_deleteBySid(wasmu_Context* context) {
+    Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::deleteBySid(_sid);
 
-    m3ApiSuccess();
+    return true;
 }
 
-m3ApiRawFunction(api::dc_sidIsNull) {
-    m3ApiReturnType(bool)
-    m3ApiGetArg(Sid, _sid)
+int api::dc_sidIsNull(wasmu_Context* context) {
+    Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     StoredInstance* storedInstance = api::storedInstances[_sid];
 
-    m3ApiReturn(!storedInstance || !storedInstance->instance);
+    wasmu_pushInt(context, 4, !storedInstance || !storedInstance->instance); wasmu_pushType(context, WASMU_VALUE_TYPE_I32);
+
+    return true;
 }
 
-m3ApiRawFunction(api::dc_getBufferSize) {
-    m3ApiReturnType(unsigned int)
-    m3ApiGetArg(Sid, _sid)
+int api::dc_getBufferSize(wasmu_Context* context) {
+    Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     unsigned int result = api::getBySid<dataTypes::Buffer>(Type::Buffer, _sid)->getSize();
 
-    m3ApiReturn(result);
+    wasmu_pushInt(context, 4, result); wasmu_pushType(context, WASMU_VALUE_TYPE_I32);
+
+    return true;
 }
 
-m3ApiRawFunction(api::dc_copyBufferInto) {
-    m3ApiGetArg(Sid, _sid)
-    m3ApiGetArgMem(char*, destination)
+int api::dc_copyBufferInto(wasmu_Context* context) {
+    char* destination = (char*)wasmu_popPtr(context); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     dataTypes::Buffer* buffer = api::getBySid<dataTypes::Buffer>(Type::Buffer, _sid);
 
@@ -719,7 +731,7 @@ m3ApiRawFunction(api::dc_copyBufferInto) {
         destination[i] = buffer->data[i];
     }
 
-    m3ApiSuccess();
+    return true;
 }
 
 EOF
@@ -730,7 +742,7 @@ tee -a firmware/_api.h > /dev/null << EOF
 #ifndef API_H_
 #define API_H_
 
-#include <wasm3.h>
+#include <wasmu.h>
 
 // {{ includes }}
 
@@ -753,11 +765,11 @@ namespace api {
     void deleteBySid(Sid sid);
     void deleteAllByOwnerProcess(proc::Process* ownerProcess);
 
-    m3ApiRawFunction(dc_getGlobalI32);
-    m3ApiRawFunction(dc_deleteBySid);
-    m3ApiRawFunction(dc_sidIsNull);
-    m3ApiRawFunction(dc_getBufferSize);
-    m3ApiRawFunction(dc_copyBufferInto);
+    int dc_getGlobalI32(wasmu_Context* context);
+    int dc_deleteBySid(wasmu_Context* context);
+    int dc_sidIsNull(wasmu_Context* context);
+    int dc_getBufferSize(wasmu_Context* context);
+    int dc_copyBufferInto(wasmu_Context* context);
 
 EOF
 
@@ -906,7 +918,7 @@ cat tools/api/_api-linker.h >> firmware/_api.cpp
 
 tee -a firmware/_api.h > /dev/null << EOF
 
-    void linkFunctions(IM3Runtime runtime);
+    void linkFunctions(wasmu_Module* module);
 }
 
 #endif

@@ -1,7 +1,7 @@
 #include "proc.h"
 #include "_api.h"
 
-#include <m3_env.h>
+#include <wasmu.h>
 
 unsigned int proc::pidCounter = 0;
 dataTypes::List<proc::Process> proc::processes;
@@ -45,49 +45,40 @@ void proc::Process::stop() {
 }
 
 proc::WasmProcess::WasmProcess(char* code, unsigned int codeSize) : proc::Process() {
-    _environment = m3_NewEnvironment();
-    _runtime = m3_NewRuntime(_environment, WASM_STACK_SLOTS, this);
+    _context = wasmu_newContext();
+    _nativeModule = wasmu_newModule(_context);
+    _processModule = wasmu_newModule(_context);
 
-    if (!_runtime) {
-        _error = WasmError::INIT_FAILURE;
-        _running = false;
-        return;
-    }
+    _context->userData = this;
 
-    if (
-        m3_ParseModule(_environment, &_module, (uint8_t*)code, codeSize) ||
-        m3_LoadModule(_runtime, _module)
-    ) {
+    wasmu_load(_processModule, (wasmu_U8*)code, codeSize);
+
+    if (!wasmu_parseSections(_processModule)) {
         _error = WasmError::PARSE_FAILURE;
         _running = false;
         return;
     }
 
-    api::linkFunctions(_runtime);
+    api::linkFunctions(_nativeModule);
 
-    IM3Function initFunction;
-    IM3Function startFunction;
+    wasmu_Function* initFunction = wasmu_getExportedFunction(_processModule, (wasmu_U8*)"__wasm_call_ctors");
+    wasmu_Function* startFunction = wasmu_getExportedFunction(_processModule, (wasmu_U8*)"_setup");
 
-    bool shouldCallInit = !m3_FindFunction(&initFunction, _runtime, "__wasm_call_ctors");
+    _stepFunction = wasmu_getExportedFunction(_processModule, (wasmu_U8*)"_loop");
 
-    if (
-        m3_FindFunction(&startFunction, _runtime, "_setup") ||
-        m3_FindFunction(&_stepFunction, _runtime, "_loop")
-    ) {
+    if (!startFunction || _stepFunction) {
         _error = WasmError::LOAD_FAILURE;
         _running = false;
         return;
     }
 
-    M3Result result = m3Err_none;
-
-    if (shouldCallInit && (result = m3_CallV(initFunction))) {
+    if (initFunction && !wasmu_callFunction(_processModule, initFunction)) {
         _error = WasmError::RUN_FAILURE;
         _running = false;
         return;
     }
 
-    if ((result = m3_CallV(startFunction))) {
+    if (!wasmu_callFunction(_processModule, startFunction)) {
         _error = WasmError::RUN_FAILURE;
         _running = false;
         return;
@@ -103,7 +94,7 @@ void proc::WasmProcess::step() {
         return;
     }
 
-    if (m3_CallV(_stepFunction)) {
+    if (wasmu_callFunction(_processModule, _stepFunction)) {
         _error = WasmError::RUN_FAILURE;
 
         stop();
@@ -121,33 +112,78 @@ void proc::WasmProcess::stop() {
 
     api::deleteAllByOwnerProcess(this);
 
-    m3_FreeRuntime(_runtime);
-    m3_FreeEnvironment(_environment);
+    wasmu_destroyContext(_context);
+}
+
+void proc::WasmProcess::_addArg(int value) {
+    wasmu_pushInt(_context, 4, value);
+    wasmu_pushType(_context, WASMU_VALUE_TYPE_I32);
+}
+
+void proc::WasmProcess::_addArg(long value) {
+    wasmu_pushInt(_context, 8, value);
+    wasmu_pushType(_context, WASMU_VALUE_TYPE_I64);
+}
+
+void proc::WasmProcess::_addArg(float value) {
+    wasmu_pushFloat(_context, WASMU_VALUE_TYPE_F32, value);
+    wasmu_pushType(_context, WASMU_VALUE_TYPE_F32);
+}
+
+void proc::WasmProcess::_addArg(double value) {
+    wasmu_pushFloat(_context, WASMU_VALUE_TYPE_F64, value);
+    wasmu_pushType(_context, WASMU_VALUE_TYPE_F64);
+}
+
+int proc::WasmProcess::_getResult(int defaultValue) {
+    return wasmu_popType(_context) == WASMU_VALUE_TYPE_I32 ? wasmu_popInt(_context, 4) : defaultValue;
+}
+
+long proc::WasmProcess::_getResult(long defaultValue) {
+    return wasmu_popType(_context) == WASMU_VALUE_TYPE_I64 ? wasmu_popInt(_context, 8) : defaultValue;
+}
+
+float proc::WasmProcess::_getResult(float defaultValue) {
+    return wasmu_popType(_context) == WASMU_VALUE_TYPE_F32 ? wasmu_popFloat(_context, WASMU_VALUE_TYPE_F32) : defaultValue;
+}
+
+double proc::WasmProcess::_getResult(double defaultValue) {
+    return wasmu_popType(_context) == WASMU_VALUE_TYPE_F64 ? wasmu_popFloat(_context, WASMU_VALUE_TYPE_F64) : defaultValue;
+}
+
+template<typename T, typename ...Args> void proc::WasmProcess::_addArgs(T value, Args... args) {
+    _addArg(value);
+    _addArgs(args...);
 }
 
 template<typename ...Args> void proc::WasmProcess::callVoid(const char* name, Args... args) {
-    IM3Function function;
+    wasmu_Function* function = wasmu_getExportedFunction(_processModule, (wasmu_U8*)name);
 
-    if (m3_FindFunction(&function, _runtime, name)) {
+    if (!function) {
         return;
     }
 
-    m3_CallV(function, args...);
+    _addArgs(args...);
+
+    wasmu_callFunction(_processModule, function);
 }
 
 template<typename T, typename ...Args> T proc::WasmProcess::call(const char* name, T defaultValue, Args... args) {
-    IM3Function function;
-    T result;
+    wasmu_Function* function = wasmu_getExportedFunction(_processModule, (wasmu_U8*)name);
 
-    if (
-        m3_FindFunction(&function, _runtime, name) ||
-        m3_CallV(function, args...) ||
-        m3_GetResultsV(function, &result)
-    ) {
+    if (!function) {
         return defaultValue;
     }
 
-    return result;
+    T result;
+
+    _addArgs(args...);
+
+    if (!wasmu_callFunction(_processModule, function)) {
+        return defaultValue;
+    }
+
+    return _getResult(defaultValue);
 }
 
 template<typename ...Args> void proc::WasmProcess::callVoidOn(void* instance, const char* name, Args... args) {
@@ -167,7 +203,7 @@ template<typename T, typename ...Args> T proc::WasmProcess::callOn(void* instanc
         return defaultValue;
     }
 
-    return call(name, sid, args...);
+    return call(name, defaultValue, sid, args...);
 }
 
 void proc::stepProcesses() {
@@ -184,13 +220,6 @@ void proc::stop(proc::Process* process) {
     process->stop();
 }
 
-M3Result m3_Yield() {
-    // TODO: Limit execution
-
-    return m3Err_none;
-}
-
 template void proc::WasmProcess::callVoidOn<>(void*, char const*);
-template void proc::WasmProcess::callVoidOn<ui::EventType>(void*, char const*, ui::EventType);
-template void proc::WasmProcess::callVoidOn<ui::EventType, input::Button>(void*, char const*, ui::EventType, input::Button);
-template void proc::WasmProcess::callVoidOn<ui::EventType, unsigned int>(void*, char const*, ui::EventType, unsigned int);
+template void proc::WasmProcess::callVoidOn<int>(void*, char const*, int);
+template void proc::WasmProcess::callVoidOn<int, int>(void*, char const*, int, int);
