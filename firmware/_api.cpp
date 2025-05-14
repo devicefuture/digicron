@@ -197,56 +197,56 @@ int api::dc_copyBufferInto(wasmu_Context* context) {
 }
 
 int api::dc_utils_longToString(wasmu_Context* context) {
-    unsigned int base = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    long number = (long)wasmu_popInt(context, sizeof(long)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    unsigned int base = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    long number = (long)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)context->userData, new dataTypes::Buffer(utils::longToString(number, base)));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_utils_unsignedLongToString(wasmu_Context* context) {
-    unsigned int base = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned long number = (unsigned long)wasmu_popInt(context, sizeof(unsigned long)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    unsigned int base = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned long number = (unsigned long)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)context->userData, new dataTypes::Buffer(utils::unsignedLongToString(number, base)));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_utils_doubleToString(wasmu_Context* context) {
-    unsigned int decimalPlaces = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    double number = (double)wasmu_popInt(context, sizeof(double)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_F64);
+    unsigned int decimalPlaces = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    double number = (double)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_F64)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_F64);
 
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)context->userData, new dataTypes::Buffer(utils::doubleToString(number, decimalPlaces)));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_utils_stringToLong(wasmu_Context* context) {
-    unsigned int base = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int base = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     char* string = (char*)wasmu_popPtr(context); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     long result = utils::stringToLong(String(string), base);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_utils_stringToUnsignedLong(wasmu_Context* context) {
-    unsigned int base = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int base = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     char* string = (char*)wasmu_popPtr(context); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     unsigned long result = utils::stringToUnsignedLong(String(string), base);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -256,7 +256,7 @@ int api::dc_utils_stringToDouble(wasmu_Context* context) {
 
     double result = utils::stringToDouble(String(string));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_F64);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_F64), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_F64);
 
     return true;
 }
@@ -284,7 +284,7 @@ int api::dc_console_logPartChars(wasmu_Context* context) {
 }
 
 int api::dc_console_logPartUInt(wasmu_Context* context) {
-    unsigned int value = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int value = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     console::logPart((proc::WasmProcess*)context->userData, value);
 
@@ -292,7 +292,7 @@ int api::dc_console_logPartUInt(wasmu_Context* context) {
 }
 
 int api::dc_console_logPartInt(wasmu_Context* context) {
-    int value = (int)wasmu_popInt(context, sizeof(int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    int value = (int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     console::logPart((proc::WasmProcess*)context->userData, value);
 
@@ -300,7 +300,7 @@ int api::dc_console_logPartInt(wasmu_Context* context) {
 }
 
 int api::dc_console_logPartULong(wasmu_Context* context) {
-    unsigned long value = (unsigned long)wasmu_popInt(context, sizeof(unsigned long)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    unsigned long value = (unsigned long)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     console::logPart((proc::WasmProcess*)context->userData, value);
 
@@ -308,7 +308,7 @@ int api::dc_console_logPartULong(wasmu_Context* context) {
 }
 
 int api::dc_console_logPartLong(wasmu_Context* context) {
-    long value = (long)wasmu_popInt(context, sizeof(long)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    long value = (long)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     console::logPart((proc::WasmProcess*)context->userData, value);
 
@@ -316,7 +316,7 @@ int api::dc_console_logPartLong(wasmu_Context* context) {
 }
 
 int api::dc_console_logPartDouble(wasmu_Context* context) {
-    double value = (double)wasmu_popInt(context, sizeof(double)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_F64);
+    double value = (double)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_F64)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_F64);
 
     console::logPart((proc::WasmProcess*)context->userData, value);
 
@@ -324,7 +324,7 @@ int api::dc_console_logPartDouble(wasmu_Context* context) {
 }
 
 int api::dc_console_logPartPtr(wasmu_Context* context) {
-    void* value = (void*)wasmu_popInt(context, sizeof(void*)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    void* value = (void*)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     console::logPart((proc::WasmProcess*)context->userData, value);
 
@@ -341,37 +341,37 @@ int api::dc_timing_Time_new(wasmu_Context* context) {
     auto instance = new timing::Time();
     Sid result = api::store<timing::Time>(Type::timing_Time, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_timing_Time_newUsingDate(wasmu_Context* context) {
-    unsigned int second = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int minute = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int hour = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int day = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int month = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    int year = (int)wasmu_popInt(context, sizeof(int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int second = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int minute = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int hour = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int day = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int month = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    int year = (int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     auto instance = new timing::Time(year, month, day, hour, minute, second);
     Sid result = api::store<timing::Time>(Type::timing_Time, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_timing_Time_newUsingMilliseconds(wasmu_Context* context) {
-    unsigned long millisecondOfDay = (unsigned long)wasmu_popInt(context, sizeof(unsigned long)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
-    unsigned int day = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int month = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    int year = (int)wasmu_popInt(context, sizeof(int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned long millisecondOfDay = (unsigned long)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int day = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int month = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    int year = (int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     auto instance = new timing::Time(year, month, day, millisecondOfDay);
     Sid result = api::store<timing::Time>(Type::timing_Time, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -381,18 +381,18 @@ int api::dc_timing_Time_daysInYear(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->daysInYear();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_timing_Time_daysInMonth(wasmu_Context* context) {
-    unsigned int month = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int month = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     unsigned int result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->daysInMonth(month);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -402,7 +402,7 @@ int api::dc_timing_Time_millisecondsInDay(wasmu_Context* context) {
 
     unsigned long result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->millisecondsInDay();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -412,7 +412,7 @@ int api::dc_timing_Time_inLeapMillisecond(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->inLeapMillisecond();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -422,15 +422,15 @@ int api::dc_timing_Time_postLeapMillisecondOffset(wasmu_Context* context) {
 
     unsigned long result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->postLeapMillisecondOffset();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_timing_Time_setDate(wasmu_Context* context) {
-    unsigned int day = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int month = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    int year = (int)wasmu_popInt(context, sizeof(int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int day = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int month = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    int year = (int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<timing::Time>(Type::timing_Time, _sid)->setDate(year, month, day);
@@ -439,9 +439,9 @@ int api::dc_timing_Time_setDate(wasmu_Context* context) {
 }
 
 int api::dc_timing_Time_setTime(wasmu_Context* context) {
-    unsigned int second = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int minute = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int hour = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int second = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int minute = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int hour = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<timing::Time>(Type::timing_Time, _sid)->setTime(hour, minute, second);
@@ -450,7 +450,7 @@ int api::dc_timing_Time_setTime(wasmu_Context* context) {
 }
 
 int api::dc_timing_Time_incrementTime(wasmu_Context* context) {
-    int millseconds = (int)wasmu_popInt(context, sizeof(int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    int millseconds = (int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<timing::Time>(Type::timing_Time, _sid)->incrementTime(millseconds);
@@ -459,7 +459,7 @@ int api::dc_timing_Time_incrementTime(wasmu_Context* context) {
 }
 
 int api::dc_timing_Time_toLocalTime(wasmu_Context* context) {
-    int timeShift = (int)wasmu_popInt(context, sizeof(int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    int timeShift = (int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<timing::Time>(Type::timing_Time, _sid)->toLocalTime(timeShift);
@@ -480,7 +480,7 @@ int api::dc_timing_Time_timeShift(wasmu_Context* context) {
 
     int result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->timeShift();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -490,7 +490,7 @@ int api::dc_timing_Time_year(wasmu_Context* context) {
 
     int result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->year();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -500,7 +500,7 @@ int api::dc_timing_Time_month(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->month();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -510,7 +510,7 @@ int api::dc_timing_Time_day(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->day();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -520,7 +520,7 @@ int api::dc_timing_Time_hour(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->hour();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -530,7 +530,7 @@ int api::dc_timing_Time_minute(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->minute();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -540,7 +540,7 @@ int api::dc_timing_Time_second(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->second();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -550,7 +550,7 @@ int api::dc_timing_Time_millisecond(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->millisecond();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -560,7 +560,7 @@ int api::dc_timing_Time_dayOfYear(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->dayOfYear();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -570,7 +570,7 @@ int api::dc_timing_Time_millisecondOfDay(wasmu_Context* context) {
 
     unsigned long result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->millisecondOfDay();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -580,7 +580,7 @@ int api::dc_timing_Time_millisecondOfDayIgnoringLeap(wasmu_Context* context) {
 
     unsigned long result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->millisecondOfDayIgnoringLeap();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -590,7 +590,7 @@ int api::dc_timing_Time_weekday(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<timing::Time>(Type::timing_Time, _sid)->weekday();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -599,37 +599,37 @@ int api::dc_timing_EarthTime_new(wasmu_Context* context) {
     auto instance = new timing::EarthTime();
     Sid result = api::store<timing::EarthTime>(Type::timing_EarthTime, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_timing_EarthTime_newUsingDate(wasmu_Context* context) {
-    unsigned int second = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int minute = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int hour = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int day = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int month = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    int year = (int)wasmu_popInt(context, sizeof(int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int second = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int minute = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int hour = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int day = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int month = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    int year = (int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     auto instance = new timing::EarthTime(year, month, day, hour, minute, second);
     Sid result = api::store<timing::EarthTime>(Type::timing_EarthTime, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_timing_EarthTime_newUsingMilliseconds(wasmu_Context* context) {
-    unsigned long millisecondOfDay = (unsigned long)wasmu_popInt(context, sizeof(unsigned long)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
-    unsigned int day = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int month = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    int year = (int)wasmu_popInt(context, sizeof(int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned long millisecondOfDay = (unsigned long)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int day = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int month = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    int year = (int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     auto instance = new timing::EarthTime(year, month, day, millisecondOfDay);
     Sid result = api::store<timing::EarthTime>(Type::timing_EarthTime, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -645,18 +645,18 @@ int api::dc_timing_EarthTime_syncToSystemTime(wasmu_Context* context) {
 int api::dc_timing_getCurrentTick(wasmu_Context* context) {
     unsigned long result = timing::getCurrentTick();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_rng_getLongInRange(wasmu_Context* context) {
-    long max = (long)wasmu_popInt(context, sizeof(long)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
-    long min = (long)wasmu_popInt(context, sizeof(long)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    long max = (long)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    long min = (long)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     long result = rng::getLongInRange(min, max);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -664,17 +664,17 @@ int api::dc_rng_getLongInRange(wasmu_Context* context) {
 int api::dc_rng_getLong(wasmu_Context* context) {
     long result = rng::getLong();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_rng_getKey(wasmu_Context* context) {
-    unsigned int length = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int length = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)context->userData, new dataTypes::Buffer(rng::getKey(length)));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -683,15 +683,15 @@ int api::dc_ui_Icon_new(wasmu_Context* context) {
     auto instance = new ui::Icon();
     Sid result = api::store<ui::Icon>(Type::ui_Icon, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_ui_Icon_setPixel(wasmu_Context* context) {
-    unsigned int value = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int y = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int x = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int value = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int y = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int x = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Icon>(Type::ui_Icon, _sid)->setPixel(x, y, (ui::PenMode)value);
@@ -703,7 +703,7 @@ int api::dc_ui_Screen_new(wasmu_Context* context) {
     auto instance = new ui::Screen((proc::WasmProcess*)context->userData);
     Sid result = api::store<ui::Screen>(Type::ui_Screen, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -717,8 +717,8 @@ int api::dc_ui_Screen_clear(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_setPosition(wasmu_Context* context) {
-    unsigned int row = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int column = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int row = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int column = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Screen>(Type::ui_Screen, _sid)->setPosition(column, row);
@@ -727,9 +727,9 @@ int api::dc_ui_Screen_setPosition(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_setPixel(wasmu_Context* context) {
-    unsigned int value = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int y = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int x = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int value = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int y = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int x = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Screen>(Type::ui_Screen, _sid)->setPixel(x, y, (ui::PenMode)value);
@@ -738,7 +738,7 @@ int api::dc_ui_Screen_setPixel(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_printChar(wasmu_Context* context) {
-    char c = (char)wasmu_popInt(context, sizeof(char)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    char c = (char)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Screen>(Type::ui_Screen, _sid)->print(c);
@@ -765,7 +765,7 @@ int api::dc_ui_Screen_printChars(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_printUInt(wasmu_Context* context) {
-    unsigned int value = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int value = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Screen>(Type::ui_Screen, _sid)->print(value);
@@ -774,7 +774,7 @@ int api::dc_ui_Screen_printUInt(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_printInt(wasmu_Context* context) {
-    int value = (int)wasmu_popInt(context, sizeof(int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    int value = (int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Screen>(Type::ui_Screen, _sid)->print(value);
@@ -783,7 +783,7 @@ int api::dc_ui_Screen_printInt(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_printULong(wasmu_Context* context) {
-    unsigned long value = (unsigned long)wasmu_popInt(context, sizeof(unsigned long)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    unsigned long value = (unsigned long)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Screen>(Type::ui_Screen, _sid)->print(value);
@@ -792,7 +792,7 @@ int api::dc_ui_Screen_printULong(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_printLong(wasmu_Context* context) {
-    long value = (long)wasmu_popInt(context, sizeof(long)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    long value = (long)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Screen>(Type::ui_Screen, _sid)->print(value);
@@ -801,7 +801,7 @@ int api::dc_ui_Screen_printLong(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_printDouble(wasmu_Context* context) {
-    double value = (double)wasmu_popInt(context, sizeof(double)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_F64);
+    double value = (double)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_F64)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_F64);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Screen>(Type::ui_Screen, _sid)->print(value);
@@ -810,7 +810,7 @@ int api::dc_ui_Screen_printDouble(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_printIcon(wasmu_Context* context) {
-    Sid icon = (Sid)wasmu_popInt(context, sizeof(Sid)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    Sid icon = (Sid)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Screen>(Type::ui_Screen, _sid)->print(api::getBySid<ui::Icon>(Type::ui_Icon, icon));
@@ -819,7 +819,7 @@ int api::dc_ui_Screen_printIcon(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_printRepeated(wasmu_Context* context) {
-    unsigned int times = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int times = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     char* string = (char*)wasmu_popPtr(context); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
@@ -829,7 +829,7 @@ int api::dc_ui_Screen_printRepeated(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_scroll(wasmu_Context* context) {
-    unsigned int maxLength = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int maxLength = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     char* string = (char*)wasmu_popPtr(context); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
@@ -847,8 +847,8 @@ int api::dc_ui_Screen_resetScroll(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_pad(wasmu_Context* context) {
-    char c = (char)wasmu_popInt(context, sizeof(char)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int size = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    char c = (char)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int size = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Screen>(Type::ui_Screen, _sid)->pad(size, c);
@@ -857,11 +857,11 @@ int api::dc_ui_Screen_pad(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_rect(wasmu_Context* context) {
-    unsigned int value = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int y2 = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int x2 = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int y1 = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int x1 = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int value = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int y2 = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int x2 = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int y1 = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int x1 = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Screen>(Type::ui_Screen, _sid)->rect(x1, y1, x2, y2, (ui::PenMode)value);
@@ -870,11 +870,11 @@ int api::dc_ui_Screen_rect(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_filledRect(wasmu_Context* context) {
-    unsigned int value = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int y2 = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int x2 = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int y1 = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int x1 = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int value = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int y2 = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int x2 = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int y1 = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int x1 = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Screen>(Type::ui_Screen, _sid)->filledRect(x1, y1, x2, y2, (ui::PenMode)value);
@@ -883,7 +883,7 @@ int api::dc_ui_Screen_filledRect(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_open(wasmu_Context* context) {
-    bool urgent = (bool)wasmu_popInt(context, sizeof(bool)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    bool urgent = (bool)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Screen>(Type::ui_Screen, _sid)->open(urgent);
@@ -900,7 +900,7 @@ int api::dc_ui_Screen_close(wasmu_Context* context) {
 }
 
 int api::dc_ui_Screen_swapWith(wasmu_Context* context) {
-    Sid currentScreen = (Sid)wasmu_popInt(context, sizeof(Sid)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    Sid currentScreen = (Sid)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Screen>(Type::ui_Screen, _sid)->swapWith(api::getBySid<ui::Screen>(Type::ui_Screen, currentScreen));
@@ -912,7 +912,7 @@ int api::dc_ui_Menu_new(wasmu_Context* context) {
     auto instance = new ui::Menu((proc::WasmProcess*)context->userData);
     Sid result = api::store<ui::Menu>(Type::ui_Menu, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -939,13 +939,13 @@ int api::dc_ui_Menu_getCurrentIndex(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<ui::Menu>(Type::ui_Menu, _sid)->getCurrentIndex();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_ui_Menu_setCurrentIndex(wasmu_Context* context) {
-    unsigned int index = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int index = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::Menu>(Type::ui_Menu, _sid)->setCurrentIndex(index);
@@ -957,7 +957,7 @@ int api::dc_ui_ContextualMenu_new(wasmu_Context* context) {
     auto instance = new ui::ContextualMenu((proc::WasmProcess*)context->userData);
     Sid result = api::store<ui::ContextualMenu>(Type::ui_ContextualMenu, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -968,7 +968,7 @@ int api::dc_ui_ContextualMenu_newWithTitle(wasmu_Context* context) {
     auto instance = new ui::ContextualMenu((proc::WasmProcess*)context->userData, String(title));
     Sid result = api::store<ui::ContextualMenu>(Type::ui_ContextualMenu, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -978,7 +978,7 @@ int api::dc_ui_ContextualMenu_getTitle(wasmu_Context* context) {
 
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)context->userData, new dataTypes::Buffer(api::getBySid<ui::ContextualMenu>(Type::ui_ContextualMenu, _sid)->getTitle()));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -997,13 +997,13 @@ int api::dc_ui_ContextualMenu_getSelectionBlinking(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<ui::ContextualMenu>(Type::ui_ContextualMenu, _sid)->getSelectionBlinking();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_ui_ContextualMenu_setSelectionBlinking(wasmu_Context* context) {
-    bool blinkSelection = (bool)wasmu_popInt(context, sizeof(bool)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    bool blinkSelection = (bool)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::ContextualMenu>(Type::ui_ContextualMenu, _sid)->setSelectionBlinking(blinkSelection);
@@ -1015,19 +1015,19 @@ int api::dc_ui_ConfirmationMenu_new(wasmu_Context* context) {
     auto instance = new ui::ConfirmationMenu((proc::WasmProcess*)context->userData);
     Sid result = api::store<ui::ConfirmationMenu>(Type::ui_ConfirmationMenu, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_ui_ConfirmationMenu_newWithTitle(wasmu_Context* context) {
-    bool swapYesNo = (bool)wasmu_popInt(context, sizeof(bool)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    bool swapYesNo = (bool)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     char* title = (char*)wasmu_popPtr(context); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     auto instance = new ui::ConfirmationMenu((proc::WasmProcess*)context->userData, String(title), swapYesNo);
     Sid result = api::store<ui::ConfirmationMenu>(Type::ui_ConfirmationMenu, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1037,7 +1037,7 @@ int api::dc_ui_ConfirmationMenu_yesSelected(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<ui::ConfirmationMenu>(Type::ui_ConfirmationMenu, _sid)->yesSelected();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1046,7 +1046,7 @@ int api::dc_ui_Popup_new(wasmu_Context* context) {
     auto instance = new ui::Popup((proc::WasmProcess*)context->userData);
     Sid result = api::store<ui::Popup>(Type::ui_Popup, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1055,7 +1055,7 @@ int api::dc_ui_TextInput_new(wasmu_Context* context) {
     auto instance = new ui::TextInput((proc::WasmProcess*)context->userData);
     Sid result = api::store<ui::TextInput>(Type::ui_TextInput, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1066,7 +1066,7 @@ int api::dc_ui_TextInput_newWithValue(wasmu_Context* context) {
     auto instance = new ui::TextInput((proc::WasmProcess*)context->userData, String(value));
     Sid result = api::store<ui::TextInput>(Type::ui_TextInput, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1076,7 +1076,7 @@ int api::dc_ui_TextInput_getValue(wasmu_Context* context) {
 
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)context->userData, new dataTypes::Buffer(api::getBySid<ui::TextInput>(Type::ui_TextInput, _sid)->getValue()));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1091,7 +1091,7 @@ int api::dc_ui_TextInput_setValue(wasmu_Context* context) {
 }
 
 int api::dc_ui_TextInput_typeTextChar(wasmu_Context* context) {
-    char text = (char)wasmu_popInt(context, sizeof(char)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    char text = (char)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::TextInput>(Type::ui_TextInput, _sid)->typeText(text);
@@ -1120,19 +1120,19 @@ int api::dc_ui_IntInput_new(wasmu_Context* context) {
     auto instance = new ui::IntInput((proc::WasmProcess*)context->userData);
     Sid result = api::store<ui::IntInput>(Type::ui_IntInput, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_ui_IntInput_newWithTitleAndValue(wasmu_Context* context) {
-    long value = (long)wasmu_popInt(context, sizeof(long)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    long value = (long)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     char* title = (char*)wasmu_popPtr(context); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     auto instance = new ui::IntInput((proc::WasmProcess*)context->userData, String(title), value);
     Sid result = api::store<ui::IntInput>(Type::ui_IntInput, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1142,7 +1142,7 @@ int api::dc_ui_IntInput_getTitle(wasmu_Context* context) {
 
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)context->userData, new dataTypes::Buffer(api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->getTitle()));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1161,13 +1161,13 @@ int api::dc_ui_IntInput_getValue(wasmu_Context* context) {
 
     long result = api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->getValue();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_ui_IntInput_setValue(wasmu_Context* context) {
-    long value = (long)wasmu_popInt(context, sizeof(long)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    long value = (long)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->setValue(value);
@@ -1180,13 +1180,13 @@ int api::dc_ui_IntInput_getValueBlinking(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->getValueBlinking();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_ui_IntInput_setValueBlinking(wasmu_Context* context) {
-    bool blinkValue = (bool)wasmu_popInt(context, sizeof(bool)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    bool blinkValue = (bool)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->setValueBlinking(blinkValue);
@@ -1199,13 +1199,13 @@ int api::dc_ui_IntInput_getBase(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->getBase();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_ui_IntInput_setBase(wasmu_Context* context) {
-    unsigned int base = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int base = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->setBase(base);
@@ -1214,8 +1214,8 @@ int api::dc_ui_IntInput_setBase(wasmu_Context* context) {
 }
 
 int api::dc_ui_IntInput_setRange(wasmu_Context* context) {
-    long maxValue = (long)wasmu_popInt(context, sizeof(long)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
-    long minValue = (long)wasmu_popInt(context, sizeof(long)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I64);
+    long maxValue = (long)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    long minValue = (long)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<ui::IntInput>(Type::ui_IntInput, _sid)->setRange(minValue, maxValue);
@@ -1227,19 +1227,19 @@ int api::dc_fs_FileHandle_new(wasmu_Context* context) {
     auto instance = new fs::FileHandle((proc::WasmProcess*)context->userData);
     Sid result = api::store<fs::FileHandle>(Type::fs_FileHandle, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_fs_FileHandle_newWithPathAndMode(wasmu_Context* context) {
-    unsigned int mode = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int mode = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     char* path = (char*)wasmu_popPtr(context); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     auto instance = new fs::FileHandle((proc::WasmProcess*)context->userData, String(path), (fs::FileMode)mode);
     Sid result = api::store<fs::FileHandle>(Type::fs_FileHandle, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1249,7 +1249,7 @@ int api::dc_fs_FileHandle_getPath(wasmu_Context* context) {
 
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)context->userData, new dataTypes::Buffer(api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->getPath()));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1259,7 +1259,7 @@ int api::dc_fs_FileHandle_getMode(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->getMode();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1269,7 +1269,7 @@ int api::dc_fs_FileHandle_isOpen(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->isOpen();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1279,7 +1279,7 @@ int api::dc_fs_FileHandle_isAvailable(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->isAvailable();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1289,7 +1289,7 @@ int api::dc_fs_FileHandle_read(wasmu_Context* context) {
 
     char result = api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->read();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1299,13 +1299,13 @@ int api::dc_fs_FileHandle_readString(wasmu_Context* context) {
 
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)context->userData, new dataTypes::Buffer(api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->readString()));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_fs_FileHandle_write(wasmu_Context* context) {
-    char c = (char)wasmu_popInt(context, sizeof(char)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    char c = (char)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->write(c);
@@ -1327,7 +1327,7 @@ int api::dc_fs_FileHandle_getSize(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->getSize();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1337,14 +1337,14 @@ int api::dc_fs_FileHandle_tell(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->tell();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_fs_FileHandle_seek(wasmu_Context* context) {
-    unsigned int origins = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    int position = (int)wasmu_popInt(context, sizeof(int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int origins = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    int position = (int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->seek(position, (fs::SeekOrigin)origins);
@@ -1353,7 +1353,7 @@ int api::dc_fs_FileHandle_seek(wasmu_Context* context) {
 }
 
 int api::dc_fs_FileHandle_truncate(wasmu_Context* context) {
-    unsigned int size = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int size = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     api::getBySid<fs::FileHandle>(Type::fs_FileHandle, _sid)->truncate(size);
@@ -1381,7 +1381,7 @@ int api::dc_fs_DirectoryListing_new(wasmu_Context* context) {
     auto instance = new fs::DirectoryListing((proc::WasmProcess*)context->userData);
     Sid result = api::store<fs::DirectoryListing>(Type::fs_DirectoryListing, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1399,7 +1399,7 @@ int api::dc_fs_DirectoryListing_next(wasmu_Context* context) {
 
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)context->userData, new dataTypes::Buffer(api::getBySid<fs::DirectoryListing>(Type::fs_DirectoryListing, _sid)->next()));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1409,18 +1409,18 @@ int api::dc_fs_DirectoryListing_length(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<fs::DirectoryListing>(Type::fs_DirectoryListing, _sid)->length();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_fs_open(wasmu_Context* context) {
-    unsigned int mode = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int mode = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     char* path = (char*)wasmu_popPtr(context); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     Sid result = api::store<fs::FileHandle>(Type::fs_FileHandle, (proc::WasmProcess*)context->userData, fs::open((proc::WasmProcess*)context->userData, String(path), (fs::FileMode)mode));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1430,7 +1430,7 @@ int api::dc_fs_isFileOpen(wasmu_Context* context) {
 
     unsigned int result = fs::isFileOpen(String(path));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1440,7 +1440,7 @@ int api::dc_fs_exists(wasmu_Context* context) {
 
     unsigned int result = fs::exists(String(path));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1450,7 +1450,7 @@ int api::dc_fs_getEntryType(wasmu_Context* context) {
 
     unsigned int result = fs::getEntryType(String(path));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1460,7 +1460,7 @@ int api::dc_fs_remove(wasmu_Context* context) {
 
     unsigned int result = fs::remove(String(path));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1471,7 +1471,7 @@ int api::dc_fs_rename(wasmu_Context* context) {
 
     unsigned int result = fs::rename(String(oldPath), String(newPath));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1481,7 +1481,7 @@ int api::dc_fs_createDirectory(wasmu_Context* context) {
 
     unsigned int result = fs::createDirectory(String(path));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1491,7 +1491,7 @@ int api::dc_fs_ensureParentDirectories(wasmu_Context* context) {
 
     unsigned int result = fs::ensureParentDirectories(String(path));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1501,18 +1501,18 @@ int api::dc_fs_listDirectory(wasmu_Context* context) {
 
     Sid result = api::store<fs::DirectoryListing>(Type::fs_DirectoryListing, (proc::WasmProcess*)context->userData, fs::listDirectory((proc::WasmProcess*)context->userData, String(path)));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_test_TestClass_new(wasmu_Context* context) {
-    unsigned int seed = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int seed = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     auto instance = new test::TestClass(seed);
     Sid result = api::store<test::TestClass>(Type::test_TestClass, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1526,26 +1526,26 @@ int api::dc_test_TestClass_identify(wasmu_Context* context) {
 }
 
 int api::dc_test_TestClass_add(wasmu_Context* context) {
-    unsigned int value2 = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    unsigned int value = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int value2 = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int value = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     unsigned int result = api::getBySid<test::TestClass>(Type::test_TestClass, _sid)->add(value, value2);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_test_TestClass_bools(wasmu_Context* context) {
-    bool c = (bool)wasmu_popInt(context, sizeof(bool)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    bool b = (bool)wasmu_popInt(context, sizeof(bool)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    bool a = (bool)wasmu_popInt(context, sizeof(bool)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    bool c = (bool)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    bool b = (bool)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    bool a = (bool)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
     Sid _sid = wasmu_popInt(context, 4); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     unsigned int result = api::getBySid<test::TestClass>(Type::test_TestClass, _sid)->bools(a, b, c);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1555,7 +1555,7 @@ int api::dc_test_TestClass_nextRandomNumber(wasmu_Context* context) {
 
     unsigned int result = api::getBySid<test::TestClass>(Type::test_TestClass, _sid)->nextRandomNumber();
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1565,7 +1565,7 @@ int api::dc_test_TestClass_getString(wasmu_Context* context) {
 
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)context->userData, new dataTypes::Buffer(api::getBySid<test::TestClass>(Type::test_TestClass, _sid)->getString()));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1575,18 +1575,18 @@ int api::dc_test_TestClass_getChars(wasmu_Context* context) {
 
     Sid result = api::store<dataTypes::Buffer>(Type::Buffer, (proc::WasmProcess*)context->userData, new dataTypes::Buffer(api::getBySid<test::TestClass>(Type::test_TestClass, _sid)->getChars()));
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
 
 int api::dc_test_TestSubclass_new(wasmu_Context* context) {
-    unsigned int seed = (unsigned int)wasmu_popInt(context, sizeof(unsigned int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    unsigned int seed = (unsigned int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     auto instance = new test::TestSubclass(seed);
     Sid result = api::store<test::TestSubclass>(Type::test_TestSubclass, (proc::WasmProcess*)context->userData, instance);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1614,12 +1614,12 @@ int api::dc_test_sayHello(wasmu_Context* context) {
 }
 
 int api::dc_test_add(wasmu_Context* context) {
-    int b = (int)wasmu_popInt(context, sizeof(int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
-    int a = (int)wasmu_popInt(context, sizeof(int)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    int b = (int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    int a = (int)wasmu_popInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32)); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     int result = test::add(a, b);
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }
@@ -1627,7 +1627,7 @@ int api::dc_test_add(wasmu_Context* context) {
 int api::dc_test_getMostRecentTest(wasmu_Context* context) {
     Sid result = api::store<test::TestClass>(Type::test_TestClass, (proc::WasmProcess*)context->userData, test::getMostRecentTest());
 
-    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
+    wasmu_pushInt(context, wasmu_getValueTypeSize(WASMU_VALUE_TYPE_I32), result); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);
 
     return true;
 }

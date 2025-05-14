@@ -18,8 +18,8 @@ namespace proc {
 
     enum WasmError {
         NONE,
-        INIT_FAILURE,
         PARSE_FAILURE,
+        LINK_FAILURE,
         LOAD_FAILURE,
         RUN_FAILURE
     };

@@ -158,7 +158,7 @@ function method {
         firmwareReturnType="unsigned int"
     fi
 
-    if [ "$returnType" = "long" ] || [ "$returnType" = "unsigned long" ]; then
+    if [ "$returnType" = "long long" ] || [ "$returnType" = "unsigned long long" ]; then
         returnValueType=WASMU_VALUE_TYPE_I64
     fi
 
@@ -306,7 +306,7 @@ function method {
                 shortArgType="*"
                 ;;
 
-            "long"|"unsigned long")
+            "long long"|"unsigned long long")
                 argValueType=WASMU_VALUE_TYPE_I64
                 ;;
 
@@ -365,7 +365,7 @@ function method {
         if [ "$firmwareArgType" = "char*" ]; then
             sed -i "1s/^/    char* $argName = (char*)wasmu_popPtr(context); WASMU_ASSERT_POP_TYPE(WASMU_VALUE_TYPE_I32);\n/" tools/api/_api-args.h
         else
-            sed -i "1s/^/    $firmwareArgType $argName = ($firmwareArgType)wasmu_popInt(context, sizeof($firmwareArgType)); WASMU_ASSERT_POP_TYPE($argValueType);\n/" tools/api/_api-args.h
+            sed -i "1s/^/    $firmwareArgType $argName = ($firmwareArgType)wasmu_popInt(context, wasmu_getValueTypeSize($argValueType)); WASMU_ASSERT_POP_TYPE($argValueType);\n/" tools/api/_api-args.h
         fi
 
         shift
@@ -456,7 +456,7 @@ function method {
 
     if [ "$returnType" != "void" ]; then
         echo >> firmware/_api.cpp
-        echo "    wasmu_pushInt(context, sizeof(result), result); WASMU_ASSERT_POP_TYPE($returnValueType);" >> firmware/_api.cpp
+        echo "    wasmu_pushInt(context, wasmu_getValueTypeSize($returnValueType), result); WASMU_ASSERT_POP_TYPE($returnValueType);" >> firmware/_api.cpp
     fi
 
     (

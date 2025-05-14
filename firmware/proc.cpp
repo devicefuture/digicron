@@ -41,7 +41,9 @@ void proc::Process::stop() {
 
     _running = false;
 
-    onStop(this);
+    if (onStop) {
+        onStop(this);
+    }
 }
 
 proc::WasmProcess::WasmProcess(char* code, unsigned int codeSize) : proc::Process() {
@@ -50,6 +52,9 @@ proc::WasmProcess::WasmProcess(char* code, unsigned int codeSize) : proc::Proces
     _processModule = wasmu_newModule(_context);
 
     _context->userData = this;
+
+    wasmu_assignModuleName(_nativeModule, (wasmu_U8*)"digicron");
+    wasmu_assignModuleName(_processModule, (wasmu_U8*)"app");
 
     wasmu_load(_processModule, (wasmu_U8*)code, codeSize);
 
@@ -61,24 +66,33 @@ proc::WasmProcess::WasmProcess(char* code, unsigned int codeSize) : proc::Proces
 
     api::linkFunctions(_nativeModule);
 
+    if (
+        !wasmu_resolveModuleImports(_nativeModule) ||
+        !wasmu_resolveModuleImports(_processModule)
+    ) {
+        _error = WasmError::LINK_FAILURE;
+        _running = false;
+        return;
+    }
+
     wasmu_Function* initFunction = wasmu_getExportedFunction(_processModule, (wasmu_U8*)"__wasm_call_ctors");
     wasmu_Function* startFunction = wasmu_getExportedFunction(_processModule, (wasmu_U8*)"_setup");
 
     _stepFunction = wasmu_getExportedFunction(_processModule, (wasmu_U8*)"_loop");
 
-    if (!startFunction || _stepFunction) {
+    if (!startFunction || !_stepFunction) {
         _error = WasmError::LOAD_FAILURE;
         _running = false;
         return;
     }
 
-    if (initFunction && !wasmu_callFunction(_processModule, initFunction)) {
+    if (initFunction && !wasmu_runFunction(_processModule, initFunction)) {
         _error = WasmError::RUN_FAILURE;
         _running = false;
         return;
     }
 
-    if (!wasmu_callFunction(_processModule, startFunction)) {
+    if (!wasmu_runFunction(_processModule, startFunction)) {
         _error = WasmError::RUN_FAILURE;
         _running = false;
         return;
@@ -94,7 +108,7 @@ void proc::WasmProcess::step() {
         return;
     }
 
-    if (wasmu_callFunction(_processModule, _stepFunction)) {
+    if (!wasmu_runFunction(_processModule, _stepFunction)) {
         _error = WasmError::RUN_FAILURE;
 
         stop();
@@ -165,7 +179,7 @@ template<typename ...Args> void proc::WasmProcess::callVoid(const char* name, Ar
 
     _addArgs(args...);
 
-    wasmu_callFunction(_processModule, function);
+    wasmu_runFunction(_processModule, function);
 }
 
 template<typename T, typename ...Args> T proc::WasmProcess::call(const char* name, T defaultValue, Args... args) {
@@ -179,7 +193,7 @@ template<typename T, typename ...Args> T proc::WasmProcess::call(const char* nam
 
     _addArgs(args...);
 
-    if (!wasmu_callFunction(_processModule, function)) {
+    if (!wasmu_runFunction(_processModule, function)) {
         return defaultValue;
     }
 
