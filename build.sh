@@ -3,12 +3,6 @@ if [ "$DESKTOP_SESSION" == "gshell" ]; then
     export EMSDK_OS=linux
 fi
 
-tools/api/builder.sh
-
-for appPath in apps/*/; do
-    apps/build.sh $(basename $appPath)
-done
-
 if [ "$1" == "--install-dev" ]; then
     sudo apt-get install clang lld xxd binaryen
 

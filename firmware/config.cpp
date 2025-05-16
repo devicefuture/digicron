@@ -1,10 +1,5 @@
-#ifndef DC_COMMON_CONFIG_CPP_
-#define DC_COMMON_CONFIG_CPP_
-
-#ifndef DIGICRON_H_
-    #include "config.h"
-    #include "../fs.h"
-#endif
+#include "config.h"
+#include "fs.h"
 
 inline config::Config::Config() {}
 
@@ -282,5 +277,3 @@ inline bool config::Config::saveToFile(dataTypes::String path) {
 
     return true;
 }
-
-#endif

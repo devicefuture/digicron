@@ -2,7 +2,6 @@
 #define NUMERIC_INPUTS_H_
 
 #include "../ui.h"
-#include "../common/ui.h"
 #include "../timing.h"
 
 namespace ui {

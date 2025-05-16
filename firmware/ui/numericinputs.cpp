@@ -1,5 +1,5 @@
 #include "numericinputs.h"
-#include "../common/maths.h"
+#include "../maths.h"
 #include "../timing.h"
 #include "../utils.h"
 

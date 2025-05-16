@@ -1,10 +1,8 @@
-#ifndef DC_COMMON_CONFIG_H_
-#define DC_COMMON_CONFIG_H_
+#ifndef CONFIG_H_
+#define CONFIG_H_
 
-#ifndef DIGICRON_H_
-    #include "../datatypes.h"
-    #include "../utils.h"
-#endif
+#include "datatypes.h"
+#include "utils.h"
 
 namespace config {
     struct Property {

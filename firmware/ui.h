@@ -38,10 +38,10 @@ namespace ui {
 
             void setPixel(unsigned int x, unsigned int y, PenMode value);
     };
+
+    Icon* constructIcon(dataTypes::String pixels);
 }
 
 #include "ui/screens.h"
-
-#include "common/ui.h"
 
 #endif

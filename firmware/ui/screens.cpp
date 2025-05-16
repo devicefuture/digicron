@@ -276,34 +276,12 @@ void ui::Screen::preventDefault() {
 
 void ui::Screen::_update() {
     update();
-
-    if (ownerProcess && ownerProcess->getType() == proc::ProcessType::WASM) {
-        ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_update");
-    }
 }
 
 void ui::Screen::_handleEvent(ui::Event event) {
     _defaultPrevented = false;
 
     handleEvent(event);
-
-    if (ownerProcess && ownerProcess->getType() == proc::ProcessType::WASM) {
-        if (event.type == EventType::BUTTON_UP || event.type == EventType::BUTTON_DOWN) {
-            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleButtonEvent", event.type, event.data.button);
-        }
-
-        if (event.type == EventType::ITEM_SELECT) {
-            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleItemEvent", event.type, event.data.index);
-        }
-
-        if (event.type == EventType::CANCEL) {
-            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleSimpleEvent", event.type);
-        }
-
-        if (event.type == EventType::CONFIRM_VALUE) {
-            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleSimpleEvent", event.type);
-        }
-    }
 }
 
 void ui::enactScreenPermanence(ui::ScreenPermanence permanenceBoundary) {
