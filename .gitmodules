@@ -13,3 +13,6 @@
 [submodule "hardware/lib/USB-C"]
 	path = hardware/lib/USB-C
 	url = https://github.com/ai03-2725/Type-C.pretty.git
+[submodule "lib/catto"]
+	path = lib/catto
+	url = https://github.com/devicefuture/catto.git

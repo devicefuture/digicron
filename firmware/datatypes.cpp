@@ -1,8 +1,9 @@
 #include "datatypes.h"
 #include "proc.h"
-#include "apps.h"
 #include "fs.h"
+#include "config.h"
 #include "ui/screens.h"
+#include "apps.h"
 
 template<typename T> T* store(T value) {
     auto storedValue = new dataTypes::StoredValue<T>(value);
@@ -155,6 +156,26 @@ template<typename T> void dataTypes::List<T>::empty() {
     while (currentItemPtr) {
         auto nextItemPtr = currentItemPtr->nextItemPtr;
 
+        delete currentItemPtr;
+
+        currentItemPtr = nextItemPtr;
+    }
+
+    _firstItemPtr = nullptr;
+    _length = 0;
+}
+
+template<typename T> void dataTypes::List<T>::emptyAndDelete() {
+    if (!_firstItemPtr) {
+        return;
+    }
+
+    auto currentItemPtr = _firstItemPtr;
+
+    while (currentItemPtr) {
+        auto nextItemPtr = currentItemPtr->nextItemPtr;
+
+        delete currentItemPtr->valuePtr;
         delete currentItemPtr;
 
         currentItemPtr = nextItemPtr;
@@ -398,6 +419,7 @@ template<typename T> dataTypes::List<T> dataTypes::List<T>::concat(dataTypes::Li
 
 template class dataTypes::List<String>;
 template class dataTypes::List<proc::Process>;
-template class dataTypes::List<apps::App>;
 template class dataTypes::List<fs::FileHandle>;
+template class dataTypes::List<config::Property>;
 template class dataTypes::List<ui::Screen>;
+template class dataTypes::List<apps::App>;

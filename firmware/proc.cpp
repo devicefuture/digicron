@@ -1,5 +1,7 @@
 #include "proc.h"
 
+#include <catto.h>
+
 unsigned int proc::pidCounter = 0;
 dataTypes::List<proc::Process> proc::processes;
 
@@ -38,7 +40,38 @@ void proc::Process::stop() {
 
     _running = false;
 
-    onStop(this);
+    if (onStop) {
+        onStop(this);
+    }
+}
+
+proc::AttoProcess::AttoProcess(String code) : proc::Process::Process() {
+    _context = catto_newContext();
+
+    catto_addContextStandardCommands(_context);
+    catto_load(_context, code.c_str());
+}
+
+void proc::AttoProcess::step() {
+    if (!_running) {
+        return;
+    }
+
+    if (!catto_step(_context)) {
+        stop();
+
+        return;
+    }
+}
+
+void proc::AttoProcess::stop() {
+    if (!_running) {
+        return;
+    }
+
+    Process::stop();
+
+    // TODO: Free catto context
 }
 
 void proc::stepProcesses() {

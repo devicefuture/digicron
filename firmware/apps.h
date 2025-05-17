@@ -3,11 +3,13 @@
 
 #include "datatypes.h"
 #include "proc.h"
+#include "config.h"
 
 namespace apps {
     class App {
         public:
-            App(String id, String displayName);
+            App(String id, config::Config* appConfig);
+            ~App();
 
             String getId();
             String getDisplayName();
@@ -15,12 +17,20 @@ namespace apps {
 
         protected:
             String _id;
-            String _displayName;
+            config::Config* _config;
+    };
+
+    class AttoApp : public App {
+        public:
+            using App::App;
+
+            proc::Process* launch() override;
     };
 
     extern dataTypes::List<App> registry;
     extern proc::Process* primaryAppProcess;
 
+    void scan();
     apps::App* getAppById(String id);
 }
 

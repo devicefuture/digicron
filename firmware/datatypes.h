@@ -55,6 +55,7 @@ namespace dataTypes {
             T* next(Iterator* iterator = nullptr);
             unsigned int length();
             void empty();
+            void emptyAndDelete();
             unsigned int push(T* valuePtr);
             T* pop();
             unsigned int unshift(T* valuePtr);

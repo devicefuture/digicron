@@ -123,11 +123,7 @@ void fs::FileHandle::close() {
 }
 
 fs::DirectoryListing::~DirectoryListing() {
-    _entries.start();
-
-    while (String* entry = _entries.next()) {
-        delete entry;
-    }
+    _entries.emptyAndDelete();
 }
 
 String fs::DirectoryListing::next() {

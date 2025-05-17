@@ -2,13 +2,15 @@
 #define PROC_H_
 
 #include <Arduino.h>
+#include <catto-config.h>
+#include <catto.h>
 
 #include "datatypes.h"
 
 namespace proc {
     enum ProcessType {
         SYSTEM,
-        WASM
+        ATTO
     };
 
     extern unsigned int pidCounter;
@@ -32,6 +34,18 @@ namespace proc {
         protected:
             unsigned int _pid;
             bool _running = true;
+    };
+
+    class AttoProcess : public Process {
+        public:
+            AttoProcess(String code);
+
+            ProcessType getType() override {return ProcessType::ATTO;}
+            void step() override;
+            void stop() override;
+
+        protected:
+            catto_Context* _context;
     };
 
     extern dataTypes::List<Process> processes;
