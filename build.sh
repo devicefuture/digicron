@@ -1,7 +1,11 @@
+#!/bin/bash
+
 if [ "$DESKTOP_SESSION" == "gshell" ]; then
     # Fix when using LiveG OS since `emsdk` confuses LiveG OS for macOS
     export EMSDK_OS=linux
 fi
+
+./sysfs.sh
 
 if [ "$1" == "--install-dev" ]; then
     sudo apt-get install clang lld xxd binaryen

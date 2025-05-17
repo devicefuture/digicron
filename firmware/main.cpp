@@ -19,6 +19,7 @@
 #include "proc.h"
 #include "fs.h"
 #include "apps.h"
+#include "_sysfs.h"
 
 #define BACK_BTN_PIN 6
 #define HOME_BTN_PIN 5
@@ -59,9 +60,12 @@ void setup() {
     testScreen->print(" device  future");
     testScreen->print(tmIcon);
 
-    #ifndef DC_SIMULATOR
-        fs::init();
+    fs::init();
 
+    sysfs::populate();
+    apps::scan();
+
+    #ifndef DC_SIMULATOR
         Bluefruit.begin();
         Bluefruit.setTxPower(0);
         Bluefruit.setName("DigiCron");
@@ -85,8 +89,6 @@ void setup() {
             loop();
         }
     #endif
-
-    apps::scan();
 }
 
 void loop() {

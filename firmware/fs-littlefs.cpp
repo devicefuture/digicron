@@ -33,6 +33,18 @@ void fs::FileHandle::write(char c) {
     _file->write(&c, 1);
 }
 
+void fs::FileHandle::write(const char* buffer, unsigned int length) {
+    if (!_isOpen) {
+        return;
+    }
+
+    if (!(_mode == FileMode::WRITE || _mode == FileMode::APPEND)) {
+        return;
+    }
+
+    _file->write(buffer, length);
+}
+
 unsigned int fs::FileHandle::getSize() {
     if (!_isOpen) {
         return 0;

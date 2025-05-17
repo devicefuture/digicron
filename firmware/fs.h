@@ -50,6 +50,7 @@ namespace fs {
             String readString();
 
             void write(char c);
+            void write(const char* buffer, unsigned int length);
             void write(String string);
 
             unsigned int getSize();
