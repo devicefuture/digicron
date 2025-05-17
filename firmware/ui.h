@@ -3,6 +3,10 @@
 
 #include <Arduino.h>
 
+namespace ui {
+    class Screen;
+}
+
 #include "datatypes.h"
 #include "input.h"
 #include "display.h"

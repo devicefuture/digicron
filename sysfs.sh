@@ -1,5 +1,11 @@
 #!/bin/bash
 
+OVERWRITE=false
+
+if [ "$1" = "--overwrite" ]; then
+    OVERWRITE=true
+fi
+
 mkdir -p firmware/sysfs
 
 > firmware/_sysfs.h
@@ -26,6 +32,10 @@ tee -a firmware/_sysfs.cpp > /dev/null << EOF
 bool sysfs::addFile(String path, const unsigned char* data, unsigned int length) {
     if (!fs::ensureParentDirectories(path)) {
         return false;
+    }
+
+    if (!$OVERWRITE && fs::exists(path)) {
+        return true;
     }
 
     fs::FileHandle* file = fs::open(path, fs::FileMode::WRITE);

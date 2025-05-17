@@ -5,7 +5,12 @@ if [ "$DESKTOP_SESSION" == "gshell" ]; then
     export EMSDK_OS=linux
 fi
 
-./sysfs.sh
+if [ "$1" == "--overwrite" ]; then
+    ./sysfs.sh --overwrite
+    shift
+else
+    ./sysfs.sh
+fi
 
 if [ "$1" == "--install-dev" ]; then
     sudo apt-get install clang lld xxd binaryen
