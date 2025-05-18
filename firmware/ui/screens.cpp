@@ -73,9 +73,7 @@ void ui::Screen::setPixel(unsigned int x, unsigned int y, ui::PenMode value) {
 }
 
 void ui::Screen::print(char c) {
-    if (_currentPosition >= display::CHAR_COUNT) {
-        return;
-    }
+    _scrollUp();
 
     if (c == '\n') {
         _currentPosition += display::COLUMNS - (_currentPosition % display::COLUMNS);
@@ -146,9 +144,7 @@ void ui::Screen::print(double value) {
 }
 
 void ui::Screen::print(Icon* icon) {
-    if (_currentPosition >= display::CHAR_COUNT) {
-        return;
-    }
+    _scrollUp();
 
     for (unsigned int offset = 0; offset < display::CHAR_COLUMNS; offset++) {
         displayData[(_currentPosition * display::CHAR_COLUMNS) + offset] = icon->iconData[offset];
@@ -272,6 +268,22 @@ void ui::Screen::swapWith(ui::Screen* currentScreen) {
 
 void ui::Screen::preventDefault() {
     _defaultPrevented = true;
+}
+
+void ui::Screen::_scrollUp() {
+    while (_currentPosition >= display::CHAR_COUNT) {
+        unsigned int charOffset = (display::CHAR_COUNT - display::COLUMNS) * display::CHAR_COLUMNS;
+
+        for (unsigned int i = 0; i < charOffset; i++) {
+            displayData[i] = displayData[(display::COLUMNS * display::CHAR_COLUMNS) + i];
+        }
+
+        for (unsigned int i = 0; i < display::COLUMNS * display::CHAR_COLUMNS; i++) {
+            displayData[charOffset + i] = 0;
+        }
+
+        _currentPosition -= display::COLUMNS;
+    }
 }
 
 void ui::Screen::_update() {

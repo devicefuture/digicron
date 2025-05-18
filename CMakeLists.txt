@@ -37,6 +37,7 @@ add_executable(digicron ${SOURCES})
 
 add_definitions(
     -DDC_SIMULATOR
+    -DCATTO_USE_64_BIT
     -DCATTO_CUSTOM_PRINT_COMMAND
 )
 

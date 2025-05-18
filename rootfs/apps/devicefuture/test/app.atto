@@ -1,2 +1,4 @@
-10 print "Hello, world! ";
-20 goto 10
+10 i=0
+20 print i
+30 i=i+1
+40 goto 20
