@@ -106,7 +106,9 @@ void proc::AttoProcess::stop() {
 
     Process::stop();
 
-    // TODO: Free catto context
+    catto_freeContext(_context);
+
+    delete _mainScreen;
 }
 
 void proc::stepProcesses() {

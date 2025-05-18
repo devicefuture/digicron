@@ -101,8 +101,6 @@ void loop() {
 
     if (ui::currentScreen == testScreen && millis() > 3000) {
         home::homeScreen.open(true);
-
-        // proc::WasmProcess testProcess((char*)apptest_app_wasm, apptest_app_wasm_len);
     }
 
     // #ifndef DC_SIMULATOR
