@@ -4715,7 +4715,7 @@
 		)
 		(uuid "2c4a9622-612d-4727-95a3-ab54867cd377")
 	)
-	(text "1,000 mA output at 5 V\n(at 3.7 V input)"
+	(text "1,000 mA output at 5.2 V\n(at 3.7 V input)"
 		(exclude_from_sim no)
 		(at 230.886 90.932 0)
 		(effects
@@ -4727,12 +4727,12 @@
 	)
 	(text "Power switching\nbetween battery\nand USB"
 		(exclude_from_sim no)
-		(at 249.682 92.964 0)
+		(at 249.682 90.424 0)
 		(effects
 			(font
 				(size 1.016 1.016)
 			)
-			(justify left)
+			(justify left top)
 		)
 		(uuid "67dea63f-22ea-45dd-858a-b1e63d7c901b")
 	)
@@ -4747,6 +4747,28 @@
 			)
 		)
 		(uuid "74e2ca55-4f72-4e0b-a818-04a8f9e7fe7c")
+	)
+	(text "5.2 V - 0.45 V = 4.75 V output"
+		(exclude_from_sim no)
+		(at 247.904 100.584 0)
+		(effects
+			(font
+				(size 1.016 1.016)
+			)
+			(justify right)
+		)
+		(uuid "b6fbc805-eda3-4dc0-bdc6-7306e539e495")
+	)
+	(text "Voltage drop\n0.45 V at 30 mA"
+		(exclude_from_sim no)
+		(at 249.682 109.474 0)
+		(effects
+			(font
+				(size 1.016 1.016)
+			)
+			(justify left bottom)
+		)
+		(uuid "e5cad310-c847-4861-a4e9-19f7cede3091")
 	)
 	(text "3.3 V power regulation"
 		(exclude_from_sim no)
