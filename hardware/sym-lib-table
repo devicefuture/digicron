@@ -6,4 +6,5 @@
   (lib (name "LTR390")(type "KiCad")(uri "${KIPRJMOD}/lib/LTR390/2024-12-11_22-26-57.kicad_sym")(options "")(descr ""))
   (lib (name "ADXL345")(type "KiCad")(uri "${KIPRJMOD}/lib/ADXL345/2024-12-11_22-39-53.kicad_sym")(options "")(descr ""))
   (lib (name "RT9080")(type "KiCad")(uri "${KIPRJMOD}/lib/RT9080/2025-02-12_18-34-38.kicad_sym")(options "")(descr ""))
+  (lib (name "TPS61023")(type "KiCad")(uri "${KIPRJMOD}/lib/TPS61023/2025-05-21_17-34-31.kicad_sym")(options "")(descr ""))
 )

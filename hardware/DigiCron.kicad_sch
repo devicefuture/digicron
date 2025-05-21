@@ -7344,7 +7344,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "184a5530-f591-492a-9b94-fc8405ebe47a")
-		(property "Reference" "R102"
+		(property "Reference" "R101"
 			(at 34.29 168.91 90)
 			(effects
 				(font
@@ -7396,7 +7396,7 @@
 		(instances
 			(project "DigiCron"
 				(path "/da54d175-8762-4f8c-be46-30694592bf7b"
-					(reference "R102")
+					(reference "R101")
 					(unit 1)
 				)
 			)
@@ -7629,7 +7629,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "484a4be5-e940-4cc0-9456-34105628d873")
-		(property "Reference" "Q102"
+		(property "Reference" "Q101"
 			(at 113.03 177.7999 0)
 			(effects
 				(font
@@ -7689,7 +7689,7 @@
 		(instances
 			(project ""
 				(path "/da54d175-8762-4f8c-be46-30694592bf7b"
-					(reference "Q102")
+					(reference "Q101")
 					(unit 1)
 				)
 			)
@@ -8283,7 +8283,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "7b5d17d8-b30d-4b7e-a8e2-2bc90c563746")
-		(property "Reference" "R103"
+		(property "Reference" "R102"
 			(at 43.18 179.0699 0)
 			(effects
 				(font
@@ -8337,7 +8337,7 @@
 		(instances
 			(project "DigiCron"
 				(path "/da54d175-8762-4f8c-be46-30694592bf7b"
-					(reference "R103")
+					(reference "R102")
 					(unit 1)
 				)
 			)
@@ -9041,7 +9041,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "ab7a870c-1bd5-4ffe-8385-f4a4a45f3e41")
-		(property "Reference" "R104"
+		(property "Reference" "R103"
 			(at 95.25 172.72 90)
 			(effects
 				(font
@@ -9093,7 +9093,7 @@
 		(instances
 			(project "DigiCron"
 				(path "/da54d175-8762-4f8c-be46-30694592bf7b"
-					(reference "R104")
+					(reference "R103")
 					(unit 1)
 				)
 			)
@@ -9350,7 +9350,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c0565a95-3511-4c99-994f-3b9c4e5a2483")
-		(property "Reference" "R101"
+		(property "Reference" "R100"
 			(at 44.45 158.75 90)
 			(effects
 				(font
@@ -9402,7 +9402,7 @@
 		(instances
 			(project ""
 				(path "/da54d175-8762-4f8c-be46-30694592bf7b"
-					(reference "R101")
+					(reference "R100")
 					(unit 1)
 				)
 			)
@@ -10288,7 +10288,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "f8cdf153-2574-4009-ac5b-7a09102c9120")
-		(property "Reference" "Q101"
+		(property "Reference" "Q100"
 			(at 54.61 173.9899 0)
 			(effects
 				(font
@@ -10348,7 +10348,7 @@
 		(instances
 			(project ""
 				(path "/da54d175-8762-4f8c-be46-30694592bf7b"
-					(reference "Q101")
+					(reference "Q100")
 					(unit 1)
 				)
 			)
