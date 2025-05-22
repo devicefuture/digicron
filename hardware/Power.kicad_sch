@@ -4993,7 +4993,7 @@
 	)
 	(text "Battery power level sensing\nvoltage divider"
 		(exclude_from_sim no)
-		(at 125.984 32.258 0)
+		(at 125.984 31.242 0)
 		(effects
 			(font
 				(size 1.905 1.905)
