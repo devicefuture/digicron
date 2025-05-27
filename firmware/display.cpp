@@ -18,7 +18,7 @@ void display::init() {
         driver.begin();
         driver.clear();
         driver.displayUnblank();
-        driver.setBrightness(7);
+        driver.setBrightness(15);
     #endif
 }
 
