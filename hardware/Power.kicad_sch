@@ -1786,6 +1786,177 @@
 				)
 			)
 		)
+		(symbol "MU-AS90R:MU-AS90R"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "SW"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "MU-AS90R_0_1"
+				(rectangle
+					(start -6.35 -3.81)
+					(end 6.35 -11.43)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "MU-AS90R_1_1"
+				(pin input line
+					(at -8.89 -5.08 0)
+					(length 2.54)
+					(name "UP"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -8.89 -7.62 0)
+					(length 2.54)
+					(name "LEFT"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "B"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -8.89 -10.16 0)
+					(length 2.54)
+					(name "DOWN"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "C"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 8.89 -10.16 180)
+					(length 2.54)
+					(name "COM"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "D"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 8.89 -7.62 180)
+					(length 2.54)
+					(name "RIGHT"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "E"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 8.89 -5.08 180)
+					(length 2.54)
+					(name "SEL"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "F"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
 		(symbol "RT9080:RT9080-33GJ5"
 			(pin_names
 				(offset 0.254)
@@ -5531,6 +5702,28 @@
 		)
 		(uuid "f8e4e039-19d7-4d5a-ad9e-f0500ebaf089")
 	)
+	(global_label "JOY_RIGHT"
+		(shape input)
+		(at 104.14 173.99 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "26fd27cc-af65-43ac-96ee-44bf964286e2")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 116.9224 173.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "JOY_BACK"
 		(shape input)
 		(at 49.53 161.29 0)
@@ -5552,6 +5745,27 @@
 			)
 		)
 	)
+	(global_label "JOY_LEFT"
+		(shape input)
+		(at 86.36 173.99 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "5698756f-165f-4072-952e-53c922a50d74")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 86.36 173.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "USB_D-"
 		(shape input)
 		(at 27.94 73.66 180)
@@ -5565,6 +5779,27 @@
 		(uuid "7d1a6679-9db8-4d52-a86d-387241ca06c4")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 27.94 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "JOY_DOWN"
+		(shape input)
+		(at 86.36 176.53 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "7d4d4f0a-f15d-4037-81e7-05afe6623165")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 86.36 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5652,6 +5887,48 @@
 		(uuid "b3ef6496-02cf-46af-8faa-4364baa9ef71")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 27.94 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "JOY_UP"
+		(shape input)
+		(at 86.36 171.45 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "dea4277e-2a41-4ea7-a069-2954f157c0a1")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 86.36 171.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "JOY_SELECT"
+		(shape input)
+		(at 104.14 171.45 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "e0f0ca42-459a-4367-bfdd-ccbc66e06f65")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 104.14 171.45 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7901,6 +8178,86 @@
 		)
 	)
 	(symbol
+		(lib_id "MU-AS90R:MU-AS90R")
+		(at 95.25 166.37 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "878d2d7b-66a3-4e8e-a06e-b51b0183e16b")
+		(property "Reference" "SW202"
+			(at 95.25 166.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MU-AS90R"
+			(at 95.25 168.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "MU-AS90R:MU-AS90R"
+			(at 95.25 166.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 95.25 166.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 95.25 166.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "F"
+			(uuid "df4601e7-8928-4bd1-97d9-76ac1a6f6312")
+		)
+		(pin "E"
+			(uuid "9331310f-2202-4107-ac24-15bb57f7476a")
+		)
+		(pin "A"
+			(uuid "e59a9851-d730-4e03-ac98-fff5beff82c4")
+		)
+		(pin "D"
+			(uuid "b179c799-8baa-4c3c-878a-8c1271b985e0")
+		)
+		(pin "C"
+			(uuid "e383ff10-7d48-494c-a64b-04164277974e")
+		)
+		(pin "B"
+			(uuid "a925baf3-da35-4c10-826b-279ee72916fb")
+		)
+		(instances
+			(project ""
+				(path "/da54d175-8762-4f8c-be46-30694592bf7b/f250b6aa-fac8-4faa-af78-57e6d3c4eae4"
+					(reference "SW202")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 60.325 55.88 90)
 		(unit 1)
@@ -9289,6 +9646,74 @@
 			(project "DigiCron"
 				(path "/da54d175-8762-4f8c-be46-30694592bf7b/f250b6aa-fac8-4faa-af78-57e6d3c4eae4"
 					(reference "X200")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_name "GND_5")
+		(lib_id "power:GND")
+		(at 104.14 176.53 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e066bf99-04a5-4c8d-8697-21b3cb0101c6")
+		(property "Reference" "#PWR0203"
+			(at 110.49 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 107.95 176.5299 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 104.14 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 104.14 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 104.14 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "da619e94-ae98-4544-9bf8-34fb88afced0")
+		)
+		(instances
+			(project "DigiCron"
+				(path "/da54d175-8762-4f8c-be46-30694592bf7b/f250b6aa-fac8-4faa-af78-57e6d3c4eae4"
+					(reference "#PWR0203")
 					(unit 1)
 				)
 			)

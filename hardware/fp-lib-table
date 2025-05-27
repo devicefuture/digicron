@@ -9,4 +9,5 @@
   (lib (name "AO3401A")(type "KiCad")(uri "${KIPRJMOD}/lib/AO3401A/footprints.pretty")(options "")(descr ""))
   (lib (name "TPS61023")(type "KiCad")(uri "${KIPRJMOD}/lib/TPS61023/footprints.pretty")(options "")(descr ""))
   (lib (name "SMD_SW_6mm")(type "KiCad")(uri "${KIPRJMOD}/lib/SMD_SW_6mm/footprints.pretty")(options "")(descr ""))
+  (lib (name "MU-AS90R")(type "KiCad")(uri "${KIPRJMOD}/lib/MU-AS90R/MU-AS90R.pretty")(options "")(descr ""))
 )
