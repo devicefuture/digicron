@@ -1312,6 +1312,210 @@
 				)
 			)
 		)
+		(symbol "ECX-.327-CDX-1293:ECX-.327-CDX-1293"
+			(pin_names
+				(offset 1.016)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "XTAL"
+				(at -5.08 3.302 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left bottom)
+				)
+			)
+			(property "Value" "ECX-.327-CDX-1293"
+				(at -5.08 -5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left bottom)
+				)
+			)
+			(property "Footprint" "ECX-.327-CDX-1293:XTAL_ECS-.327-12.5-34RR-TR"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "PARTREV" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+					(hide yes)
+				)
+			)
+			(property "STANDARD" "Manufacturer recommendations"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+					(hide yes)
+				)
+			)
+			(property "MAXIMUM_PACKAGE_HEIGHT" "0.9mm"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+					(hide yes)
+				)
+			)
+			(property "MANUFACTURER" "ECS"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify bottom)
+					(hide yes)
+				)
+			)
+			(symbol "ECX-.327-CDX-1293_0_0"
+				(polyline
+					(pts
+						(xy -5.08 2.54) (xy -5.08 -2.54)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.54 -2.54) (xy 2.54 -2.54)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.54 2.54) (xy -2.54 -2.54)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 -2.54) (xy 2.54 2.54)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 2.54) (xy -2.54 2.54)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 5.08 2.54) (xy 5.08 -2.54)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at -10.16 0 0)
+					(length 5.08)
+					(name "~"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 10.16 0 180)
+					(length 5.08)
+					(name "~"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.016 1.016)
+							)
+						)
+					)
+				)
+			)
+		)
 		(symbol "GND_1"
 			(power)
 			(pin_numbers hide)
@@ -4386,6 +4590,12 @@
 		(uuid "2be18aea-ccf2-420a-b937-a0a52b8d9a3f")
 	)
 	(junction
+		(at 115.57 154.94)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2fa1e820-1cba-4fd9-bb57-7269a75ecd37")
+	)
+	(junction
 		(at 44.45 76.2)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -4476,6 +4686,12 @@
 		(uuid "a76c1546-8dc4-4222-86a0-12d73744fe80")
 	)
 	(junction
+		(at 127 165.1)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "aaf9f396-620d-494e-8056-c6153a050c82")
+	)
+	(junction
 		(at 179.07 38.1)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -4492,6 +4708,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "be097324-b1c2-428c-9489-0148dbdb3702")
+	)
+	(junction
+		(at 138.43 154.94)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "c032f7b8-a404-4b1e-984f-7e30fe80373d")
 	)
 	(junction
 		(at 125.73 57.15)
@@ -4621,6 +4843,16 @@
 	)
 	(wire
 		(pts
+			(xy 138.43 157.48) (xy 138.43 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0b93a243-d665-4ce3-8d14-5302edca04bc")
+	)
+	(wire
+		(pts
 			(xy 226.06 124.46) (xy 226.06 123.19)
 		)
 		(stroke
@@ -4678,6 +4910,16 @@
 			(type default)
 		)
 		(uuid "1df9572e-49c0-4f7c-aa45-3b7c43614838")
+	)
+	(wire
+		(pts
+			(xy 115.57 157.48) (xy 115.57 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1f47c59e-9627-40b6-90c8-2040854cee64")
 	)
 	(wire
 		(pts
@@ -4771,6 +5013,16 @@
 	)
 	(wire
 		(pts
+			(xy 114.3 154.94) (xy 115.57 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "392887f2-9588-4917-85ad-55c1a28b0333")
+	)
+	(wire
+		(pts
 			(xy 81.28 43.18) (xy 90.805 43.18)
 		)
 		(stroke
@@ -4798,6 +5050,16 @@
 			(type default)
 		)
 		(uuid "466a5992-9f75-4d08-9ba7-497dac738e2e")
+	)
+	(wire
+		(pts
+			(xy 127 165.1) (xy 138.43 165.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4878a798-83d9-43b6-9246-a60fe7c20074")
 	)
 	(wire
 		(pts
@@ -4978,6 +5240,16 @@
 			(type default)
 		)
 		(uuid "5dc65f87-694b-4dbc-af7c-161da5904902")
+	)
+	(wire
+		(pts
+			(xy 115.57 165.1) (xy 127 165.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6062b5d5-8a1c-49af-90af-17861093f1a1")
 	)
 	(wire
 		(pts
@@ -5271,6 +5543,16 @@
 	)
 	(wire
 		(pts
+			(xy 115.57 154.94) (xy 116.84 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9ac94a30-6f10-43c5-bbe8-3f7797cb0cba")
+	)
+	(wire
+		(pts
 			(xy 27.94 187.96) (xy 26.67 187.96)
 		)
 		(stroke
@@ -5278,6 +5560,16 @@
 			(type default)
 		)
 		(uuid "9acd1aaf-a955-4700-890d-ce49c883cdc5")
+	)
+	(wire
+		(pts
+			(xy 138.43 154.94) (xy 137.16 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9c58975a-647f-4c9b-badb-3c96b6186f77")
 	)
 	(wire
 		(pts
@@ -5378,6 +5670,16 @@
 			(type default)
 		)
 		(uuid "a915b94c-7167-4702-a8a6-e6809df93f9b")
+	)
+	(wire
+		(pts
+			(xy 139.7 154.94) (xy 138.43 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a9c8b258-9d11-43fc-b54f-d9a7b9533c90")
 	)
 	(wire
 		(pts
@@ -5855,6 +6157,18 @@
 		)
 		(uuid "160b293e-3b8a-4453-9fc3-2ed40f24f055")
 	)
+	(text "Crystal oscillator"
+		(exclude_from_sim no)
+		(at 126.492 136.652 0)
+		(effects
+			(font
+				(size 1.905 1.905)
+				(thickness 0.381)
+				(bold yes)
+			)
+		)
+		(uuid "20f56692-c00a-4486-99b2-2f454ddfd943")
+	)
 	(text "600 mA output at 3.3 V"
 		(exclude_from_sim no)
 		(at 247.65 37.338 0)
@@ -5876,6 +6190,16 @@
 			)
 		)
 		(uuid "2c4a9622-612d-4727-95a3-ab54867cd377")
+	)
+	(text "32.768 KHz at ±5 ppm"
+		(exclude_from_sim no)
+		(at 127.508 141.986 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "3947a43f-89e1-4f47-baa4-14ac8ac7be21")
 	)
 	(text "1,000 mA output at 5.2 V\n(at 3.7 V input)"
 		(exclude_from_sim no)
@@ -6164,6 +6488,28 @@
 			)
 		)
 	)
+	(global_label "XL1"
+		(shape input)
+		(at 114.3 154.94 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "9cc9dd7e-e67d-47c0-9ef6-d5f7c9484f3a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 107.8677 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "JOY_HOME"
 		(shape input)
 		(at 80.01 182.88 0)
@@ -6203,6 +6549,28 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "XL2"
+		(shape input)
+		(at 139.7 154.94 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "ce28381d-dadf-4e35-a9ff-523439293d6b")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 146.1323 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
 				(hide yes)
 			)
 		)
@@ -8513,6 +8881,143 @@
 		)
 	)
 	(symbol
+		(lib_name "GND_5")
+		(lib_id "power:GND")
+		(at 127 165.1 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "6e85d9a4-7a21-4585-a38a-d97e19189299")
+		(property "Reference" "#PWR0206"
+			(at 127 171.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 127 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 127 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 127 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 127 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8c98946a-6d08-418c-b08b-a74c7ec4b462")
+		)
+		(instances
+			(project "DigiCron"
+				(path "/da54d175-8762-4f8c-be46-30694592bf7b/f250b6aa-fac8-4faa-af78-57e6d3c4eae4"
+					(reference "#PWR0206")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 138.43 161.29 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "721601ab-724c-40fc-bc96-37939f69f43a")
+		(property "Reference" "C207"
+			(at 142.24 160.0199 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "25p"
+			(at 142.24 162.5599 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0201_0603Metric_Pad0.64x0.40mm_HandSolder"
+			(at 139.3952 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 138.43 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 138.43 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "f875ab2e-abc2-468b-83e3-0e94a4764528")
+		)
+		(pin "1"
+			(uuid "12574945-3b00-4b23-bc8b-164a07ab3749")
+		)
+		(instances
+			(project "DigiCron"
+				(path "/da54d175-8762-4f8c-be46-30694592bf7b/f250b6aa-fac8-4faa-af78-57e6d3c4eae4"
+					(reference "C207")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 78.105 76.2 90)
 		(unit 1)
@@ -10674,6 +11179,185 @@
 			(project "DigiCron"
 				(path "/da54d175-8762-4f8c-be46-30694592bf7b/f250b6aa-fac8-4faa-af78-57e6d3c4eae4"
 					(reference "J200")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "ECX-.327-CDX-1293:ECX-.327-CDX-1293")
+		(at 127 154.94 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f16cde53-4e59-426e-9a82-9ad8c56dda48")
+		(property "Reference" "XTAL200"
+			(at 127 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "ECX-.327-CDX-1293"
+			(at 127 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "ECX-.327-CDX-1293:XTAL_ECS-.327-12.5-34RR-TR"
+			(at 127 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 127 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 127 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "PARTREV" ""
+			(at 127 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "STANDARD" "Manufacturer recommendations"
+			(at 127 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "MAXIMUM_PACKAGE_HEIGHT" "0.9mm"
+			(at 127 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(property "MANUFACTURER" "ECS"
+			(at 127 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify bottom)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "001c4801-4ff4-44c4-8fa5-b537a7a81d78")
+		)
+		(pin "1"
+			(uuid "39e1c78a-0d8f-4d84-b7ce-9613da63aad1")
+		)
+		(instances
+			(project ""
+				(path "/da54d175-8762-4f8c-be46-30694592bf7b/f250b6aa-fac8-4faa-af78-57e6d3c4eae4"
+					(reference "XTAL200")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 115.57 161.29 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f2b75953-b726-418c-b3c5-a9868a365a1b")
+		(property "Reference" "C206"
+			(at 119.38 160.0199 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "25p"
+			(at 119.38 162.5599 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0201_0603Metric_Pad0.64x0.40mm_HandSolder"
+			(at 116.5352 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 115.57 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 115.57 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "e5802990-a83c-44f1-b012-1f40149719c9")
+		)
+		(pin "1"
+			(uuid "8c2b1d4b-f1dd-4bdd-85c7-52a8d335820d")
+		)
+		(instances
+			(project ""
+				(path "/da54d175-8762-4f8c-be46-30694592bf7b/f250b6aa-fac8-4faa-af78-57e6d3c4eae4"
+					(reference "C206")
 					(unit 1)
 				)
 			)

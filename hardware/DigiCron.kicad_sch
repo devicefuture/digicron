@@ -6749,6 +6749,28 @@
 			)
 		)
 	)
+	(global_label "XL1"
+		(shape input)
+		(at 81.28 50.8 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "8313f67b-457d-4550-b0e9-b603453f36cf")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 87.7123 50.8 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "HCMS_DATA_SHARE"
 		(shape input)
 		(at 256.54 128.905 0)
@@ -7170,6 +7192,28 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "XL2"
+		(shape input)
+		(at 81.28 53.34 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "e76bfb35-ebfb-4781-8818-2e2a04e85588")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 87.7123 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
 				(hide yes)
 			)
 		)
