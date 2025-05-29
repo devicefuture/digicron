@@ -9,13 +9,10 @@ CMakeCache.txt
 Makefile
 *.a
 
-# App library
+# System file sources
 
-tools/api/_*.h
-
-# App build files
-
-apps/*/build
+firmware/sysfs
+firmware/_*
 
 # Hardware
 

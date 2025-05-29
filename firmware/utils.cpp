@@ -1,5 +1,5 @@
 #include "utils.h"
-#include "common/maths.h"
+#include "maths.h"
 
 String utils::longToString(long number, unsigned int base) {
     if (base != 2 && base != 8 && base != 10 && base != 16) {

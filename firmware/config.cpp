@@ -1,22 +1,13 @@
-#ifndef DC_COMMON_CONFIG_CPP_
-#define DC_COMMON_CONFIG_CPP_
+#include "config.h"
+#include "fs.h"
 
-#ifndef DIGICRON_H_
-    #include "config.h"
-    #include "../fs.h"
-#endif
+config::Config::Config() {}
 
-inline config::Config::Config() {}
-
-inline config::Config::~Config() {
-    _properties.start();
-
-    while (Property* property = _properties.next()) {
-        delete property;
-    }
+config::Config::~Config() {
+    _properties.emptyAndDelete();
 }
 
-inline dataTypes::String config::Config::getStringOrDefault(dataTypes::String section, dataTypes::String key, dataTypes::String defaultValue) {
+dataTypes::String config::Config::getStringOrDefault(dataTypes::String section, dataTypes::String key, dataTypes::String defaultValue) {
     _properties.start();
 
     while (Property* property = _properties.next()) {
@@ -28,39 +19,39 @@ inline dataTypes::String config::Config::getStringOrDefault(dataTypes::String se
     return defaultValue;
 }
 
-inline dataTypes::String config::Config::getString(dataTypes::String section, dataTypes::String key) {
+dataTypes::String config::Config::getString(dataTypes::String section, dataTypes::String key) {
     return getStringOrDefault(section, key, "");
 }
 
-inline long config::Config::getLongOrDefault(dataTypes::String section, dataTypes::String key, long defaultValue) {
+long config::Config::getLongOrDefault(dataTypes::String section, dataTypes::String key, long defaultValue) {
     dataTypes::String stringValue = getStringOrDefault(section, key, utils::longToString(defaultValue, 10));
 
     return utils::stringToLong(stringValue, 10);
 }
 
-inline long config::Config::getLong(dataTypes::String section, dataTypes::String key) {
+long config::Config::getLong(dataTypes::String section, dataTypes::String key) {
     return getLongOrDefault(section, key, 0);
 }
 
-inline double config::Config::getDoubleOrDefault(dataTypes::String section, dataTypes::String key, double defaultValue) {
+double config::Config::getDoubleOrDefault(dataTypes::String section, dataTypes::String key, double defaultValue) {
     dataTypes::String stringValue = getStringOrDefault(section, key, utils::doubleToString(defaultValue, 15));
 
     return utils::stringToDouble(stringValue);
 }
 
-inline double config::Config::getDouble(dataTypes::String section, dataTypes::String key) {
+double config::Config::getDouble(dataTypes::String section, dataTypes::String key) {
     return getDoubleOrDefault(section, key, 0);
 }
 
-inline bool config::Config::getBoolOrDefault(dataTypes::String section, dataTypes::String key, bool defaultValue) {
+bool config::Config::getBoolOrDefault(dataTypes::String section, dataTypes::String key, bool defaultValue) {
     return getStringOrDefault(section, key, defaultValue ? "true" : "false") == "true";
 }
 
-inline bool config::Config::getBool(dataTypes::String section, dataTypes::String key) {
+bool config::Config::getBool(dataTypes::String section, dataTypes::String key) {
     return getBoolOrDefault(section, key, false);
 }
 
-inline void config::Config::setString(dataTypes::String section, dataTypes::String key, dataTypes::String value) {
+void config::Config::setString(dataTypes::String section, dataTypes::String key, dataTypes::String value) {
     _properties.start();
 
     while (Property* property = _properties.next()) {
@@ -80,19 +71,19 @@ inline void config::Config::setString(dataTypes::String section, dataTypes::Stri
     _properties.push(newProperty);
 }
 
-inline void config::Config::setLong(dataTypes::String section, dataTypes::String key, long value) {
+void config::Config::setLong(dataTypes::String section, dataTypes::String key, long value) {
     setString(section, key, utils::longToString(value, 10));
 }
 
-inline void config::Config::setDouble(dataTypes::String section, dataTypes::String key, double value) {
+void config::Config::setDouble(dataTypes::String section, dataTypes::String key, double value) {
     setString(section, key, utils::doubleToString(value, 15));
 }
 
-inline void config::Config::setBool(dataTypes::String section, dataTypes::String key, bool value) {
+void config::Config::setBool(dataTypes::String section, dataTypes::String key, bool value) {
     setString(section, key, value ? "true" : "false");
 }
 
-inline void config::Config::fromIni(dataTypes::String ini) {
+void config::Config::fromIni(dataTypes::String ini) {
     dataTypes::String section = "";
     dataTypes::String propertyKey = "";
     dataTypes::String propertyValue = "";
@@ -180,7 +171,7 @@ inline void config::Config::fromIni(dataTypes::String ini) {
     }
 }
 
-inline dataTypes::String config::Config::toIni() {
+dataTypes::String config::Config::toIni() {
     dataTypes::String ini = "";
     dataTypes::List<dataTypes::String> sections;
     bool firstSection = true;
@@ -248,7 +239,7 @@ inline dataTypes::String config::Config::toIni() {
     return ini;
 }
 
-inline bool config::Config::loadFromFile(dataTypes::String path) {
+bool config::Config::loadFromFile(dataTypes::String path) {
     fs::FileHandle* file = fs::open(path, fs::FileMode::READ);
 
     if (!file) {
@@ -257,14 +248,12 @@ inline bool config::Config::loadFromFile(dataTypes::String path) {
 
     fromIni(file->readString());
 
-    file->close();
-
     delete file;
 
     return true;
 }
 
-inline bool config::Config::saveToFile(dataTypes::String path) {
+bool config::Config::saveToFile(dataTypes::String path) {
     if (!fs::ensureParentDirectories(path)) {
         return false;
     }
@@ -282,5 +271,3 @@ inline bool config::Config::saveToFile(dataTypes::String path) {
 
     return true;
 }
-
-#endif

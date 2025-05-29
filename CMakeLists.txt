@@ -12,20 +12,20 @@ file(GLOB HCMS_SOURCES
     ${CMAKE_SOURCE_DIR}/lib/HCMS39xx/src/font5x7.h
 )
 
-file(GLOB WASM3_SOURCES
-    ${CMAKE_SOURCE_DIR}/lib/wasm3/source/*.c
-    ${CMAKE_SOURCE_DIR}/lib/wasm3/source/*.h
+file(GLOB CATTO_SOURCES
+    ${CMAKE_SOURCE_DIR}/lib/catto/dist/*.h
 )
 
 add_library(EpoxyDuino STATIC ${EPOXY_SOURCES})
 add_library(HCMS39xx STATIC ${HCMS_SOURCES})
-add_library(Wasm3 STATIC ${WASM3_SOURCES})
+add_library(catto STATIC ${CATTO_SOURCES})
 
 set_target_properties(HCMS39xx PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(catto PROPERTIES LINKER_LANGUAGE CXX)
 
 target_include_directories(EpoxyDuino PUBLIC ${CMAKE_SOURCE_DIR}/devdeps/EpoxyDuino/cores/epoxy)
 target_include_directories(HCMS39xx PUBLIC ${CMAKE_SOURCE_DIR}/lib/HCMS39xx/src)
-target_include_directories(Wasm3 PUBLIC ${CMAKE_SOURCE_DIR}/lib/wasm3/source)
+target_include_directories(catto PUBLIC ${CMAKE_SOURCE_DIR}/lib/catto/dist)
 
 file(GLOB SOURCES
     ${CMAKE_SOURCE_DIR}/firmware/*.cpp
@@ -37,6 +37,8 @@ add_executable(digicron ${SOURCES})
 
 add_definitions(
     -DDC_SIMULATOR
+    -DCATTO_USE_64_BIT
+    -DCATTO_CUSTOM_PRINT_COMMAND
 )
 
 target_compile_options(digicron PRIVATE
@@ -49,7 +51,5 @@ target_compile_options(digicron PRIVATE
 set_target_properties(digicron PROPERTIES LINK_FLAGS "--bind --embed-file rootfs@/")
 
 target_include_directories(digicron PRIVATE ${CMAKE_SOURCE_DIR}/devdeps/EpoxyDuino/cores/epoxy)
-target_include_directories(HCMS39xx PUBLIC ${CMAKE_SOURCE_DIR}/lib/HCMS39xx/src)
-target_include_directories(Wasm3 PUBLIC ${CMAKE_SOURCE_DIR}/lib/wasm3-arduino/src)
 
-target_link_libraries(digicron PRIVATE EpoxyDuino HCMS39xx Wasm3)
+target_link_libraries(digicron PRIVATE EpoxyDuino HCMS39xx catto)

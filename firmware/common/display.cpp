@@ -1,4 +1,0 @@
-#ifndef DC_COMMON_DISPLAY_CPP_
-#define DC_COMMON_DISPLAY_CPP_
-
-#endif

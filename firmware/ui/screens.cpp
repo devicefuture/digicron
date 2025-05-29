@@ -73,9 +73,7 @@ void ui::Screen::setPixel(unsigned int x, unsigned int y, ui::PenMode value) {
 }
 
 void ui::Screen::print(char c) {
-    if (_currentPosition >= display::CHAR_COUNT) {
-        return;
-    }
+    _scrollUp();
 
     if (c == '\n') {
         _currentPosition += display::COLUMNS - (_currentPosition % display::COLUMNS);
@@ -146,9 +144,7 @@ void ui::Screen::print(double value) {
 }
 
 void ui::Screen::print(Icon* icon) {
-    if (_currentPosition >= display::CHAR_COUNT) {
-        return;
-    }
+    _scrollUp();
 
     for (unsigned int offset = 0; offset < display::CHAR_COLUMNS; offset++) {
         displayData[(_currentPosition * display::CHAR_COLUMNS) + offset] = icon->iconData[offset];
@@ -274,36 +270,30 @@ void ui::Screen::preventDefault() {
     _defaultPrevented = true;
 }
 
+void ui::Screen::_scrollUp() {
+    while (_currentPosition >= display::CHAR_COUNT) {
+        unsigned int charOffset = (display::CHAR_COUNT - display::COLUMNS) * display::CHAR_COLUMNS;
+
+        for (unsigned int i = 0; i < charOffset; i++) {
+            displayData[i] = displayData[(display::COLUMNS * display::CHAR_COLUMNS) + i];
+        }
+
+        for (unsigned int i = 0; i < display::COLUMNS * display::CHAR_COLUMNS; i++) {
+            displayData[charOffset + i] = 0;
+        }
+
+        _currentPosition -= display::COLUMNS;
+    }
+}
+
 void ui::Screen::_update() {
     update();
-
-    if (ownerProcess && ownerProcess->getType() == proc::ProcessType::WASM) {
-        ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_update");
-    }
 }
 
 void ui::Screen::_handleEvent(ui::Event event) {
     _defaultPrevented = false;
 
     handleEvent(event);
-
-    if (ownerProcess && ownerProcess->getType() == proc::ProcessType::WASM) {
-        if (event.type == EventType::BUTTON_UP || event.type == EventType::BUTTON_DOWN) {
-            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleButtonEvent", event.type, event.data.button);
-        }
-
-        if (event.type == EventType::ITEM_SELECT) {
-            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleItemEvent", event.type, event.data.index);
-        }
-
-        if (event.type == EventType::CANCEL) {
-            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleSimpleEvent", event.type);
-        }
-
-        if (event.type == EventType::CONFIRM_VALUE) {
-            ((proc::WasmProcess*)ownerProcess)->callVoidOn(this, "_callable_ui_Screen_handleSimpleEvent", event.type);
-        }
-    }
 }
 
 void ui::enactScreenPermanence(ui::ScreenPermanence permanenceBoundary) {

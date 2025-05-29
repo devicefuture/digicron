@@ -18,7 +18,8 @@
 #include "home.h"
 #include "proc.h"
 #include "fs.h"
-#include "systemapps.h"
+#include "apps.h"
+#include "_sysfs.h"
 
 #define BACK_BTN_PIN 6
 #define HOME_BTN_PIN 5
@@ -53,16 +54,18 @@ void setup() {
     timing::init();
     display::init();
     input::init();
-    systemApps::init();
 
     ui::currentScreen = testScreen;
 
     testScreen->print(" device  future");
     testScreen->print(tmIcon);
 
-    #ifndef DC_SIMULATOR
-        fs::init();
+    fs::init();
 
+    sysfs::populate();
+    apps::scan();
+
+    #ifndef DC_SIMULATOR
         Bluefruit.begin();
         Bluefruit.setTxPower(0);
         Bluefruit.setName("DigiCron");
@@ -98,8 +101,6 @@ void loop() {
 
     if (ui::currentScreen == testScreen && millis() > 3000) {
         home::homeScreen.open(true);
-
-        // proc::WasmProcess testProcess((char*)apptest_app_wasm, apptest_app_wasm_len);
     }
 
     // #ifndef DC_SIMULATOR

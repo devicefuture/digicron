@@ -55,15 +55,19 @@ namespace ui {
             virtual void handleEvent(Event event) {}
             void preventDefault();
 
-            virtual void _update();
-            virtual void _handleEvent(Event event);
-
         protected:
+            friend void renderCurrentScreen();
+
             unsigned int _currentPosition = 0;
             unsigned long _scrollStartTime = 0;
             unsigned int _padUntil = 0;
             unsigned int _padChar = '\0';
             bool _defaultPrevented = false;
+
+            void _scrollUp();
+
+            virtual void _update();
+            virtual void _handleEvent(Event event);
     };
 
     extern input::Button lastButton;

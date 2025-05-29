@@ -1,13 +1,15 @@
 #ifndef APPS_H_
 #define APPS_H_
 
-#include "common/datatypes.h"
+#include "datatypes.h"
 #include "proc.h"
+#include "config.h"
 
 namespace apps {
     class App {
         public:
-            App(String id, String displayName);
+            App(String id, config::Config* appConfig);
+            ~App();
 
             String getId();
             String getDisplayName();
@@ -15,23 +17,20 @@ namespace apps {
 
         protected:
             String _id;
-            String _displayName;
+            config::Config* _config;
     };
 
-    class SystemWasmApp : public App {
+    class AttoApp : public App {
         public:
-            SystemWasmApp(String id, String displayName, char* code, unsigned int codeSize);
+            using App::App;
 
             proc::Process* launch() override;
-
-        protected:
-            char* _code;
-            unsigned int _codeSize;
     };
 
     extern dataTypes::List<App> registry;
     extern proc::Process* primaryAppProcess;
 
+    void scan();
     apps::App* getAppById(String id);
 }
 

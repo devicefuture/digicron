@@ -3,6 +3,10 @@
 
 #include <Arduino.h>
 
+namespace ui {
+    class Screen;
+}
+
 #include "datatypes.h"
 #include "input.h"
 #include "display.h"
@@ -38,10 +42,10 @@ namespace ui {
 
             void setPixel(unsigned int x, unsigned int y, PenMode value);
     };
+
+    Icon* constructIcon(dataTypes::String pixels);
 }
 
 #include "ui/screens.h"
-
-#include "common/ui.h"
 
 #endif

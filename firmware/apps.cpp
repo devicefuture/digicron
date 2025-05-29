@@ -1,11 +1,16 @@
 #include "apps.h"
+#include "fs.h"
 
 dataTypes::List<apps::App> apps::registry;
 proc::Process* apps::primaryAppProcess = nullptr;
 
-apps::App::App(String id, String displayName) {
+apps::App::App(String id, config::Config* appConfig) {
     _id = id;
-    _displayName = displayName;
+    _config = appConfig;
+}
+
+apps::App::~App() {
+    delete _config;
 }
 
 String apps::App::getId() {
@@ -13,27 +18,32 @@ String apps::App::getId() {
 }
 
 String apps::App::getDisplayName() {
-    return _displayName;
+    return _config->getStringOrDefault("App", "Name", _id);
 }
 
 proc::Process* apps::App::launch() {
     return nullptr;
 }
 
-apps::SystemWasmApp::SystemWasmApp(String id, String displayName, char* code, unsigned int codeSize) : App(id, displayName) {
-    _code = code;
-    _codeSize = codeSize;
-}
-
-proc::Process* apps::SystemWasmApp::launch() {
-    Serial.print("Launching WASM app: ");
+proc::Process* apps::AttoApp::launch() {
+    Serial.print("Launching atto app: ");
     Serial.println(_id);
 
     if (primaryAppProcess) {
         primaryAppProcess->stop();
     }
 
-    auto process = new proc::WasmProcess(_code, _codeSize);
+    fs::FileHandle* file = fs::open("apps/" + _id + "/app.atto", fs::FileMode::READ);
+
+    if (!file) {
+        return nullptr;
+    }
+
+    String code = file->readString();
+
+    delete file;
+
+    auto process = new proc::AttoProcess(code);
 
     process->onStop = [](proc::Process* process) {
         if (primaryAppProcess == process) {
@@ -42,12 +52,67 @@ proc::Process* apps::SystemWasmApp::launch() {
 
         delete process;
 
-        Serial.println("WASM process deleted");
+        Serial.println("atto process deleted");
     };
 
     primaryAppProcess = process;
 
     return process;
+}
+
+void apps::scan() {
+    auto publishers = fs::listDirectory("/apps");
+    String publisher;
+    String publisherApp;
+
+    registry.emptyAndDelete();
+
+    if (!publishers) {
+        return;
+    }
+
+    publishers->start();
+
+    while ((publisher = publishers->next()).length() > 0) {
+        String publisherPath = String("/apps/") + publisher;
+
+        auto publisherApps = fs::listDirectory(publisherPath);
+
+        if (!publisherApps) {
+            continue;
+        }
+
+        publisherApps->start();
+
+        while ((publisherApp = publisherApps->next()).length() > 0) {
+            String appPath = publisherPath + "/" + publisherApp;
+
+            config::Config* appConfig = new config::Config();
+
+            Serial.print("Adding app at path: ");
+            Serial.println(appPath);
+
+            if (!appConfig->loadFromFile(appPath + "/manifest.ini")) {
+                delete appConfig;
+
+                continue;
+            }
+
+            String appCodePath = appPath + "/" + appConfig->getStringOrDefault("App", "Path", "app.atto");
+
+            if (fs::getEntryType(appCodePath) != fs::EntryType::FILE) {
+                delete appConfig;
+
+                continue;
+            }
+
+            registry.push(new AttoApp(publisher + "/" + publisherApp, appConfig));
+        }
+
+        delete publisherApps;
+    }
+
+    delete publishers;
 }
 
 apps::App* apps::getAppById(String id) {

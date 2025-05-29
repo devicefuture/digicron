@@ -1,7 +1,7 @@
-#include "proc.h"
-#include "_api.h"
+#include <catto.h>
 
-#include <m3_env.h>
+#include "proc.h"
+#include "ui.h"
 
 unsigned int proc::pidCounter = 0;
 dataTypes::List<proc::Process> proc::processes;
@@ -41,133 +41,74 @@ void proc::Process::stop() {
 
     _running = false;
 
-    onStop(this);
-}
-
-proc::WasmProcess::WasmProcess(char* code, unsigned int codeSize) : proc::Process() {
-    _environment = m3_NewEnvironment();
-    _runtime = m3_NewRuntime(_environment, WASM_STACK_SLOTS, this);
-
-    if (!_runtime) {
-        _error = WasmError::INIT_FAILURE;
-        _running = false;
-        return;
-    }
-
-    if (
-        m3_ParseModule(_environment, &_module, (uint8_t*)code, codeSize) ||
-        m3_LoadModule(_runtime, _module)
-    ) {
-        _error = WasmError::PARSE_FAILURE;
-        _running = false;
-        return;
-    }
-
-    api::linkFunctions(_runtime);
-
-    IM3Function initFunction;
-    IM3Function startFunction;
-
-    bool shouldCallInit = !m3_FindFunction(&initFunction, _runtime, "__wasm_call_ctors");
-
-    if (
-        m3_FindFunction(&startFunction, _runtime, "_setup") ||
-        m3_FindFunction(&_stepFunction, _runtime, "_loop")
-    ) {
-        _error = WasmError::LOAD_FAILURE;
-        _running = false;
-        return;
-    }
-
-    M3Result result = m3Err_none;
-
-    if (shouldCallInit && (result = m3_CallV(initFunction))) {
-        _error = WasmError::RUN_FAILURE;
-        _running = false;
-        return;
-    }
-
-    if ((result = m3_CallV(startFunction))) {
-        _error = WasmError::RUN_FAILURE;
-        _running = false;
-        return;
+    if (onStop) {
+        onStop(this);
     }
 }
 
-bool proc::WasmProcess::isRunning() {
-    return _running;
+void attoPrintCommand(catto_Context* context) {
+    bool appendFlag = false;
+
+    proc::AttoProcess* process = (proc::AttoProcess*)context->userData;
+
+    while (catto_hasNextArg(context)) {
+        catto_AstNode* arg = catto_getNextArg(context);
+        char* string = catto_asString(catto_evalExpression(context, arg));
+
+        if (!catto_hasNextArg(context) && catto_hasAppendFlag(arg)) {
+            appendFlag = true;
+        }
+
+        process->getMainScreen()->print(string);
+
+        free(string);
+
+        if (catto_hasNextArg(context)) {
+            process->getMainScreen()->print(" ");
+        }
+    }
+
+    if (!appendFlag) {
+        process->getMainScreen()->print("\n");
+    }
 }
 
-void proc::WasmProcess::step() {
+proc::AttoProcess::AttoProcess(String code) : proc::Process::Process() {
+    _context = catto_newContext();
+
+    _context->userData = this;
+
+    catto_addContextStandardCommands(_context);
+    catto_addCommand(_context, "print", &attoPrintCommand);
+    catto_load(_context, code.c_str());
+
+    _mainScreen = new ui::Screen(this);
+
+    _mainScreen->open(true);
+}
+
+void proc::AttoProcess::step() {
     if (!_running) {
         return;
     }
 
-    if (m3_CallV(_stepFunction)) {
-        _error = WasmError::RUN_FAILURE;
-
+    if (!catto_step(_context)) {
         stop();
 
         return;
     }
 }
 
-void proc::WasmProcess::stop() {
+void proc::AttoProcess::stop() {
     if (!_running) {
         return;
     }
 
     Process::stop();
 
-    api::deleteAllByOwnerProcess(this);
+    catto_freeContext(_context);
 
-    m3_FreeRuntime(_runtime);
-    m3_FreeEnvironment(_environment);
-}
-
-template<typename ...Args> void proc::WasmProcess::callVoid(const char* name, Args... args) {
-    IM3Function function;
-
-    if (m3_FindFunction(&function, _runtime, name)) {
-        return;
-    }
-
-    m3_CallV(function, args...);
-}
-
-template<typename T, typename ...Args> T proc::WasmProcess::call(const char* name, T defaultValue, Args... args) {
-    IM3Function function;
-    T result;
-
-    if (
-        m3_FindFunction(&function, _runtime, name) ||
-        m3_CallV(function, args...) ||
-        m3_GetResultsV(function, &result)
-    ) {
-        return defaultValue;
-    }
-
-    return result;
-}
-
-template<typename ...Args> void proc::WasmProcess::callVoidOn(void* instance, const char* name, Args... args) {
-    api::Sid sid = api::findOwnSid(instance);
-
-    if (sid < 0) {
-        return;
-    }
-
-    callVoid(name, sid, args...);
-}
-
-template<typename T, typename ...Args> T proc::WasmProcess::callOn(void* instance, const char* name, T defaultValue, Args... args) {
-    api::Sid sid = api::findOwnSid(instance);
-
-    if (sid < 0) {
-        return defaultValue;
-    }
-
-    return call(name, sid, args...);
+    delete _mainScreen;
 }
 
 void proc::stepProcesses() {
@@ -183,14 +124,3 @@ void proc::stepProcesses() {
 void proc::stop(proc::Process* process) {
     process->stop();
 }
-
-M3Result m3_Yield() {
-    // TODO: Limit execution
-
-    return m3Err_none;
-}
-
-template void proc::WasmProcess::callVoidOn<>(void*, char const*);
-template void proc::WasmProcess::callVoidOn<ui::EventType>(void*, char const*, ui::EventType);
-template void proc::WasmProcess::callVoidOn<ui::EventType, input::Button>(void*, char const*, ui::EventType, input::Button);
-template void proc::WasmProcess::callVoidOn<ui::EventType, unsigned int>(void*, char const*, ui::EventType, unsigned int);
