@@ -21,6 +21,9 @@ namespace ui {
             ScreenPermanence permanence = NEUTRAL;
 
             char displayData[display::DATA_SIZE];
+            char* altDisplayData = nullptr;
+            char* drawableDisplayData = displayData;
+            char* visibleDisplayData = displayData;
 
             Screen();
             Screen(proc::Process* process);
@@ -46,6 +49,9 @@ namespace ui {
             void pad(unsigned int size, char c);
             void rect(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2, PenMode value);
             void filledRect(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2, PenMode value);
+
+            void setBlitMode(bool enabled);
+            void blit();
 
             virtual void open(bool urgent = false);
             virtual void close();

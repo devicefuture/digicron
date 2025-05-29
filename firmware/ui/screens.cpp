@@ -38,7 +38,7 @@ ui::Screen::~Screen() {
 
 void ui::Screen::clear() {
     for (unsigned int i = 0; i < sizeof(displayData); i++) {
-        displayData[i] = 0;
+        drawableDisplayData[i] = 0;
     }
 
     _currentPosition = 0;
@@ -59,7 +59,7 @@ void ui::Screen::setPixel(unsigned int x, unsigned int y, ui::PenMode value) {
         return;
     }
 
-    char* bytePointer = displayData + offset;
+    char* bytePointer = drawableDisplayData + offset;
 
     y %= display::CHAR_ROWS;
 
@@ -85,7 +85,7 @@ void ui::Screen::print(char c) {
     char* fontByte = (char*)font5x7 + ((c - asciiOffset) * display::CHAR_COLUMNS);
 
     for (unsigned int offset = 0; offset < display::CHAR_COLUMNS; offset++) {
-        displayData[(_currentPosition * display::CHAR_COLUMNS) + offset] = fontByte[offset];
+        drawableDisplayData[(_currentPosition * display::CHAR_COLUMNS) + offset] = fontByte[offset];
     }
 
     _currentPosition++;
@@ -147,7 +147,7 @@ void ui::Screen::print(Icon* icon) {
     _scrollUp();
 
     for (unsigned int offset = 0; offset < display::CHAR_COLUMNS; offset++) {
-        displayData[(_currentPosition * display::CHAR_COLUMNS) + offset] = icon->iconData[offset];
+        drawableDisplayData[(_currentPosition * display::CHAR_COLUMNS) + offset] = icon->iconData[offset];
     }
 
     _currentPosition++;
@@ -230,6 +230,44 @@ void ui::Screen::filledRect(unsigned int x1, unsigned int y1, unsigned int x2, u
     }
 }
 
+void ui::Screen::setBlitMode(bool enabled) {
+    if (enabled) {
+        if (altDisplayData) {
+            return;
+        }
+
+        altDisplayData = (char*)malloc(sizeof(displayData));
+        drawableDisplayData = altDisplayData;
+
+        clear();
+    } else {
+        if (!altDisplayData) {
+            return;
+        }
+
+        drawableDisplayData = displayData;
+        visibleDisplayData = displayData;
+
+        free(altDisplayData);
+
+        altDisplayData = nullptr;
+    }
+}
+
+void ui::Screen::blit() {
+    if (!altDisplayData) {
+        return;
+    }
+
+    if (visibleDisplayData == displayData) {
+        visibleDisplayData = altDisplayData;
+        drawableDisplayData = displayData;
+    } else {
+        visibleDisplayData = displayData;
+        drawableDisplayData = altDisplayData;
+    }
+}
+
 void ui::Screen::open(bool urgent) {
     Serial.printf("Opened %x (urgent: %d, permanence: %d)\n", ownerProcess, urgent, permanence);
 
@@ -275,11 +313,11 @@ void ui::Screen::_scrollUp() {
         unsigned int charOffset = (display::CHAR_COUNT - display::COLUMNS) * display::CHAR_COLUMNS;
 
         for (unsigned int i = 0; i < charOffset; i++) {
-            displayData[i] = displayData[(display::COLUMNS * display::CHAR_COLUMNS) + i];
+            drawableDisplayData[i] = drawableDisplayData[(display::COLUMNS * display::CHAR_COLUMNS) + i];
         }
 
         for (unsigned int i = 0; i < display::COLUMNS * display::CHAR_COLUMNS; i++) {
-            displayData[charOffset + i] = 0;
+            drawableDisplayData[charOffset + i] = 0;
         }
 
         _currentPosition -= display::COLUMNS;
@@ -396,5 +434,5 @@ void ui::renderCurrentScreen() {
 
     currentScreen->_update();
 
-    display::render(currentScreen->displayData);
+    display::render(currentScreen->visibleDisplayData);
 }

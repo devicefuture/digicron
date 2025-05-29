@@ -7,10 +7,12 @@
 
 namespace proc {
     class Process;
+    class AttoProcess;
 }
 
 #include "datatypes.h"
 #include "ui.h"
+#include "atto.h"
 
 namespace proc {
     enum ProcessType {
@@ -51,8 +53,11 @@ namespace proc {
             ui::Screen* getMainScreen() {return _mainScreen;}
 
         protected:
+            friend class atto::AttoBindings;
+
             catto_Context* _context;
             ui::Screen* _mainScreen;
+            ui::Screen* _overlayScreen = nullptr;
     };
 
     extern dataTypes::List<Process> processes;

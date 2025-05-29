@@ -1,4 +1,7 @@
 10 i=0
-20 print i
-30 i=i+1
-40 goto 20
+20 cls
+30 print "Hello"
+40 print i
+50 blit
+60 i=i+1
+70 goto 20
