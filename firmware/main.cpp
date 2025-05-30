@@ -60,9 +60,14 @@ void setup() {
     testScreen->print(" device  future");
     testScreen->print(tmIcon);
 
-    fs::init();
+    if (!fs::init()) {
+        Serial.println("Failed to init filesystem");
+    }
 
-    sysfs::populate();
+    if (!sysfs::populate()) {
+        Serial.println("Failed to populate sysfs");
+    }
+
     apps::scan();
 
     #ifndef DC_SIMULATOR

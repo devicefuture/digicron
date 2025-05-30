@@ -46,46 +46,6 @@ void proc::Process::stop() {
     }
 }
 
-proc::AttoProcess::AttoProcess(String code) : proc::Process::Process() {
-    _context = catto_newContext();
-
-    _context->userData = this;
-
-    catto_addContextStandardCommands(_context);
-
-    atto::bindings.bindToContext(_context);
-
-    catto_load(_context, code.c_str());
-
-    _mainScreen = new ui::Screen(this);
-
-    _mainScreen->open(true);
-}
-
-void proc::AttoProcess::step() {
-    if (!_running) {
-        return;
-    }
-
-    if (!catto_step(_context)) {
-        stop();
-
-        return;
-    }
-}
-
-void proc::AttoProcess::stop() {
-    if (!_running) {
-        return;
-    }
-
-    Process::stop();
-
-    catto_freeContext(_context);
-
-    delete _mainScreen;
-}
-
 void proc::stepProcesses() {
     processes.start();
 

@@ -174,6 +174,10 @@ void ui::Screen::printRepeated(String string, unsigned int times) {
 }
 
 void ui::Screen::scroll(String string, unsigned int maxLength) {
+    if (maxLength > display::COLUMNS) {
+        maxLength = display::COLUMNS;
+    }
+
     if (string.length() <= maxLength) {
         print(string);
         printRepeated(" ", maxLength - string.length());

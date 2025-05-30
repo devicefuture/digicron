@@ -3,11 +3,11 @@
 
 #include <catto.h>
 
-namespace atto {
-    class AttoBindings;
-}
+#include "ui.h"
 
-#include "proc.h"
+namespace attoProc {
+    class AttoProcess;
+}
 
 namespace atto {
     class AttoBindings {
@@ -15,14 +15,47 @@ namespace atto {
             static void bindToContext(catto_Context* context);
 
         private:
-            static proc::AttoProcess* _getProcess(catto_Context* context);
+            static attoProc::AttoProcess* _getProcess(catto_Context* context);
 
             static void _print(catto_Context* context);
             static void _cls(catto_Context* context);
+            static void _pos(catto_Context* context);
+            static void _resetScroll(catto_Context* context);
+            static void _scroll(catto_Context* context);
             static void _blit(catto_Context* context);
+
+            static catto_TypedValue _key(catto_Context* context, catto_DataType returnType);
+
+            static void _menu(catto_Context* context);
+    };
+
+    class AttoErrorMessageScreen : public ui::Screen {
+        public:
+            using ui::Screen::Screen;
+
+            void setMessage(String message) {_message = message;}
+
+            void update() override;
+            void handleEvent(ui::Event event) override;
+
+        private:
+            String _message;
+    };
+
+    class AttoContextualMenu : public ui::ContextualMenu {
+        public:
+            AttoContextualMenu(attoProc::AttoProcess* process, String title, catto_AstNode* resultVariable);
+
+            void handleEvent(ui::Event event) override;
+
+        private:
+            catto_Context* _context;
+            catto_AstNode* _resultVariable;
     };
 
     extern AttoBindings bindings;
 }
+
+#include "attoproc.h"
 
 #endif

@@ -1,4 +1,5 @@
 #include "apps.h"
+#include "attoproc.h"
 #include "fs.h"
 
 dataTypes::List<apps::App> apps::registry;
@@ -43,7 +44,7 @@ proc::Process* apps::AttoApp::launch() {
 
     delete file;
 
-    auto process = new proc::AttoProcess(code);
+    auto process = new attoProc::AttoProcess(code);
 
     process->onStop = [](proc::Process* process) {
         if (primaryAppProcess == process) {

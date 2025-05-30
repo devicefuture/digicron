@@ -1,7 +1,44 @@
-10 i=0
-20 cls
-30 print "Hello"
-40 print i
-50 blit
-60 i=i+1
-70 goto 20
+i=0
+
+def showMessage line1$, line2$
+    resetScroll
+
+    while key:loop
+
+    until key
+        cls
+        scroll line1$
+        scroll line2$
+        blit
+    loop
+end
+
+def test
+    dim items
+    push "First", items
+    push "Second", items
+    push "Third", items
+
+    menu "Test", items, i
+
+    if not cancel
+        showMessage "Selected", "#"; i; ": "; items[i]
+    else
+        showMessage "Cancel", ""
+    end
+end
+
+while key:loop
+
+repeat
+    cls
+    print "Hello"
+    print i
+    blit
+
+    if key = joysel
+        test
+    end
+
+    i=i+1
+loop
