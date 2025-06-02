@@ -3998,11 +3998,42 @@ function sendDisplayDataToSimulator(dataPtr,size) { renderDisplayData(new Uint8C
   }
   }
 
+  function ___syscall_rmdir(path) {
+  try {
+  
+      path = SYSCALLS.getStr(path);
+      FS.rmdir(path);
+      return 0;
+    } catch (e) {
+    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
+    return -e.errno;
+  }
+  }
+
   function ___syscall_stat64(path, buf) {
   try {
   
       path = SYSCALLS.getStr(path);
       return SYSCALLS.doStat(FS.stat, path, buf);
+    } catch (e) {
+    if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
+    return -e.errno;
+  }
+  }
+
+  function ___syscall_unlinkat(dirfd, path, flags) {
+  try {
+  
+      path = SYSCALLS.getStr(path);
+      path = SYSCALLS.calculateAt(dirfd, path);
+      if (flags === 0) {
+        FS.unlink(path);
+      } else if (flags === 512) {
+        FS.rmdir(path);
+      } else {
+        abort('Invalid flags passed to unlinkat');
+      }
+      return 0;
     } catch (e) {
     if (typeof FS == 'undefined' || !(e.name === 'ErrnoError')) throw e;
     return -e.errno;
@@ -6121,7 +6152,11 @@ var wasmImports = {
   /** @export */
   __syscall_openat: ___syscall_openat,
   /** @export */
+  __syscall_rmdir: ___syscall_rmdir,
+  /** @export */
   __syscall_stat64: ___syscall_stat64,
+  /** @export */
+  __syscall_unlinkat: ___syscall_unlinkat,
   /** @export */
   _abort_js: __abort_js,
   /** @export */
@@ -6185,7 +6220,7 @@ var __emscripten_stack_restore = (a0) => (__emscripten_stack_restore = wasmExpor
 var __emscripten_stack_alloc = (a0) => (__emscripten_stack_alloc = wasmExports['_emscripten_stack_alloc'])(a0);
 var _emscripten_stack_get_current = () => (_emscripten_stack_get_current = wasmExports['emscripten_stack_get_current'])();
 var dynCall_jiji = Module['dynCall_jiji'] = createExportWrapper('dynCall_jiji', 5);
-var ___emscripten_embedded_file_data = Module['___emscripten_embedded_file_data'] = 71960;
+var ___emscripten_embedded_file_data = Module['___emscripten_embedded_file_data'] = 72008;
 
 // include: postamble.js
 // === Auto-generated postamble setup entry stuff ===
