@@ -38,6 +38,8 @@ bool sysfs::addFile(String path, const unsigned char* data, unsigned int length)
         return true;
     }
 
+    fs::remove(path);
+
     fs::FileHandle* file = fs::open(path, fs::FileMode::WRITE);
 
     if (!file) {
