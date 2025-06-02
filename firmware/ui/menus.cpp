@@ -28,17 +28,7 @@ ui::Menu::~Menu() {
 }
 
 void ui::Menu::clearItems() {
-    items.start();
-
-    while (auto item = items.next()) {
-        if (item == ui::yesOption || item == ui::noOption) {
-            continue;
-        }
-
-        delete item;
-    }
-
-    items.empty();
+    items.emptyAndDelete();
 }
 
 void ui::Menu::update() {

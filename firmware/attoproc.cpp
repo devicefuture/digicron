@@ -74,6 +74,10 @@ void attoProc::AttoProcess::stop() {
     catto_freeContext(_context);
 
     delete _mainScreen;
+
+    if (_overlayScreen) {
+        delete _overlayScreen;
+    }
 }
 
 void attoProc::AttoProcess::destoryOverlayScreen() {

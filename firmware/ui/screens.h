@@ -78,6 +78,7 @@ namespace ui {
 
     extern input::Button lastButton;
     extern Screen* currentScreen;
+    extern Screen* buttonDownScreen;
     extern proc::Process* foregroundProcess;
     extern proc::Process* lastNonHomeProcess;
     extern dataTypes::List<Screen> screenStack;

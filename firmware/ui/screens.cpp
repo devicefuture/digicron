@@ -11,7 +11,8 @@
 #include "../home.h"
 
 input::Button ui::lastButton;
-ui::Screen* ui::currentScreen;
+ui::Screen* ui::currentScreen = nullptr;
+ui::Screen* ui::buttonDownScreen = nullptr;
 proc::Process* ui::foregroundProcess = nullptr;
 proc::Process* ui::lastNonHomeProcess = nullptr;
 dataTypes::List<ui::Screen> ui::screenStack;
@@ -396,6 +397,8 @@ void ui::renderCurrentScreen() {
                 .data = {.button = lastButton}
             };
 
+            buttonDownScreen = nullptr;
+
             currentScreen->_handleEvent(buttonUpEvent);
 
             lastButtonReleaseTime = timing::getCurrentTick();
@@ -410,6 +413,8 @@ void ui::renderCurrentScreen() {
                 .type = EventType::BUTTON_DOWN,
                 .data = {.button = currentButton}
             };
+
+            buttonDownScreen = currentScreen;
 
             currentScreen->_handleEvent(buttonDownEvent);
 

@@ -1,9 +1,7 @@
-i=0
+count = 0
 
 def showMessage line1$, line2$
     resetScroll
-
-    while key:loop
 
     until key
         cls
@@ -11,6 +9,8 @@ def showMessage line1$, line2$
         scroll line2$
         blit
     loop
+
+    while key:loop
 end
 
 def test
@@ -28,17 +28,15 @@ def test
     end
 end
 
-while key:loop
-
 repeat
     cls
     print "Hello"
-    print i
+    print count
     blit
 
     if key = joysel
         test
     end
 
-    i=i+1
+    count = count + 1
 loop

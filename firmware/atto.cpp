@@ -79,10 +79,12 @@ void atto::AttoBindings::_resetScroll(catto_Context* context) {
 void atto::AttoBindings::_scroll(catto_Context* context) {
     ui::Screen* mainScreen = _getProcess(context)->getMainScreen();
     
-    String string = catto_asString(catto_evalNextArg(context));
+    char* string = catto_asString(catto_evalNextArg(context));
     unsigned int maxLength = catto_hasNextArg(context) ? catto_asNumber(catto_evalNextArg(context)) : display::COLUMNS;
 
     mainScreen->scroll(string, maxLength);
+
+    free(string);
 }
 
 void atto::AttoBindings::_blit(catto_Context* context) {
@@ -95,7 +97,7 @@ void atto::AttoBindings::_blit(catto_Context* context) {
 catto_TypedValue atto::AttoBindings::_key(catto_Context* context, catto_DataType returnType) {
     ui::Screen* mainScreen = _getProcess(context)->getMainScreen();
 
-    if (ui::currentScreen != mainScreen) {
+    if (ui::buttonDownScreen != mainScreen) {
         return catto_asTypedString((catto_Char*)"");
     }
 
@@ -118,35 +120,47 @@ catto_TypedValue atto::AttoBindings::_key(catto_Context* context, catto_DataType
 void atto::AttoBindings::_menu(catto_Context* context) {
     attoProc::AttoProcess* process = _getProcess(context);
     bool isContextual = false;
-    String title;
+    char* title;
 
-    catto_TypedValue titleArg = catto_evalNextArg(context);
-    catto_TypedValue itemsArg;
+    catto_TypedValue titleValue = catto_evalNextArg(context);
+    catto_TypedValue itemsValue;
     catto_List* items;
 
-    if (titleArg.type == CATTO_DATA_TYPE_STRING) {
+    if (titleValue.type == CATTO_DATA_TYPE_STRING) {
         isContextual = true;
-        title = catto_asString(titleArg);
-        itemsArg = catto_evalNextArg(context);
+        title = catto_asString(titleValue);
+        itemsValue = catto_evalNextArg(context);
     } else {
-        itemsArg = titleArg;
+        itemsValue = titleValue;
     }
 
-    if (itemsArg.type != CATTO_DATA_TYPE_LIST) {
+    if (itemsValue.type != CATTO_DATA_TYPE_LIST) {
         context->errorState = CATTO_ERROR_STATE_NOT_A_LIST;
+
+        free(title);
 
         return;
     }
 
-    items = itemsArg.value.asList;
+    items = itemsValue.value.asList;
 
-    process->_overlayScreen = new AttoContextualMenu(process, title, catto_getNextArg(context));
+    catto_AstNode* indexArg = catto_getNextArg(context);
+    AttoContextualMenu* menu = new AttoContextualMenu(process, title, indexArg);
+
+    free(title);
+
+    process->_overlayScreen = menu;
 
     for (unsigned int i = 0; i < items->length; i++) {
-        ((ui::Menu*)process->_overlayScreen)->items.push(new String(catto_asString(items->values[i])));
+        char* item = catto_asString(items->values[i]);
+
+        menu->items.push(new String(item));
+
+        free(item);
     }
 
-    process->_overlayScreen->open();
+    menu->open();
+    menu->setCurrentIndex(catto_asNumber(catto_evalExpression(context, indexArg)));
 }
 
 void atto::AttoErrorMessageScreen::update() {
