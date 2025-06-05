@@ -75,13 +75,7 @@ mainMenu::AppsMenuScreen::AppsMenuScreen() : ui::ContextualMenu("APPS") {
 void mainMenu::AppsMenuScreen::open(bool urgent) {
     apps::registry.start();
 
-    items.start();
-
-    while (auto item = items.next()) {
-        delete item;
-    }
-
-    items.empty();
+    items.emptyAndDelete();
 
     while (auto app = apps::registry.next()) {
         items.push(new String(app->getDisplayName()));

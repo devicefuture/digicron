@@ -23,7 +23,7 @@ namespace attoProc {
             void step() override;
             void stop() override;
             ui::Screen* getMainScreen() {return _mainScreen;}
-            void destoryOverlayScreen();
+            void destroyOverlayScreen();
 
         protected:
             friend class atto::AttoBindings;

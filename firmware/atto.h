@@ -17,6 +17,8 @@ namespace atto {
         private:
             static attoProc::AttoProcess* _getProcess(catto_Context* context);
 
+            static void _addStringConstant(catto_Context* context, const char* name, const char* value);
+
             static void _print(catto_Context* context);
             static void _cls(catto_Context* context);
             static void _pos(catto_Context* context);

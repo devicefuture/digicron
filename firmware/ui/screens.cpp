@@ -34,6 +34,7 @@ ui::Screen::Screen(proc::Process* process) : ui::Screen::Screen() {
 }
 
 ui::Screen::~Screen() {
+    setBlitMode(false);
     close();
 }
 

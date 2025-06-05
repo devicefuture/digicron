@@ -28,7 +28,7 @@ namespace ui {
             Screen();
             Screen(proc::Process* process);
 
-            ~Screen();
+            virtual ~Screen();
 
             void clear();
             void setPosition(unsigned int column, unsigned int row);

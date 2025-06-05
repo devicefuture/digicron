@@ -69,17 +69,18 @@ void attoProc::AttoProcess::stop() {
         _errorMessageScreen->open();
     }
 
-    Process::stop();
-
     catto_freeContext(_context);
 
     delete _mainScreen;
+    delete _errorMessageScreen;
 
     if (_overlayScreen) {
         delete _overlayScreen;
     }
+
+    Process::stop();
 }
 
-void attoProc::AttoProcess::destoryOverlayScreen() {
+void attoProc::AttoProcess::destroyOverlayScreen() {
     _willDestroyOverlayScreen = true;
 }

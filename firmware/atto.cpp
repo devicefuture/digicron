@@ -16,17 +16,26 @@ void atto::AttoBindings::bindToContext(catto_Context* context) {
 
     catto_addFunction(context, "key", &_key);
 
-    catto_setVariable(context, "joyback", catto_asTypedString((catto_Char*)"Escape"));
-    catto_setVariable(context, "joyhome", catto_asTypedString((catto_Char*)"Home"));
-    catto_setVariable(context, "joyup", catto_asTypedString((catto_Char*)"ArrowUp"));
-    catto_setVariable(context, "joydown", catto_asTypedString((catto_Char*)"ArrowDown"));
-    catto_setVariable(context, "joyleft", catto_asTypedString((catto_Char*)"ArrowLeft"));
-    catto_setVariable(context, "joyright", catto_asTypedString((catto_Char*)"ArrowRight"));
-    catto_setVariable(context, "joysel", catto_asTypedString((catto_Char*)"Enter"));
+    _addStringConstant(context, "joyback", "Escape");
+    _addStringConstant(context, "joyhome", "Home");
+    _addStringConstant(context, "joyup", "ArrowUp");
+    _addStringConstant(context, "joydown", "ArrowDown");
+    _addStringConstant(context, "joyleft", "ArrowLeft");
+    _addStringConstant(context, "joyright", "ArrowRight");
+    _addStringConstant(context, "joysel", "Enter");
 }
 
 attoProc::AttoProcess* atto::AttoBindings::_getProcess(catto_Context* context) {
     return (attoProc::AttoProcess*)context->userData;
+}
+
+void atto::AttoBindings::_addStringConstant(catto_Context* context, const char* name, const char* value) {
+    catto_TypedValue string = catto_asTypedString((catto_Char*)value);
+
+    catto_setVariable(context, name, string);
+
+    catto_addTypedValueToGc(context, string);
+    catto_gc(context);
 }
 
 void atto::AttoBindings::_print(catto_Context* context) {
@@ -186,7 +195,7 @@ void atto::AttoContextualMenu::handleEvent(ui::Event event) {
         catto_assignValue(_context, _resultVariable, catto_asTypedNumber(event.data.index));
         catto_setVariable(_context, "cancel", catto_asTypedNumber(false));
 
-        ((attoProc::AttoProcess*)ownerProcess)->destoryOverlayScreen();
+        ((attoProc::AttoProcess*)ownerProcess)->destroyOverlayScreen();
 
         return;
     }
@@ -194,7 +203,7 @@ void atto::AttoContextualMenu::handleEvent(ui::Event event) {
     if (event.type == ui::EventType::CANCEL) {
         catto_setVariable(_context, "cancel", catto_asTypedNumber(true));
 
-        ((attoProc::AttoProcess*)ownerProcess)->destoryOverlayScreen();
+        ((attoProc::AttoProcess*)ownerProcess)->destroyOverlayScreen();
 
         return;
     }
