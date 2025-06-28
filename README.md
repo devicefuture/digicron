@@ -10,7 +10,7 @@ You must clone this repo like this:
 git clone --recurse-submodules https://github.com/devicefuture/digicron
 ```
 
-This is because this repo contains submodules which are used as libraries for the firmware and simulator.
+This is because this repo contains Git submodules which are used as libraries for the firmware and simulator.
 
 ## Building
 Before building for the first time, install dev dependencies:
