@@ -33,7 +33,6 @@ namespace attoProc {
             ui::Screen* _mainScreen;
             ui::Screen* _overlayScreen = nullptr;
             bool _willDestroyOverlayScreen = false;
-            atto::AttoErrorMessageScreen* _errorMessageScreen;
     };
 }
 

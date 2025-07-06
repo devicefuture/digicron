@@ -1,5 +1,7 @@
 #include "attoproc.h"
 
+atto::AttoErrorMessageScreen errorMessageScreen;
+
 attoProc::AttoProcess::AttoProcess(String code) : proc::Process::Process() {
     _context = catto_newContext();
 
@@ -12,7 +14,6 @@ attoProc::AttoProcess::AttoProcess(String code) : proc::Process::Process() {
     catto_load(_context, code.c_str());
 
     _mainScreen = new ui::Screen(this);
-    _errorMessageScreen = new atto::AttoErrorMessageScreen(this);
 
     _mainScreen->open(true);
 }
@@ -59,20 +60,20 @@ void attoProc::AttoProcess::stop() {
             case CATTO_ERROR_STATE_NOT_A_LIST: message = "Cannot perform list operation on non-list variable"; break;
             case CATTO_ERROR_STATE_INVALID_LIST_VALUE: message = "Invalid list value"; break;
             case CATTO_ERROR_STATE_CANNOT_ASSIGN_VALUE: message = "Expected variable name"; break;
+            case CATTO_ERROR_STATE_UNKNOWN_FIELD: message = "Field is not present in list declaration"; break;
 
             default: break;
         }
 
-        _errorMessageScreen->resetScroll();
-        _errorMessageScreen->setMessage(message);
+        errorMessageScreen.resetScroll();
+        errorMessageScreen.setMessage(message);
 
-        _errorMessageScreen->open();
+        errorMessageScreen.open();
     }
 
     catto_freeContext(_context);
 
     delete _mainScreen;
-    delete _errorMessageScreen;
 
     if (_overlayScreen) {
         delete _overlayScreen;
