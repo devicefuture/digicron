@@ -16,6 +16,9 @@ void atto::AttoBindings::bindToContext(catto_Context* context) {
 
     catto_addFunction(context, "key", &_key);
 
+    catto_setVariable(context, "cols", catto_asTypedNumber(8));
+    catto_setVariable(context, "rows", catto_asTypedNumber(2));
+
     _addStringConstant(context, "joyback", "Escape");
     _addStringConstant(context, "joyhome", "Home");
     _addStringConstant(context, "joyup", "ArrowUp");
@@ -160,7 +163,7 @@ void atto::AttoBindings::_menu(catto_Context* context) {
 
     process->_overlayScreen = menu;
 
-    for (unsigned int i = 0; i < items->length; i++) {
+    for (unsigned int i = 0; i < items->length; i += items->fieldCount > 0 ? items->fieldCount : 1) {
         char* item = catto_asString(items->values[i]);
 
         menu->items.push(new String(item));

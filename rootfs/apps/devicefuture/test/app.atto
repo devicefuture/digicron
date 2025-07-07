@@ -10,11 +10,12 @@ def showMessage line1$, line2$
         blit
     loop
 
-    while key:loop
+    while key : loop
 end
 
 def test
     dim items
+
     push "First", items
     push "Second", items
     push "Third", items
