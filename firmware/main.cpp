@@ -29,7 +29,9 @@
 #define JOY_RIGHT_PIN 11
 #define JOY_SELECT_PIN 13
 
-ui::Screen* testScreen = new ui::Screen();
+#define PROC_STEP_DURATION_US 1000
+
+ui::Screen* startupScreen = new ui::Screen();
 
 ui::Icon* tmIcon = ui::constructIcon(
     "###  "
@@ -55,10 +57,10 @@ void setup() {
     display::init();
     input::init();
 
-    ui::currentScreen = testScreen;
+    ui::currentScreen = startupScreen;
 
-    testScreen->print(" device  future");
-    testScreen->print(tmIcon);
+    startupScreen->print(" device  future");
+    startupScreen->print(tmIcon);
 
     if (!fs::init()) {
         Serial.println("Failed to init filesystem");
@@ -104,7 +106,7 @@ void loop() {
 
     lastTick = currentTick;
 
-    if (ui::currentScreen == testScreen && millis() > 3000) {
+    if (ui::currentScreen == startupScreen && timing::getCurrentTick() > 3000) {
         home::homeScreen.open(true);
     }
 
@@ -112,7 +114,12 @@ void loop() {
     //     Serial.printf("Free heap: %d\r\n", dbgHeapFree());
     // #endif
 
-    proc::stepProcesses();
+    long startMicrosecond = timing::getCurrentMicrosecond();
+
+    while (timing::getCurrentMicrosecond() - startMicrosecond < PROC_STEP_DURATION_US) {
+        proc::stepProcesses();
+    }
+
     ui::renderCurrentScreen();
 }
 

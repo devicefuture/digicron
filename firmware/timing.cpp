@@ -270,13 +270,19 @@ struct timing::LeapAdjustment timing::EarthTime::leapAdjustmentToday() {
 
     _cachedLeapAdjustment = NO_LEAP_ADJUSTMENT;
 
-    EarthTimeNonLeaping adjust_2025_06_30(2025, 6, 30, 23, 59, 59); // TODO: Remove this since no leap second has been announced for 2025
+    /*
+        To schedule a leap second (1000 milliseconds), use this code (replace YYYY, MM and DD with occurrence date):
 
-    adjust_2025_06_30.toLocalTime(_timeShift);
+        ```
+        EarthTimeNonLeaping adjust_YYYY_MM_DD(YYYY, MM, DD, 23, 59, 59);
 
-    if (year() == adjust_2025_06_30.year() && dayOfYear() == adjust_2025_06_30.dayOfYear()) {
-        _cachedLeapAdjustment = (timing::LeapAdjustment) {adjust_2025_06_30.millisecondOfDay() + 1000, 1000};
-    }
+        adjust_YYYY_MM_DD.toLocalTime(_timeShift);
+
+        if (year() == adjust_YYYY_MM_DD.year() && dayOfYear() == adjust_YYYY_MM_DD.dayOfYear()) {
+            _cachedLeapAdjustment = (timing::LeapAdjustment) {adjust_YYYY_MM_DD.millisecondOfDay() + 1000, 1000};
+        }
+        ```
+    */
 
     _cachedLeapAdjustmentYear = year();
     _cachedLeapAdjustmentDayOfYear = dayOfYear();
@@ -298,6 +304,10 @@ unsigned long timing::getCurrentTick() {
     #else
         return millis();
     #endif
+}
+
+unsigned long timing::getCurrentMicrosecond() {
+    return micros();
 }
 
 #ifndef DC_SIMULATOR
