@@ -15,10 +15,10 @@ end
 
 def renderCounter
     cls
-    scroll counters[currentCounter] name$
-    
-    base = counters[currentCounter] base
-    value = counters[currentCounter] value
+    scroll counters[currentCounter].name$
+
+    base = counters[currentCounter].base
+    value = counters[currentCounter].value
     displayValue$ = ""
 
     while base != 10 and value < 0
@@ -42,15 +42,15 @@ end
 
 def performCounterAction action, arg
     if action = ACTION_INCREMENT
-        counters[currentCounter] value = counters[currentCounter] value + arg
+        counters[currentCounter].value = counters[currentCounter].value + arg
     else if action = ACTION_DECREMENT
-        counters[currentCounter] value = counters[currentCounter] value - arg
+        counters[currentCounter].value = counters[currentCounter].value - arg
     else if action = ACTION_SET_VALUE
-        counters[currentCounter] value = arg
+        counters[currentCounter].value = arg
     else if action = ACTION_RESET
-        counters[currentCounter] value = counters[currentCounter] resetValue
+        counters[currentCounter].value = counters[currentCounter].resetValue
     else if action = ACTION_SET_RESET_VALUE
-        counters[currentCounter] resetValue = counters[currentCounter] value
+        counters[currentCounter].resetValue = counters[currentCounter].value
     end
 
     renderCounter
@@ -71,11 +71,11 @@ def openActionSelectionMenu button$
     currentAction = ACTION_NONE
 
     if button$ = joysel
-        currentAction = counters[currentCounter] selectAction
+        currentAction = counters[currentCounter].selectAction
     else if button$ = joyup
-        currentAction = counters[currentCounter] upAction
+        currentAction = counters[currentCounter].upAction
     else if button$ = joydown
-        currentAction = counters[currentCounter] downAction
+        currentAction = counters[currentCounter].downAction
     end
 
     i = find(items, "action", currentAction)
@@ -85,11 +85,11 @@ def openActionSelectionMenu button$
     if cancel
         return
     else if button$ = joysel
-        counters[currentCounter] selectAction = items[i] action
+        counters[currentCounter].selectAction = items[i].action
     else if button$ = joyup
-        counters[currentCounter] upAction = items[i] action
+        counters[currentCounter].upAction = items[i].action
     else if button$ = joydown
-        counters[currentCounter] downAction = items[i] action
+        counters[currentCounter].downAction = items[i].action
     end
 end
 
@@ -108,7 +108,7 @@ def openButtonActionsMenu
         return
     end
 
-    openActionSelectionMenu items[i] button$
+    openActionSelectionMenu items[i].button$
 end
 
 def openChangeBaseMenu
@@ -119,12 +119,12 @@ def openChangeBaseMenu
     push "10(DEN)", 10, items
     push "16(HEX)", 16, items
 
-    i = find(items, "base", counters[currentCounter] base)
+    i = find(items, "base", counters[currentCounter].base)
 
     menu "Base-n?", items, i
 
     if not cancel
-        counters[currentCounter] base = items[i] base
+        counters[currentCounter].base = items[i].base
     end
 end
 
@@ -142,7 +142,7 @@ def openCounterMenu
 
     i = 0
 
-    menu counters[currentCounter] name$, items, i
+    menu counters[currentCounter].name$, items, i
 
     if cancel
         return
@@ -169,11 +169,11 @@ repeat
     renderCounter
 
     if key = joysel
-        performCounterAction counters[currentCounter] selectAction, counters[currentCounter] selectArg
+        performCounterAction counters[currentCounter].selectAction, counters[currentCounter].selectArg
     else if key = joyup
-        performCounterAction counters[currentCounter] upAction, counters[currentCounter] upArg
+        performCounterAction counters[currentCounter].upAction, counters[currentCounter].upArg
     else if key = joydown
-        performCounterAction counters[currentCounter] downAction, counters[currentCounter] downArg
+        performCounterAction counters[currentCounter].downAction, counters[currentCounter].downArg
     else if key = joyleft
         currentCounter = currentCounter - 1
 
