@@ -157,6 +157,7 @@ void atto::AttoBindings::_menu(catto_Context* context) {
     items = itemsValue.value.asList;
 
     catto_AstNode* indexArg = catto_getNextArg(context);
+    catto_Int initialIndex = catto_asNumber(catto_evalNextArg(context));
     AttoContextualMenu* menu = new AttoContextualMenu(process, title, indexArg);
 
     free(title);
@@ -172,7 +173,7 @@ void atto::AttoBindings::_menu(catto_Context* context) {
     }
 
     menu->open();
-    menu->setCurrentIndex(catto_asNumber(catto_evalExpression(context, indexArg)));
+    menu->setCurrentIndex(initialIndex >= 0 ? initialIndex : items->length + initialIndex);
 }
 
 void atto::AttoErrorMessageScreen::update() {

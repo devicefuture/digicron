@@ -78,9 +78,7 @@ def openActionSelectionMenu button$
         currentAction = counters[currentCounter].downAction
     end
 
-    i = find(items, "action", currentAction)
-
-    menu "Action?", items, i
+    menu "Action?", items, i, find(items, "action", currentAction)
 
     if cancel
         return
@@ -119,9 +117,7 @@ def openChangeBaseMenu
     push "10(DEN)", 10, items
     push "16(HEX)", 16, items
 
-    i = find(items, "base", counters[currentCounter].base)
-
-    menu "Base-n?", items, i
+    menu "Base-n?", items, i, find(items, "base", counters[currentCounter].base)
 
     if not cancel
         counters[currentCounter].base = items[i].base
