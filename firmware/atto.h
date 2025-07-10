@@ -28,6 +28,7 @@ namespace atto {
 
             static catto_TypedValue _key(catto_Context* context, catto_DataType returnType);
 
+            static void _input(catto_Context* context);
             static void _menu(catto_Context* context);
     };
 
@@ -42,6 +43,17 @@ namespace atto {
 
         private:
             String _message;
+    };
+
+    class AttoTextInput : public ui::TextInput {
+        public:
+            AttoTextInput(attoProc::AttoProcess* process, catto_AstNode* resultVariable);
+
+            void handleEvent(ui::Event event) override;
+
+        private:
+            catto_Context* _context;
+            catto_AstNode* _resultVariable;
     };
 
     class AttoContextualMenu : public ui::ContextualMenu {

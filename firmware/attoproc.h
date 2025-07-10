@@ -27,6 +27,7 @@ namespace attoProc {
 
         protected:
             friend class atto::AttoBindings;
+            friend class atto::AttoTextInput;
             friend class atto::AttoContextualMenu;
 
             catto_Context* _context;

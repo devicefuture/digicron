@@ -28,7 +28,17 @@ ui::Menu::~Menu() {
 }
 
 void ui::Menu::clearItems() {
-    items.emptyAndDelete();
+    items.start();
+
+    while (String* item = items.next()) {
+        if (item == ui::yesOption || item == ui::noOption) {
+            continue;
+        }
+
+        delete item;
+    }
+
+    items.empty();
 }
 
 void ui::Menu::update() {

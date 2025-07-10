@@ -12,6 +12,7 @@ void atto::AttoBindings::bindToContext(catto_Context* context) {
     catto_addCommand(context, "scroll", &_scroll);
     catto_addCommand(context, "blit", &_blit);
 
+    catto_addCommand(context, "input", &_input);
     catto_addCommand(context, "menu", &_menu);
 
     catto_addFunction(context, "key", &_key);
@@ -129,6 +130,28 @@ catto_TypedValue atto::AttoBindings::_key(catto_Context* context, catto_DataType
     return catto_asTypedString((catto_Char*)string);
 }
 
+void atto::AttoBindings::_input(catto_Context* context) {
+    attoProc::AttoProcess* process = _getProcess(context);
+
+    catto_AstNode* valueArg = catto_getNextArg(context);
+
+    if (valueArg->type != CATTO_AST_NODE_TYPE_EXPRESSION_LEAF || !valueArg->value.asExpressionLeaf.subjectVariable) {
+        // Retain compatibility for calls that use a fixed string prompt as first argument
+        valueArg = catto_getNextArg(context);
+    }
+
+    catto_Char* initialValue = catto_hasNextArg(context) ? catto_asString(catto_evalNextArg(context)) : catto_copyString("");
+    AttoTextInput* input = new AttoTextInput(process, valueArg);
+
+    process->_overlayScreen = input;
+
+    input->setValue(initialValue);
+    input->open();
+    input->selectAll();
+
+    free(initialValue);
+}
+
 void atto::AttoBindings::_menu(catto_Context* context) {
     attoProc::AttoProcess* process = _getProcess(context);
     bool isContextual = false;
@@ -186,6 +209,30 @@ void atto::AttoErrorMessageScreen::update() {
 void atto::AttoErrorMessageScreen::handleEvent(ui::Event event) {
     if (event.type == ui::EventType::BUTTON_DOWN && event.data.button == input::Button::BACK) {
         close();
+    }
+}
+
+atto::AttoTextInput::AttoTextInput(attoProc::AttoProcess* process, catto_AstNode* resultVariable) : ui::TextInput(process) {
+    _context = process->_context;
+    _resultVariable = resultVariable;
+}
+
+void atto::AttoTextInput::handleEvent(ui::Event event) {
+    if (event.type == ui::EventType::CONFIRM_VALUE) {
+        catto_assignValue(_context, _resultVariable, catto_asTypedString(getValue().c_str()));
+        catto_setVariable(_context, "cancel", catto_asTypedNumber(false));
+
+        ((attoProc::AttoProcess*)ownerProcess)->destroyOverlayScreen();
+
+        return;
+    }
+
+    if (event.type == ui::EventType::CANCEL) {
+        catto_setVariable(_context, "cancel", catto_asTypedNumber(true));
+
+        ((attoProc::AttoProcess*)ownerProcess)->destroyOverlayScreen();
+
+        return;
     }
 }
 

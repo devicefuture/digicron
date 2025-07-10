@@ -58,6 +58,10 @@ def performCounterAction action, arg
     while key : loop
 end
 
+def openRenameInput
+    input counters[currentCounter].name$, counters[currentCounter].name$
+end
+
 def openActionSelectionMenu button$
     dim items with name$, action
 
@@ -142,6 +146,8 @@ def openCounterMenu
 
     if cancel
         return
+    else if items[i] = "RENAME"
+        openRenameInput
     else if items[i] = "BTNACTS"
         openButtonActionsMenu
     else if items[i] = "BASE-N"

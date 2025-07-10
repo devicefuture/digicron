@@ -241,7 +241,7 @@ void ui::TextInput::_handleEvent(ui::Event event) {
 
                 if (_value == _originalValue) {
                     ContextualMenu::_handleEvent((Event) {
-                        .type = EventType::CANCEL
+                        .type = EventType::CONFIRM_VALUE
                     });
 
                     close();
