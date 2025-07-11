@@ -11,6 +11,8 @@ currentCounter = 0
 
 def newCounter name$, value
     push name$, value, 10, 0, ACTION_INCREMENT, 1, ACTION_INCREMENT, 1, ACTION_DECREMENT, 1, counters
+
+    currentCounter = len(counters) - 1
 end
 
 def renderCounter
@@ -56,6 +58,14 @@ def performCounterAction action, arg
     renderCounter
 
     while key : loop
+end
+
+def openResetMenu
+    noyes "Reset?", result
+
+    if result
+        counters[currentCounter].value = counters[currentCounter].resetValue
+    end
 end
 
 def openRenameInput
@@ -128,6 +138,14 @@ def openChangeBaseMenu
     end
 end
 
+def openDeleteMenu
+    noyes "Delete?", result
+
+    if result
+        remove counters, currentCounter
+    end
+end
+
 def openCounterMenu
     dim items
 
@@ -146,12 +164,18 @@ def openCounterMenu
 
     if cancel
         return
+    else if items[i] = "RESET"
+        openResetMenu
     else if items[i] = "RENAME"
         openRenameInput
     else if items[i] = "BTNACTS"
         openButtonActionsMenu
     else if items[i] = "BASE-N"
         openChangeBaseMenu
+    else if items[i] = "DELETE"
+        openDeleteMenu
+    else if items[i] = "+NEW"
+        newCounter "Counter"; len(counters) + 1, 0
     end
 end
 
@@ -164,7 +188,7 @@ repeat
         currentCounter = len(counters) - 1
     end
 
-    if currentCounter > len(counters) - 1
+    if currentCounter >= len(counters)
         currentCounter = 0
     end
 

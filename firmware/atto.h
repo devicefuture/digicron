@@ -30,6 +30,9 @@ namespace atto {
 
             static void _input(catto_Context* context);
             static void _menu(catto_Context* context);
+            static void _yesno_or_noyes(catto_Context* context, bool swapYesNo);
+            static void _yesno(catto_Context* context);
+            static void _noyes(catto_Context* context);
     };
 
     class AttoErrorMessageScreen : public ui::Screen {
@@ -59,6 +62,17 @@ namespace atto {
     class AttoContextualMenu : public ui::ContextualMenu {
         public:
             AttoContextualMenu(attoProc::AttoProcess* process, String title, catto_AstNode* resultVariable);
+
+            void handleEvent(ui::Event event) override;
+
+        private:
+            catto_Context* _context;
+            catto_AstNode* _resultVariable;
+    };
+
+    class AttoConfirmationMenu : public ui::ConfirmationMenu {
+        public:
+            AttoConfirmationMenu(attoProc::AttoProcess* process, String title, bool swapYesNo, catto_AstNode* resultVariable);
 
             void handleEvent(ui::Event event) override;
 

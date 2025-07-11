@@ -14,6 +14,8 @@ void atto::AttoBindings::bindToContext(catto_Context* context) {
 
     catto_addCommand(context, "input", &_input);
     catto_addCommand(context, "menu", &_menu);
+    catto_addCommand(context, "yesno", &_yesno);
+    catto_addCommand(context, "noyes", &_noyes);
 
     catto_addFunction(context, "key", &_key);
 
@@ -199,6 +201,46 @@ void atto::AttoBindings::_menu(catto_Context* context) {
     menu->setCurrentIndex(initialIndex >= 0 ? initialIndex : items->length + initialIndex);
 }
 
+void atto::AttoBindings::_yesno_or_noyes(catto_Context* context, bool swapYesNo) {
+    attoProc::AttoProcess* process = _getProcess(context);
+    char* title;
+
+    catto_TypedValue titleValue = catto_evalNextArg(context);
+
+    title = catto_asString(titleValue);
+
+    catto_AstNode* indexArg = catto_getNextArg(context);
+    AttoConfirmationMenu* menu = new AttoConfirmationMenu(process, title, swapYesNo, indexArg);
+
+    free(title);
+
+    process->_overlayScreen = menu;
+
+    catto_TypedValue itemsValue = catto_evalNextArg(context);
+
+    if (itemsValue.type == CATTO_DATA_TYPE_LIST) {
+        catto_List* items = itemsValue.value.asList;
+
+        for (unsigned int i = 0; i < items->length; i += items->fieldCount > 0 ? items->fieldCount : 1) {
+            char* item = catto_asString(items->values[i]);
+
+            menu->items.push(new String(item));
+
+            free(item);
+        }
+    }
+
+    menu->open();
+}
+
+void atto::AttoBindings::_yesno(catto_Context* context) {
+    _yesno_or_noyes(context, false);
+}
+
+void atto::AttoBindings::_noyes(catto_Context* context) {
+    _yesno_or_noyes(context, true);
+}
+
 void atto::AttoErrorMessageScreen::update() {
     clear();
 
@@ -244,6 +286,35 @@ atto::AttoContextualMenu::AttoContextualMenu(attoProc::AttoProcess* process, Str
 void atto::AttoContextualMenu::handleEvent(ui::Event event) {
     if (event.type == ui::EventType::ITEM_SELECT) {
         catto_assignValue(_context, _resultVariable, catto_asTypedNumber(event.data.index));
+        catto_setVariable(_context, "cancel", catto_asTypedNumber(false));
+
+        ((attoProc::AttoProcess*)ownerProcess)->destroyOverlayScreen();
+
+        return;
+    }
+
+    if (event.type == ui::EventType::CANCEL) {
+        catto_setVariable(_context, "cancel", catto_asTypedNumber(true));
+
+        ((attoProc::AttoProcess*)ownerProcess)->destroyOverlayScreen();
+
+        return;
+    }
+}
+
+atto::AttoConfirmationMenu::AttoConfirmationMenu(attoProc::AttoProcess* process, String title, bool swapYesNo, catto_AstNode* resultVariable) : ui::ConfirmationMenu(process, title, swapYesNo) {
+    _context = process->_context;
+    _resultVariable = resultVariable;
+}
+
+void atto::AttoConfirmationMenu::handleEvent(ui::Event event) {
+    if (event.type == ui::EventType::ITEM_SELECT) {
+        if (event.data.index < 2) {
+            catto_assignValue(_context, _resultVariable, catto_asTypedNumber(yesSelected()));
+        } else {
+            catto_assignValue(_context, _resultVariable, catto_asTypedNumber(event.data.index));
+        }
+
         catto_setVariable(_context, "cancel", catto_asTypedNumber(false));
 
         ((attoProc::AttoProcess*)ownerProcess)->destroyOverlayScreen();

@@ -29,6 +29,7 @@ namespace attoProc {
             friend class atto::AttoBindings;
             friend class atto::AttoTextInput;
             friend class atto::AttoContextualMenu;
+            friend class atto::AttoConfirmationMenu;
 
             catto_Context* _context;
             ui::Screen* _mainScreen;
