@@ -10,7 +10,13 @@ namespace ui {
 
     class IntInput : public Screen {
         public:
-            using Screen::Screen;
+            IntInput() : Screen() {
+                _updateDisplayValueRange();
+            }
+
+            IntInput(proc::Process* process) : Screen(process) {
+                _updateDisplayValueRange();
+            }
 
             IntInput(String title, long value) : Screen() {
                 setTitle(title);

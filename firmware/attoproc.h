@@ -28,6 +28,7 @@ namespace attoProc {
         protected:
             friend class atto::AttoBindings;
             friend class atto::AttoTextInput;
+            friend class atto::AttoIntInput;
             friend class atto::AttoContextualMenu;
             friend class atto::AttoConfirmationMenu;
 
@@ -37,6 +38,9 @@ namespace attoProc {
             bool _willDestroyOverlayScreen = false;
 
             bool _blinkValue = false;
+            unsigned int _valueBase = 10;
+            long _minValue = ui::INT_INPUT_DEFAULT_MIN_VALUE;
+            long _maxValue = ui::INT_INPUT_DEFAULT_MAX_VALUE;
     };
 }
 

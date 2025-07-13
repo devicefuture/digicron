@@ -13,10 +13,15 @@ void atto::AttoBindings::bindToContext(catto_Context* context) {
     catto_addCommand(context, "blit", &_blit);
 
     catto_addCommand(context, "input", &_input);
+    catto_addCommand(context, "intinput", &_intinput);
     catto_addCommand(context, "menu", &_menu);
     catto_addCommand(context, "yesno", &_yesno);
     catto_addCommand(context, "noyes", &_noyes);
     catto_addCommand(context, "blinkvalue", &_blinkvalue);
+    catto_addCommand(context, "valuebase", &_valuebase);
+    catto_addCommand(context, "valuerange", &_valuerange);
+    catto_addCommand(context, "minvalue", &_minvalue);
+    catto_addCommand(context, "maxvalue", &_maxvalue);
 
     catto_addFunction(context, "key", &_key);
 
@@ -155,6 +160,42 @@ void atto::AttoBindings::_input(catto_Context* context) {
     free(initialValue);
 }
 
+void atto::AttoBindings::_intinput(catto_Context* context) {
+    attoProc::AttoProcess* process = _getProcess(context);
+
+    catto_TypedValue titleValue = catto_evalNextArg(context);
+    catto_Char* title = catto_asString(titleValue);
+    catto_AstNode* valueArg = catto_getNextArg(context);
+
+    catto_Int initialValue = catto_hasNextArg(context) ? catto_asNumber(catto_evalNextArg(context)) : 0;
+    AttoIntInput* input = new AttoIntInput(process, valueArg);
+
+    process->_overlayScreen = input;
+
+    input->setTitle(title);
+    input->setValue(initialValue);
+    input->open();
+
+    if (process->_blinkValue) {
+        input->setValueBlinking(true);
+
+        process->_blinkValue = false;
+    }
+
+    if (process->_valueBase) {
+        input->setBase(process->_valueBase);
+
+        process->_valueBase = 10;
+    }
+
+    input->setRange(process->_minValue, process->_maxValue);
+
+    process->_minValue = ui::INT_INPUT_DEFAULT_MIN_VALUE;
+    process->_maxValue = ui::INT_INPUT_DEFAULT_MAX_VALUE;
+
+    free(title);
+}
+
 void atto::AttoBindings::_menu(catto_Context* context) {
     attoProc::AttoProcess* process = _getProcess(context);
     bool isContextual = false;
@@ -164,7 +205,7 @@ void atto::AttoBindings::_menu(catto_Context* context) {
     catto_TypedValue itemsValue;
     catto_List* items;
 
-    if (titleValue.type == CATTO_DATA_TYPE_STRING) {
+    if (titleValue.type != CATTO_DATA_TYPE_LIST) {
         isContextual = true;
         title = catto_asString(titleValue);
         itemsValue = catto_evalNextArg(context);
@@ -254,6 +295,37 @@ void atto::AttoBindings::_blinkvalue(catto_Context* context) {
     process->_blinkValue = true;
 }
 
+void atto::AttoBindings::_valuebase(catto_Context* context) {
+    attoProc::AttoProcess* process = _getProcess(context);
+
+    catto_Int valueBase = catto_asNumber(catto_evalNextArg(context));
+
+    if (valueBase != 2 && valueBase != 8 && valueBase != 10 && valueBase != 16) {
+        return;
+    }
+
+    process->_valueBase = valueBase;
+}
+
+void atto::AttoBindings::_valuerange(catto_Context* context) {
+    attoProc::AttoProcess* process = _getProcess(context);
+
+    process->_minValue = catto_asNumber(catto_evalNextArg(context));
+    process->_maxValue = catto_asNumber(catto_evalNextArg(context));
+}
+
+void atto::AttoBindings::_minvalue(catto_Context* context) {
+    attoProc::AttoProcess* process = _getProcess(context);
+
+    process->_minValue = catto_asNumber(catto_evalNextArg(context));
+}
+
+void atto::AttoBindings::_maxvalue(catto_Context* context) {
+    attoProc::AttoProcess* process = _getProcess(context);
+
+    process->_maxValue = catto_asNumber(catto_evalNextArg(context));
+}
+
 void atto::AttoErrorMessageScreen::update() {
     clear();
 
@@ -275,6 +347,30 @@ atto::AttoTextInput::AttoTextInput(attoProc::AttoProcess* process, catto_AstNode
 void atto::AttoTextInput::handleEvent(ui::Event event) {
     if (event.type == ui::EventType::CONFIRM_VALUE) {
         catto_assignValue(_context, _resultVariable, catto_asTypedString(getValue().c_str()));
+        catto_setVariable(_context, "cancel", catto_asTypedNumber(false));
+
+        ((attoProc::AttoProcess*)ownerProcess)->destroyOverlayScreen();
+
+        return;
+    }
+
+    if (event.type == ui::EventType::CANCEL) {
+        catto_setVariable(_context, "cancel", catto_asTypedNumber(true));
+
+        ((attoProc::AttoProcess*)ownerProcess)->destroyOverlayScreen();
+
+        return;
+    }
+}
+
+atto::AttoIntInput::AttoIntInput(attoProc::AttoProcess* process, catto_AstNode* resultVariable) : ui::IntInput(process) {
+    _context = process->_context;
+    _resultVariable = resultVariable;
+}
+
+void atto::AttoIntInput::handleEvent(ui::Event event) {
+    if (event.type == ui::EventType::CONFIRM_VALUE) {
+        catto_assignValue(_context, _resultVariable, catto_asTypedNumber(getValue()));
         catto_setVariable(_context, "cancel", catto_asTypedNumber(false));
 
         ((attoProc::AttoProcess*)ownerProcess)->destroyOverlayScreen();

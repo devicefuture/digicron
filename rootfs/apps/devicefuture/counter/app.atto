@@ -140,6 +140,12 @@ def openChangeBaseMenu
     end
 end
 
+def openChangeResetValueMenu
+    blinkvalue
+    valuebase counters[currentCounter].base
+    intinput "Rst val?", counters[currentCounter].resetValue, counters[currentCounter].resetValue
+end
+
 def openDeleteMenu
     noyes "Delete?", result
 
@@ -174,6 +180,8 @@ def openCounterMenu
         openButtonActionsMenu
     else if items[i] = "BASE-N"
         openChangeBaseMenu
+    else if items[i] = "CH RVAL"
+        openChangeResetValueMenu
     else if items[i] = "DELETE"
         openDeleteMenu
     else if items[i] = "+NEW"
