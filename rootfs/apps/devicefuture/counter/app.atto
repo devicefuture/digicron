@@ -92,6 +92,7 @@ def openActionSelectionMenu button$
         currentAction = counters[currentCounter].downAction
     end
 
+    blinkvalue
     menu "Action?", items, i, find(items, "action", currentAction)
 
     if cancel
@@ -131,6 +132,7 @@ def openChangeBaseMenu
     push "10(DEN)", 10, items
     push "16(HEX)", 16, items
 
+    blinkvalue
     menu "Base-n?", items, i, find(items, "base", counters[currentCounter].base)
 
     if not cancel

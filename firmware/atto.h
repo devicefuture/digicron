@@ -33,6 +33,7 @@ namespace atto {
             static void _yesno_or_noyes(catto_Context* context, bool swapYesNo);
             static void _yesno(catto_Context* context);
             static void _noyes(catto_Context* context);
+            static void _blinkvalue(catto_Context* context);
     };
 
     class AttoErrorMessageScreen : public ui::Screen {

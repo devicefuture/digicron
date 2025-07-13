@@ -35,6 +35,8 @@ namespace attoProc {
             ui::Screen* _mainScreen;
             ui::Screen* _overlayScreen = nullptr;
             bool _willDestroyOverlayScreen = false;
+
+            bool _blinkValue = false;
     };
 }
 

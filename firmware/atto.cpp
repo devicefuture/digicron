@@ -16,6 +16,7 @@ void atto::AttoBindings::bindToContext(catto_Context* context) {
     catto_addCommand(context, "menu", &_menu);
     catto_addCommand(context, "yesno", &_yesno);
     catto_addCommand(context, "noyes", &_noyes);
+    catto_addCommand(context, "blinkvalue", &_blinkvalue);
 
     catto_addFunction(context, "key", &_key);
 
@@ -87,7 +88,7 @@ void atto::AttoBindings::_pos(catto_Context* context) {
 
 void atto::AttoBindings::_resetScroll(catto_Context* context) {
     ui::Screen* mainScreen = _getProcess(context)->getMainScreen();
-    
+
     mainScreen->resetScroll();
 }
 
@@ -199,6 +200,12 @@ void atto::AttoBindings::_menu(catto_Context* context) {
 
     menu->open();
     menu->setCurrentIndex(initialIndex >= 0 ? initialIndex : items->length + initialIndex);
+
+    if (process->_blinkValue) {
+        menu->setSelectionBlinking(true);
+
+        process->_blinkValue = false;
+    }
 }
 
 void atto::AttoBindings::_yesno_or_noyes(catto_Context* context, bool swapYesNo) {
@@ -239,6 +246,12 @@ void atto::AttoBindings::_yesno(catto_Context* context) {
 
 void atto::AttoBindings::_noyes(catto_Context* context) {
     _yesno_or_noyes(context, true);
+}
+
+void atto::AttoBindings::_blinkvalue(catto_Context* context) {
+    attoProc::AttoProcess* process = _getProcess(context);
+
+    process->_blinkValue = true;
 }
 
 void atto::AttoErrorMessageScreen::update() {
