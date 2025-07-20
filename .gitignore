@@ -25,6 +25,7 @@ hardware/*-backups
 hardware/*.kicad_prl
 hardware/*.sch-bak
 hardware/*~
+hardware/~*.lck
 hardware/_autosave-*
 hardware/*.tmp
 hardware/*-save.pro
@@ -35,3 +36,4 @@ hardware/*.dsn
 hardware/*.ses
 hardware/*.xml
 hardware/*.csv
+hardware/#auto_saved_files#
