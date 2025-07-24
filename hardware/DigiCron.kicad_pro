@@ -59,7 +59,68 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        [
+          "copper_edge_clearance|215580000|83050000|d0886e4c-9690-45cd-af97-449ec9ebbf9a|4689ee5f-1b45-419a-82bd-55feb30c70ee",
+          "Close enough to still be mountable; tight positioning with button."
+        ],
+        [
+          "copper_edge_clearance|215580000|92030000|d0886e4c-9690-45cd-af97-449ec9ebbf9a|e0fdff9a-8338-4f93-9214-0a77acd064ba",
+          "Close enough to still be mountabe; tight positioning with button."
+        ],
+        [
+          "courtyards_overlap|213615000|66820000|4f297741-0989-45e4-9fb6-4b75b892532b|7c69ef8f-81ae-4545-9500-4c793846c5a8",
+          "IR LED anode/cathode does not touch test pad."
+        ],
+        [
+          "hole_clearance|207770000|91540000|a721f391-8cc1-4280-b8c4-573d5feb0b00|2abc8ff0-1551-4b89-8581-86091d4eec09",
+          "Pad is big enough to still remain connected."
+        ],
+        [
+          "items_not_allowed|184120000|100265000|124fddb7-15c0-416f-aefd-9731dcdea894|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "items_not_allowed|184120000|92315000|3f74b522-9679-4a9a-ab09-e90f6746c673|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "items_not_allowed|184120000|92315000|f83f4d6b-e054-4fba-a4d1-76084bb688d0|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "items_not_allowed|184507500|100265000|8d796e6d-1167-4e05-9831-e9909fa471ed|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "items_not_allowed|184682500|92315000|b1cfb082-8cfd-4d2d-a45a-286fec5b30d7|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "items_not_allowed|184770000|89852500|b24149b0-0925-4069-97f3-75138bf44dd1|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "items_not_allowed|185820000|89740000|c3a8ccb8-1d84-4906-bffa-531a575a9cab|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "items_not_allowed|185870000|90090000|edc3af88-79b7-40a8-8a86-016f49b49dce|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "items_not_allowed|185870000|90557000|38106419-e7ce-4e24-a3cb-0389c0950d15|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "items_not_allowed|185870000|92940000|71fa36a2-f758-4422-9fa8-044e2d8f878b|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "items_not_allowed|185870000|99290000|540c0006-83e9-44e5-a76c-c824de4e67b5|00000000-0000-0000-0000-000000000000",
+          ""
+        ]
+      ],
       "meta": {
         "version": 2
       },
