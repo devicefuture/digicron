@@ -69,6 +69,10 @@
           "Close enough to still be mountabe; tight positioning with button."
         ],
         [
+          "courtyards_overlap|208650000|76695000|4f297741-0989-45e4-9fb6-4b75b892532b|e568b4ce-5626-4a72-86a0-2d8c74511a41",
+          "IR LED courtyard will not interfere with resistor placement."
+        ],
+        [
           "courtyards_overlap|213615000|66820000|4f297741-0989-45e4-9fb6-4b75b892532b|7c69ef8f-81ae-4545-9500-4c793846c5a8",
           "IR LED anode/cathode does not touch test pad."
         ],
@@ -119,6 +123,14 @@
         [
           "items_not_allowed|185870000|99290000|540c0006-83e9-44e5-a76c-c824de4e67b5|00000000-0000-0000-0000-000000000000",
           ""
+        ],
+        [
+          "silk_edge_clearance|215900000|83040000|d0886e4c-9690-45cd-af97-449ec9ebbf9a|5aa18992-6b15-4022-b417-f09e93dee3b5",
+          "USB socket is meant to overhang."
+        ],
+        [
+          "silk_edge_clearance|215900000|92040000|d0886e4c-9690-45cd-af97-449ec9ebbf9a|30686d02-4f87-4690-b854-ad143962a65a",
+          "USB socket is meant to overhang."
         ]
       ],
       "meta": {
