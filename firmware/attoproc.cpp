@@ -9,6 +9,9 @@ attoProc::AttoProcess::AttoProcess(String code) : proc::Process::Process() {
 
     catto_addContextStandardCommands(_context);
 
+    cattox_test_init(_context);
+    cattox_csv_init(_context);
+
     atto::bindings.bindToContext(_context);
 
     catto_load(_context, code.c_str());
