@@ -1,4 +1,5 @@
 #include "atto.h"
+#include "fs.h"
 #include "input.h"
 #include "ui.h"
 
@@ -22,6 +23,9 @@ void atto::AttoBindings::bindToContext(catto_Context* context) {
     catto_addCommand(context, "valuerange", &_valuerange);
     catto_addCommand(context, "minvalue", &_minvalue);
     catto_addCommand(context, "maxvalue", &_maxvalue);
+
+    catto_addCommand(context, "open", &_open);
+    catto_addCommand(context, "close", &_close);
 
     catto_addFunction(context, "key", &_key);
 
@@ -324,6 +328,47 @@ void atto::AttoBindings::_maxvalue(catto_Context* context) {
     attoProc::AttoProcess* process = _getProcess(context);
 
     process->_maxValue = catto_asNumber(catto_evalNextArg(context));
+}
+
+void atto::AttoBindings::_open(catto_Context* context) {
+    attoProc::AttoProcess* process = _getProcess(context);
+    fs::FileMode fileMode = fs::FileMode::WRITE;
+
+    catto_Char* path = catto_asString(catto_evalNextArg(context));
+    catto_AstNode* handleIdArg = catto_getNextArg(context);
+    catto_Char* mode = catto_asString(catto_evalNextArg(context));
+
+    if (catto_stringsEqualCaseInsensitive(mode, "r")) {
+        fileMode = fs::FileMode::READ;
+    } else if (catto_stringsEqualCaseInsensitive(mode, "a")) {
+        fileMode = fs::FileMode::APPEND;
+    }
+
+    fs::FileHandle* fileHandle = fs::open(process, path, fileMode);
+
+    if (fileHandle) {
+        process->_fileHandles.push(fileHandle);
+
+        catto_assignValue(context, handleIdArg, catto_asTypedNumber(process->_fileHandles.length() - 1));
+    } else {
+        // TODO: Throw a better error in atto
+        context->errorState = CATTO_ERROR_STATE_CANNOT_ASSIGN_VALUE;
+    }
+
+    free(path);
+    free(mode);
+}
+
+void atto::AttoBindings::_close(catto_Context* context) {
+    attoProc::AttoProcess* process = _getProcess(context);
+
+    catto_Count handleId = catto_asNumber(catto_evalNextArg(context));
+
+    fs::FileHandle* fileHandle = process->_fileHandles[handleId];
+
+    delete fileHandle;
+
+    process->_fileHandles.set(handleId, nullptr);
 }
 
 void atto::AttoErrorMessageScreen::update() {

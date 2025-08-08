@@ -21,6 +21,10 @@ attoProc::AttoProcess::AttoProcess(String code) : proc::Process::Process() {
     _mainScreen->open(true);
 }
 
+attoProc::AttoProcess::~AttoProcess() {
+    _fileHandles.emptyAndDelete();
+}
+
 void attoProc::AttoProcess::step() {
     if (!_running) {
         return;

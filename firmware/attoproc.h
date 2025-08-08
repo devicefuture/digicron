@@ -11,6 +11,7 @@ namespace attoProc {
 
 #include "datatypes.h"
 #include "proc.h"
+#include "fs.h"
 #include "ui.h"
 #include "atto.h"
 
@@ -18,6 +19,7 @@ namespace attoProc {
     class AttoProcess : public proc::Process {
         public:
             AttoProcess(String code);
+            ~AttoProcess();
 
             proc::ProcessType getType() override {return proc::ProcessType::ATTO;}
             void step() override;
@@ -41,6 +43,8 @@ namespace attoProc {
             unsigned int _valueBase = 10;
             long _minValue = ui::INT_INPUT_DEFAULT_MIN_VALUE;
             long _maxValue = ui::INT_INPUT_DEFAULT_MAX_VALUE;
+
+            dataTypes::List<fs::FileHandle> _fileHandles;
     };
 }
 

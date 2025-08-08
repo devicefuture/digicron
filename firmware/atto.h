@@ -39,6 +39,9 @@ namespace atto {
             static void _valuerange(catto_Context* context);
             static void _minvalue(catto_Context* context);
             static void _maxvalue(catto_Context* context);
+
+            static void _open(catto_Context* context);
+            static void _close(catto_Context* context);
     };
 
     class AttoErrorMessageScreen : public ui::Screen {
