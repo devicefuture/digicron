@@ -26,8 +26,11 @@ void atto::AttoBindings::bindToContext(catto_Context* context) {
 
     catto_addCommand(context, "open", &_open);
     catto_addCommand(context, "close", &_close);
+    catto_addCommand(context, "read", &_read);
+    catto_addCommand(context, "write", &_write);
 
     catto_addFunction(context, "key", &_key);
+    catto_addFunction(context, "exists", &_exists);
 
     catto_setVariable(context, "cols", catto_asTypedNumber(8));
     catto_setVariable(context, "rows", catto_asTypedNumber(2));
@@ -140,6 +143,18 @@ catto_TypedValue atto::AttoBindings::_key(catto_Context* context, catto_DataType
     }
 
     return catto_asTypedString((catto_Char*)string);
+}
+
+catto_TypedValue atto::AttoBindings::_exists(catto_Context* context, catto_DataType returnType) {
+    attoProc::AttoProcess* process = _getProcess(context);
+
+    catto_Char* path = catto_asString(catto_evalNextArg(context));
+
+    bool result = fs::exists(path);
+
+    free(path);
+
+    return catto_asTypedNumber(result ? 1 : 0);
 }
 
 void atto::AttoBindings::_input(catto_Context* context) {
@@ -332,24 +347,48 @@ void atto::AttoBindings::_maxvalue(catto_Context* context) {
 
 void atto::AttoBindings::_open(catto_Context* context) {
     attoProc::AttoProcess* process = _getProcess(context);
-    fs::FileMode fileMode = fs::FileMode::WRITE;
+    fs::FileMode fileMode = fs::FileMode::READ;
 
     catto_Char* path = catto_asString(catto_evalNextArg(context));
     catto_AstNode* handleIdArg = catto_getNextArg(context);
     catto_Char* mode = catto_asString(catto_evalNextArg(context));
 
-    if (catto_stringsEqualCaseInsensitive(mode, "r")) {
-        fileMode = fs::FileMode::READ;
+    bool shouldCreateParentDirectories = false;
+
+    if (catto_stringsEqualCaseInsensitive(mode, "w")) {
+        fileMode = fs::FileMode::WRITE;
+        shouldCreateParentDirectories = true;
     } else if (catto_stringsEqualCaseInsensitive(mode, "a")) {
         fileMode = fs::FileMode::APPEND;
+        shouldCreateParentDirectories = true;
+    }
+
+    if (shouldCreateParentDirectories) {
+        fs::ensureParentDirectories(path);
     }
 
     fs::FileHandle* fileHandle = fs::open(process, path, fileMode);
 
     if (fileHandle) {
-        process->_fileHandles.push(fileHandle);
+        unsigned int handleId = -1;
 
-        catto_assignValue(context, handleIdArg, catto_asTypedNumber(process->_fileHandles.length() - 1));
+        for (unsigned int i = 0; i < process->_fileHandles.length(); i++) {
+            if (!process->_fileHandles[i]) {
+                handleId = i;
+
+                break;
+            }
+        }
+
+        if (handleId == -1) {
+            process->_fileHandles.push(fileHandle);
+
+            handleId = process->_fileHandles.length() - 1;
+        } else {
+            process->_fileHandles.set(handleId, fileHandle);
+        }
+
+        catto_assignValue(context, handleIdArg, catto_asTypedNumber(handleId));
     } else {
         // TODO: Throw a better error in atto
         context->errorState = CATTO_ERROR_STATE_CANNOT_ASSIGN_VALUE;
@@ -369,6 +408,63 @@ void atto::AttoBindings::_close(catto_Context* context) {
     delete fileHandle;
 
     process->_fileHandles.set(handleId, nullptr);
+}
+
+void atto::AttoBindings::_read(catto_Context* context) {
+    attoProc::AttoProcess* process = _getProcess(context);
+
+    catto_Count handleId = catto_asNumber(catto_evalNextArg(context));
+    catto_AstNode* valueArg = catto_getNextArg(context);
+    catto_Count length = catto_asNumber(catto_evalNextArg(context));
+
+    fs::FileHandle* fileHandle = process->_fileHandles[handleId];
+
+    if (!fileHandle) {
+        // TODO: Throw a better error in atto
+        context->errorState = CATTO_ERROR_STATE_CANNOT_ASSIGN_VALUE;
+        return;
+    }
+
+    String value = "";
+
+    for (unsigned int i = 0; i < length || length == 0; i++) {
+        if (!fileHandle->isAvailable()) {
+            break;
+        }
+
+        char c = fileHandle->read();
+
+        if (!c) {
+            break;
+        }
+
+        value.concat(c);
+    }
+
+    printf("Read %s\n", value.c_str());
+
+    catto_assignValue(context, valueArg, catto_asTypedString(value.c_str()));
+}
+
+void atto::AttoBindings::_write(catto_Context* context) {
+    attoProc::AttoProcess* process = _getProcess(context);
+
+    catto_Char* value = catto_asString(catto_evalNextArg(context));
+    catto_Count handleId = catto_asNumber(catto_evalNextArg(context));
+
+    fs::FileHandle* fileHandle = process->_fileHandles[handleId];
+
+    if (!fileHandle) {
+        // TODO: Throw a better error in atto
+        context->errorState = CATTO_ERROR_STATE_CANNOT_ASSIGN_VALUE;
+        free(value);
+        return;
+    }
+
+    fileHandle->write(value, catto_stringLength(value));
+    printf("Write %s\n", value);
+
+    free(value);
 }
 
 void atto::AttoErrorMessageScreen::update() {

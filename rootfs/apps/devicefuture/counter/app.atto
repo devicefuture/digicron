@@ -1,3 +1,7 @@
+extload csv
+
+DATA_PATH$ = "/data/devicefuture/counter/counters.csv"
+
 ACTION_NONE = 0
 ACTION_INCREMENT = 1
 ACTION_DECREMENT = 2
@@ -7,12 +11,28 @@ ACTION_SET_RESET_VALUE = 5
 
 dim counters with name$, value, base, resetValue, selectAction, selectArg, upAction, upArg, downAction, downArg
 
+if exists(DATA_PATH$)
+    open DATA_PATH$, file, "r"
+    read file, csvData$
+    csv.intolist csvData$, counters
+    close file
+end
+
 currentCounter = 0
+
+def saveCounters
+    open DATA_PATH$, file, "w"
+    csv.fromlist counters, csvData$
+    write csvData$, file
+    close file
+end
 
 def newCounter name$, value
     push name$, value, 10, 0, ACTION_INCREMENT, 1, ACTION_INCREMENT, 1, ACTION_DECREMENT, 1, counters
 
     currentCounter = len(counters) - 1
+
+    saveCounters
 end
 
 def renderCounter
@@ -57,6 +77,8 @@ def performCounterAction action, arg
 
     renderCounter
 
+    saveCounters
+
     while key : loop
 end
 
@@ -65,11 +87,15 @@ def openResetMenu
 
     if result
         counters[currentCounter].value = counters[currentCounter].resetValue
+
+        saveCounters
     end
 end
 
 def openRenameInput
     input counters[currentCounter].name$, counters[currentCounter].name$
+
+    saveCounters
 end
 
 def openActionSelectionMenu button$
@@ -104,6 +130,8 @@ def openActionSelectionMenu button$
     else if button$ = joydown
         counters[currentCounter].downAction = items[i].action
     end
+
+    saveCounters
 end
 
 def openButtonActionsMenu
@@ -137,6 +165,8 @@ def openChangeBaseMenu
 
     if not cancel
         counters[currentCounter].base = items[i].base
+
+        saveCounters
     end
 end
 
@@ -144,6 +174,8 @@ def openChangeResetValueMenu
     blinkvalue
     valuebase counters[currentCounter].base
     intinput "Rst val?", counters[currentCounter].resetValue, counters[currentCounter].resetValue
+
+    saveCounters
 end
 
 def openDeleteMenu
@@ -151,6 +183,8 @@ def openDeleteMenu
 
     if result
         remove counters, currentCounter
+
+        saveCounters
     end
 end
 

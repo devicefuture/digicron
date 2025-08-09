@@ -27,6 +27,7 @@ namespace atto {
             static void _blit(catto_Context* context);
 
             static catto_TypedValue _key(catto_Context* context, catto_DataType returnType);
+            static catto_TypedValue _exists(catto_Context* context, catto_DataType returnType);
 
             static void _input(catto_Context* context);
             static void _intinput(catto_Context* context);
@@ -42,6 +43,8 @@ namespace atto {
 
             static void _open(catto_Context* context);
             static void _close(catto_Context* context);
+            static void _read(catto_Context* context);
+            static void _write(catto_Context* context);
     };
 
     class AttoErrorMessageScreen : public ui::Screen {
