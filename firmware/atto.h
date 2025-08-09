@@ -27,6 +27,7 @@ namespace atto {
             static void _blit(catto_Context* context);
 
             static catto_TypedValue _key(catto_Context* context, catto_DataType returnType);
+            static catto_TypedValue _epoch(catto_Context* context, catto_DataType returnType);
             static catto_TypedValue _exists(catto_Context* context, catto_DataType returnType);
 
             static void _input(catto_Context* context);

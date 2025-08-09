@@ -1,6 +1,7 @@
 #include "atto.h"
 #include "fs.h"
 #include "input.h"
+#include "timing.h"
 #include "ui.h"
 
 atto::AttoBindings atto::bindings;
@@ -30,6 +31,7 @@ void atto::AttoBindings::bindToContext(catto_Context* context) {
     catto_addCommand(context, "write", &_write);
 
     catto_addFunction(context, "key", &_key);
+    catto_addFunction(context, "epoch", &_epoch);
     catto_addFunction(context, "exists", &_exists);
 
     catto_setVariable(context, "cols", catto_asTypedNumber(8));
@@ -143,6 +145,10 @@ catto_TypedValue atto::AttoBindings::_key(catto_Context* context, catto_DataType
     }
 
     return catto_asTypedString((catto_Char*)string);
+}
+
+catto_TypedValue atto::AttoBindings::_epoch(catto_Context* context, catto_DataType returnType) {
+    return catto_asTypedNumber(timing::getCurrentTick());
 }
 
 catto_TypedValue atto::AttoBindings::_exists(catto_Context* context, catto_DataType returnType) {
@@ -441,8 +447,6 @@ void atto::AttoBindings::_read(catto_Context* context) {
         value.concat(c);
     }
 
-    printf("Read %s\n", value.c_str());
-
     catto_assignValue(context, valueArg, catto_asTypedString(value.c_str()));
 }
 
@@ -462,7 +466,6 @@ void atto::AttoBindings::_write(catto_Context* context) {
     }
 
     fileHandle->write(value, catto_stringLength(value));
-    printf("Write %s\n", value);
 
     free(value);
 }

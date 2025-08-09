@@ -2,6 +2,8 @@ extload csv
 
 DATA_PATH$ = "/data/devicefuture/counter/counters.csv"
 
+SAVE_DELAY = 3000
+
 ACTION_NONE = 0
 ACTION_INCREMENT = 1
 ACTION_DECREMENT = 2
@@ -10,6 +12,9 @@ ACTION_RESET = 4
 ACTION_SET_RESET_VALUE = 5
 
 dim counters with name$, value, base, resetValue, selectAction, selectArg, upAction, upArg, downAction, downArg
+
+lastSave = 0
+saveDeferred = false
 
 if exists(DATA_PATH$)
     open DATA_PATH$, file, "r"
@@ -20,11 +25,21 @@ end
 
 currentCounter = 0
 
-def saveCounters
+def saveCounters force
+    if not force
+        lastSave = epoch
+        saveDeferred = true
+
+        return
+    end
+
     open DATA_PATH$, file, "w"
     csv.fromlist counters, csvData$
     write csvData$, file
     close file
+
+    lastSave = epoch
+    saveDeferred = false
 end
 
 def newCounter name$, value
@@ -237,6 +252,10 @@ repeat
     end
 
     renderCounter
+
+    if saveDeferred and epoch - lastSave >= SAVE_DELAY
+        saveCounters true
+    end
 
     if key = joysel
         performCounterAction counters[currentCounter].selectAction, counters[currentCounter].selectArg
