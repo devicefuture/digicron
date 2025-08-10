@@ -1,0 +1,48 @@
+startTime = 0
+stopTime = 0
+running = false
+
+repeat
+    cls
+
+    time = stopTime
+    currentKey = key
+
+    if currentKey = joyback
+        time = 0
+    else if running
+        time = epoch - startTime
+    end
+
+    if running or stopTime = 0 or currentKey = joysel or epoch mod 1000 < 500
+        dispMinutes$ = lpad$(floor(time / 1000 / 60), 1, "0")
+        dispSeconds$ = lpad$(floor((time / 1000) mod 60), 2, "0")
+        dispMilliseconds$ = lpad$(time mod 1000, 3, "0")
+
+        print dispMinutes$; "'"; dispSeconds$; "\""; dispMilliseconds$;
+
+        if not running and currentKey = joysel
+            pos 0, 1
+            print "--HOLD--";
+        end
+    end
+
+    blit
+
+    if currentKey = joysel
+        if running
+            stopTime = time
+        end
+
+        while key : loop
+
+        if not running
+            startTime = epoch - stopTime
+        end
+
+        running = not running
+    else if currentKey = joyback
+        startTime = epoch
+        stopTime = 0
+    end
+loop
