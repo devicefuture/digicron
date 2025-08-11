@@ -52,6 +52,7 @@ long lastTick = 0;
 void setup() {
     Serial.begin(115200);
     Serial.println("Hello, world!");
+    Serial.flush();
 
     timing::init();
     display::init();
@@ -62,12 +63,20 @@ void setup() {
     startupScreen->print(" device  future");
     startupScreen->print(tmIcon);
 
+    ui::renderCurrentScreen();
+
     if (!fs::init()) {
         Serial.println("Failed to init filesystem");
+        Serial.flush();
+
+        while (true) {}
     }
 
     if (!sysfs::populate()) {
         Serial.println("Failed to populate sysfs");
+        Serial.flush();
+
+        while (true) {}
     }
 
     apps::scan();
