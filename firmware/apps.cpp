@@ -19,7 +19,11 @@ String apps::App::getId() {
 }
 
 String apps::App::getDisplayName() {
-    return _config->getStringOrDefault("App", "Name", _id);
+    String defaultName = _config->getStringOrDefault("App", "Name", _id);
+
+    defaultName.toUpperCase();
+
+    return _config->getStringOrDefault("App", "DisplayName", defaultName);
 }
 
 proc::Process* apps::App::launch() {

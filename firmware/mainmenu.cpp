@@ -9,7 +9,6 @@
 
 proc::Process mainMenu::mainMenuProcess;
 mainMenu::MainMenuScreen mainMenu::mainMenuScreen;
-mainMenu::AppsMenuScreen mainMenu::appsMenuScreen;
 
 class TestPopup : public ui::Popup {
     public:
@@ -38,13 +37,25 @@ TestPopup testPopup;
 mainMenu::MainMenuScreen::MainMenuScreen() : ui::Menu() {
     ownerProcess = &mainMenuProcess;
     permanence = ui::ScreenPermanence::CLOSE_ON_HOME;
+}
 
-    items.push(new String("NOTIFS"));
-    items.push(new String("APPS"));
-    items.push(new String("CONFIG"));
-    items.push(new String("REALLY LONG NAME"));
-    items.push(new String("ANOTHER"));
-    items.push(new String("ENDLESS"));
+void mainMenu::MainMenuScreen::open(bool urgent) {
+    apps::registry.start();
+
+    items.emptyAndDelete();
+
+    _notifsOption = new String("NOTIFS");
+    _configOption = new String("CONFIG");
+
+    items.push(_notifsOption);
+
+    while (auto app = apps::registry.next()) {
+        items.push(new String(app->getDisplayName()));
+    }
+
+    items.push(_configOption);
+
+    ui::Menu::open(urgent);
 }
 
 void mainMenu::MainMenuScreen::close() {
@@ -57,36 +68,19 @@ void mainMenu::MainMenuScreen::close() {
 
 void mainMenu::MainMenuScreen::handleEvent(ui::Event event) {
     if (event.type == ui::EventType::ITEM_SELECT) {
-        if (items[event.data.index]->equals("NOTIFS")) {
+        if (items[event.data.index] == _notifsOption) {
             testPopup.open(true);
+
+            return;
         }
 
-        if (items[event.data.index]->equals("APPS")) {
-            mainMenu::appsMenuScreen.open();
+        if (items[event.data.index] == _configOption) {
+            // TODO: Create config menu
+
+            return;
         }
-    }
-}
 
-mainMenu::AppsMenuScreen::AppsMenuScreen() : ui::ContextualMenu("APPS") {
-    ownerProcess = &mainMenuProcess;
-    permanence = ui::ScreenPermanence::CLOSE_ON_HOME;
-}
-
-void mainMenu::AppsMenuScreen::open(bool urgent) {
-    apps::registry.start();
-
-    items.emptyAndDelete();
-
-    while (auto app = apps::registry.next()) {
-        items.push(new String(app->getDisplayName()));
-    }
-
-    ui::ContextualMenu::open(urgent);
-}
-
-void mainMenu::AppsMenuScreen::handleEvent(ui::Event event) {
-    if (event.type == ui::EventType::ITEM_SELECT) {
-        apps::App* app = apps::registry[event.data.index];
+        apps::App* app = apps::registry[event.data.index - 1]; // TODO: Come up with better way to get app instance
 
         if (app) {
             app->launch();

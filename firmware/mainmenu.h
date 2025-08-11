@@ -11,20 +11,16 @@ namespace mainMenu {
         public:
             MainMenuScreen();
 
+            void open(bool urgent = true) override;
             void close() override;
             void handleEvent(ui::Event event) override;
-    };
 
-    class AppsMenuScreen : public ui::ContextualMenu {
-        public:
-            AppsMenuScreen();
-
-            void open(bool urgent = true) override;
-            void handleEvent(ui::Event event) override;
+        private:
+            String* _notifsOption;
+            String* _configOption;
     };
 
     extern MainMenuScreen mainMenuScreen;
-    extern AppsMenuScreen appsMenuScreen;
 }
 
 #endif
