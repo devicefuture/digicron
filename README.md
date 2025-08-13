@@ -1,5 +1,5 @@
 # DigiCron
-Software and hardware for the DigiCron retro smartwatch.
+Software and hardware for the DigiCron smartwatch.
 
 Want to try out the software on your device? Just visit the [DigiCron Simulator](https://digicron.devicefuture.org/simulator)!
 
