@@ -1,4 +1,5 @@
 #include "attoproc.h"
+#include "timing.h"
 
 atto::AttoErrorMessageScreen errorMessageScreen;
 
@@ -40,6 +41,12 @@ void attoProc::AttoProcess::step() {
             return;
         }
     }
+
+    if (_delayActive && (long)timing::getCurrentTick() - (long)_delayEndTime < 0) {
+        return;
+    }
+
+    _delayActive = false;
 
     if (!catto_step(_context)) {
         stop();

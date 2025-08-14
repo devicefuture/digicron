@@ -25,6 +25,7 @@ namespace atto {
             static void _resetScroll(catto_Context* context);
             static void _scroll(catto_Context* context);
             static void _blit(catto_Context* context);
+            static void _delay(catto_Context* context);
 
             static catto_TypedValue _key(catto_Context* context, catto_DataType returnType);
             static catto_TypedValue _epoch(catto_Context* context, catto_DataType returnType);

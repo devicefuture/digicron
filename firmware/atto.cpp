@@ -13,6 +13,7 @@ void atto::AttoBindings::bindToContext(catto_Context* context) {
     catto_addCommand(context, "resetscroll", &_resetScroll);
     catto_addCommand(context, "scroll", &_scroll);
     catto_addCommand(context, "blit", &_blit);
+    catto_addCommand(context, "delay", &_delay);
 
     catto_addCommand(context, "input", &_input);
     catto_addCommand(context, "intinput", &_intinput);
@@ -122,6 +123,15 @@ void atto::AttoBindings::_blit(catto_Context* context) {
 
     mainScreen->blit();
     mainScreen->setBlitMode(true);
+}
+
+void atto::AttoBindings::_delay(catto_Context* context) {
+    attoProc::AttoProcess* process = _getProcess(context);
+
+    catto_Int duration = catto_asNumber(catto_evalNextArg(context));
+
+    process->_delayActive = true;
+    process->_delayEndTime = timing::getCurrentTick() + duration;
 }
 
 catto_TypedValue atto::AttoBindings::_key(catto_Context* context, catto_DataType returnType) {
