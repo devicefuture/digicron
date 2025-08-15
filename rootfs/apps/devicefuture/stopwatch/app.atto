@@ -3,25 +3,29 @@ dim splitTimes
 startTime = 0
 stopTime = 0
 running = false
-timeIndex = 0
-lastKey = ""
+displayTime = 0
+splitIndex = 0
 showSplit = false
 showSplitChangeTime = -1000
+showTotal = true
+lastKey = ""
 
-def renderTime time, formatTime
-    if formatTime < 10 * 60 * 1000
+def renderTime time
+    timeFormat = min(time, displayTime)
+
+    if timeFormat < 10 * 60 * 1000
         dispMinutes$ = floor(time / 1000 / 60)
         dispSeconds$ = lpad$(floor(time / 1000) mod 60, 2, "0")
         dispMilliseconds$ = lpad$(time mod 1000, 3, "0")
 
         print dispMinutes$; "'"; dispSeconds$; "\""; dispMilliseconds$;
-    else if formatTime < 1 * 60 * 60 * 1000
+    else if timeFormat < 1 * 60 * 60 * 1000
         dispMinutes$ = lpad$(floor(time / 1000 / 60), 2, "0")
         dispSeconds$ = lpad$(floor(time / 1000) mod 60, 2, "0")
         dispMilliseconds$ = lpad$(floor(time / 10) mod 100, 2, "0")
 
         print dispMinutes$; "'"; dispSeconds$; "\""; dispMilliseconds$;
-    else if formatTime < 10 * 60 * 60 * 1000
+    else if timeFormat < 10 * 60 * 60 * 1000
         dispHours$ = floor(time / 1000 / 60 / 60)
         dispMinutes$ = lpad$(floor(time / 1000 / 60) mod 60, 2, "0")
         dispSeconds$ = lpad$(floor(time / 1000) mod 60, 2, "0")
@@ -36,58 +40,136 @@ def renderTime time, formatTime
     end
 end
 
-repeat
-    cls
-
-    time = stopTime
-    splitTimeIndex = timeIndex - 1
-    currentKey = key
+def renderSplitMessage index, uppercase
     lapSplitPrefix = "Lap "
 
     if showSplit
         lapSplitPrefix = "Split "
     end
 
+    if uppercase
+        lapSplitPrefix = upper$(lapSplitPrefix)
+    end
+
+    print lapSplitPrefix; right$(index + 1, 2);
+end
+
+def renderSplitTime index
+    if index > 0 and showSplit
+        renderTime splitTimes[index]
+    else if index > 0
+        renderTime splitTimes[index] - splitTimes[index - 1]
+    else
+        renderTime splitTimes[0]
+    end
+end
+
+def renderWithoutSplit
+    cls
+    pos 0, 0
+
+    if running or displayTime = 0 or epoch mod 1000 < 500
+        renderTime displayTime
+    end
+end
+
+def renderRunningWithSplit
+    cls
+    pos 0, 0
+
+    if epoch - showSplitChangeTime < 1000
+        renderSplitMessage len(splitTimes), true
+    else
+        renderSplitTime len(splitTimes) - 1
+    end
+
+    pos 0, 1
+
+    if not showSplit and len(splitTimes) > 0
+        renderTime displayTime - splitTimes[len(splitTimes) - 1]
+    else
+        renderTime displayTime
+    end
+end
+
+def renderStoppedSplit
+    cls
+    pos 0, 0
+    renderSplitMessage splitIndex, false
+    pos 0, 1
+    renderSplitTime splitIndex
+
+    if currentKey = joyup and not lastKey
+        splitIndex = splitIndex - 1
+
+        if splitIndex < 0
+            splitIndex = len(splitTimes) - 1
+            showTotal = true
+        end
+    else if currentKey = joydown and not lastKey
+        splitIndex = splitIndex + 1
+    end
+end
+
+def renderStoppedLastSplit
+    cls
+    pos 0, 0
+    renderSplitMessage len(splitTimes), false
+    pos 0, 1
+
+    if showSplit
+        renderTime displayTime
+    else
+        renderTime displayTime - splitTimes[len(splitTimes) - 1]
+    end
+
+    if currentKey = joyup and not lastKey
+        splitIndex = len(splitTimes) - 1
+    else if currentKey = joydown and not lastKey
+        splitIndex = 0
+        showTotal = true
+    end
+end
+
+def renderStoppedTotal
+    cls
+    pos 0, 0
+    print "Total"
+
+    if epoch mod 1000 < 500
+        renderTime stopTime
+    end
+
+    if currentKey = joyup and not lastKey
+        splitIndex = len(splitTimes)
+        showTotal = false
+    else if currentKey = joydown and not lastKey
+        splitIndex = 0
+        showTotal = false
+    end
+end
+
+repeat
+    cls
+
+    displayTime = stopTime
+    currentKey = key
+
     if running
-        time = epoch - startTime
-        splitTimeIndex = len(splitTimes) - 1
+        displayTime = epoch - startTime
     end
 
-    if running and len(splitTimes) > 0 and epoch - showSplitChangeTime < 1000
-        print upper$(lapSplitPrefix); right$(len(splitTimes) + 1, 2);
-        pos 0, 1
-    else if len(splitTimes) > 0 and (running or timeIndex > 0)
-        if not running
-            print lapSplitPrefix; right$(timeIndex, 2);
-            pos 0, 1
-        end
-
-        if splitTimeIndex > 0 and showSplit
-            renderTime splitTimes[splitTimeIndex], time
-        else if splitTimeIndex > 0
-            renderTime splitTimes[splitTimeIndex] - splitTimes[splitTimeIndex - 1], time
+    if len(splitTimes) = 0
+        renderWithoutSplit
+    else if len(splitTimes) > 0
+        if running
+            renderRunningWithSplit
+        else if showTotal
+            renderStoppedTotal
+        else if splitIndex >= len(splitTimes)
+            renderStoppedLastSplit
         else
-            renderTime splitTimes[0], time
-        end
-
-        pos 0, 1
-    end
-
-    if not running and len(splitTimes) > 0 and timeIndex <= 0
-        if timeIndex = -1
-            print lapSplitPrefix; right$(len(splitTimes) + 1, 2);
-        else
-            print "Total";
-        end
-
-        pos 0, 1
-    end
-
-    if running or timeIndex = -1 or (timeIndex = 0 and (stopTime = 0 or currentKey = joysel or epoch mod 1000 < 500))
-        if not showSplit and (running or timeIndex = -1) and len(splitTimes) > 0
-            renderTime time - splitTimes[len(splitTimes) - 1], time
-        else
-            renderTime time, time
+            renderStoppedSplit
         end
     end
 
@@ -100,8 +182,9 @@ repeat
 
     if currentKey = joysel
         if running
-            stopTime = time
-            timeIndex = 0
+            stopTime = displayTime
+            showTotal = true
+            splitIndex = 0
         end
 
         while key : loop
@@ -121,22 +204,13 @@ repeat
         else
             startTime = epoch
             stopTime = 0
+            splitIndex = 0
 
             dim splitTimes
         end
-    else if currentKey = joyup and not lastKey
-        timeIndex = timeIndex - 1
-    else if currentKey = joydown and not lastKey
-        timeIndex = timeIndex + 1
-    else if (currentKey = joyleft or currentKey = joyright) and not lastKey
+    else if (currentKey = joyleft or currentKey = joyright) and len(splitTimes) > 0 and (running or not showTotal) and not lastKey
         showSplit = not showSplit
         showSplitChangeTime = epoch
-    end
-
-    if timeIndex < -1 or len(splitTimes) = 0
-        timeIndex = len(splitTimes)
-    else if timeIndex > len(splitTimes)
-        timeIndex = -1
     end
 
     lastKey = currentKey
