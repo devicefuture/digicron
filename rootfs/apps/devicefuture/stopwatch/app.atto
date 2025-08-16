@@ -1,12 +1,14 @@
 dim splitTimes
 
+SHOW_SPLIT_CHANGE_DURATION = 1000
+
 startTime = 0
 stopTime = 0
 running = false
 displayTime = 0
 splitIndex = 0
 showSplit = false
-showSplitChangeTime = -1000
+showSplitChangeTime = -SHOW_SPLIT_CHANGE_DURATION
 showTotal = true
 lastKey = ""
 
@@ -68,7 +70,7 @@ def renderWithoutSplit
     cls
     pos 0, 0
 
-    if running or displayTime = 0 or epoch mod 1000 < 500
+    if running or displayTime = 0 or epoch mod 1000 < 500 or currentKey = joysel
         renderTime displayTime
     end
 end
@@ -77,7 +79,7 @@ def renderRunningWithSplit
     cls
     pos 0, 0
 
-    if epoch - showSplitChangeTime < 1000
+    if epoch - showSplitChangeTime < SHOW_SPLIT_CHANGE_DURATION
         renderSplitMessage len(splitTimes), true
     else
         renderSplitTime len(splitTimes) - 1
@@ -136,7 +138,7 @@ def renderStoppedTotal
     pos 0, 0
     print "Total"
 
-    if epoch mod 1000 < 500
+    if epoch mod 1000 < 500 or currentKey = joysel
         renderTime stopTime
     end
 
@@ -181,15 +183,18 @@ repeat
     blit
 
     if currentKey = joysel
+        while key = joysel : loop
+
         if running
             stopTime = displayTime
             showTotal = true
             splitIndex = 0
-        end
+        else
+            if key = joyback
+                while key = joyback : loop
+                continue
+            end
 
-        while key : loop
-
-        if not running
             startTime = epoch - stopTime
 
             if len(splitTimes) > 0
