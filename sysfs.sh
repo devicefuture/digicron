@@ -1,6 +1,7 @@
 #!/bin/bash
 
 OVERWRITE=false
+COMPRESS_ATTO=false
 
 if [ "$1" = "--overwrite" ]; then
     OVERWRITE=true
@@ -62,6 +63,18 @@ EOF
 for file in $(find rootfs -type f); do
     path=${file#rootfs/}
     id=${path//[\.\/]/_}
+
+    if [[ "$file" == *.at ]]; then
+        continue
+    fi
+
+    if [ $COMPRESS_ATTO = true ] && [[ "$file" == *.atto ]]; then
+        lib/catto/runtime/build/catto $file --gen-at ${file%.atto}.at
+
+        id=${id%_atto}_at
+        file=${file%.atto}.at
+        path=${path%.atto}.at
+    fi
 
     xxd -n $id -i $file | sed -e "s/unsigned/inline unsigned/" > firmware/sysfs/$id.h
 

@@ -59,10 +59,29 @@ String fs::FileHandle::readString() {
     return data;
 }
 
-void fs::FileHandle::write(String string) {
-    unsigned int i = 0;
+char* fs::FileHandle::readBuffer(unsigned int* sizePtr) {
+    char* buffer = (char*)malloc(0);
+    unsigned int size = 0;
 
-    while (string[i] != '\0') {
+    while (isAvailable()) {
+        char c = read();
+
+        buffer = (char*)realloc(buffer, size + 1);
+        buffer[size++] = c;
+    }
+
+    buffer = (char*)realloc(buffer, size + 1);
+    buffer[size++] = '\0';
+
+    if (sizePtr) {
+        *sizePtr = size;
+    }
+
+    return buffer;
+}
+
+void fs::FileHandle::write(String string) {
+    for (unsigned int i = 0; i < string.length(); i++) {
         write(string[i]);
         i++;
     }

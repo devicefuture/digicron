@@ -13,6 +13,7 @@ Makefile
 
 firmware/sysfs
 firmware/_*
+*.at
 
 # Hardware
 

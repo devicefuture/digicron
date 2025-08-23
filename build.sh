@@ -12,6 +12,10 @@ else
     ./sysfs.sh
 fi
 
+pushd lib/catto
+    ./build.sh
+popd
+
 if [ "$1" == "--install-dev" ]; then
     sudo apt-get install clang lld xxd binaryen
 

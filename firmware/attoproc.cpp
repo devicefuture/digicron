@@ -3,7 +3,7 @@
 
 atto::AttoErrorMessageScreen errorMessageScreen;
 
-attoProc::AttoProcess::AttoProcess(String code) : proc::Process::Process() {
+attoProc::AttoProcess::AttoProcess(char* code, unsigned int codeSize) : proc::Process::Process() {
     _context = catto_newContext();
 
     _context->userData = this;
@@ -15,7 +15,7 @@ attoProc::AttoProcess::AttoProcess(String code) : proc::Process::Process() {
 
     atto::bindings.bindToContext(_context);
 
-    catto_load(_context, code.c_str());
+    catto_loadWithSize(_context, code, codeSize);
 
     _mainScreen = new ui::Screen(this);
 
@@ -48,7 +48,7 @@ void attoProc::AttoProcess::step() {
 
     _delayActive = false;
 
-    if (!catto_step(_context)) {
+    if (_context->errorState != CATTO_ERROR_STATE_NONE || !catto_step(_context)) {
         stop();
 
         return;
@@ -65,6 +65,7 @@ void attoProc::AttoProcess::stop() {
 
         switch (_context->errorState) {
             case CATTO_ERROR_STATE_UNEXPECTED_TOKEN: message = "Unexpected token"; break;
+            case CATTO_ERROR_STATE_INVALID_AT_FORMAT: message = "Invalid token file format"; break;
             case CATTO_ERROR_STATE_NO_RETURN: message = "Nothing to return to"; break;
             case CATTO_ERROR_STATE_MISMATCHED_OPENING_MARK: message = "Mismatched statement opening mark"; break;
             case CATTO_ERROR_STATE_MISMATCHED_CLOSING_MARK: message = "Mismatched statement closing mark"; break;

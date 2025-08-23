@@ -48,6 +48,7 @@ namespace fs {
 
             char read();
             String readString();
+            char* readBuffer(unsigned int* sizePtr);
 
             void write(char c);
             void write(const char* buffer, unsigned int length);

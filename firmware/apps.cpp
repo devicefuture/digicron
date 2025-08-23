@@ -38,17 +38,20 @@ proc::Process* apps::AttoApp::launch() {
         primaryAppProcess->stop();
     }
 
-    fs::FileHandle* file = fs::open("apps/" + _id + "/app.atto", fs::FileMode::READ);
+    fs::FileHandle* file = fs::open("/apps/" + _id + "/" + _config->getStringOrDefault("App", "Path", "app.atto"), fs::FileMode::READ);
 
     if (!file) {
         return nullptr;
     }
 
-    String code = file->readString();
+    unsigned int size = 0;
+    char* code = file->readBuffer(&size);
 
     delete file;
 
-    auto process = new attoProc::AttoProcess(code);
+    auto process = new attoProc::AttoProcess(code, size);
+
+    free(code);
 
     process->onStop = [](proc::Process* process) {
         if (primaryAppProcess == process) {

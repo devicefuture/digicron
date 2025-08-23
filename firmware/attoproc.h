@@ -18,7 +18,7 @@ namespace attoProc {
 namespace attoProc {
     class AttoProcess : public proc::Process {
         public:
-            AttoProcess(String code);
+            AttoProcess(char* code, unsigned int codeSize);
             ~AttoProcess();
 
             proc::ProcessType getType() override {return proc::ProcessType::ATTO;}
