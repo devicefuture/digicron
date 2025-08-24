@@ -21,6 +21,7 @@ namespace ui {
             void addItem(String item) {items.push(new String(item));}
             unsigned int getCurrentIndex() {return _currentIndex;}
             void setCurrentIndex(unsigned int index) {_currentIndex = index;}
+            void setIsLoading(bool isLoading) {_isLoading = isLoading;}
 
             virtual void open(bool urgent = false) override;
 
@@ -30,6 +31,7 @@ namespace ui {
         protected:
             unsigned int _currentIndex = 0;
             unsigned int _scrollPosition = 0;
+            bool _isLoading = false;
     };
 
     class ContextualMenu : public Menu {
@@ -80,6 +82,7 @@ namespace ui {
     extern String* noOption;
     extern Icon* menuSelectionIcon;
     extern Icon* menuScrollableIcon;
+    extern Icon* menuLoadingIcon;
 }
 
 #include "textinputs.h"

@@ -23,6 +23,16 @@ ui::Icon* ui::menuScrollableIcon = ui::constructIcon(
     "  #  "
 );
 
+ui::Icon* ui::menuLoadingIcon = ui::constructIcon(
+    "#####"
+    "#   #"
+    " # # "
+    "  #  "
+    " # # "
+    "#   #"
+    "#####"
+);
+
 ui::Menu::~Menu() {
     clearItems();
 }
@@ -68,7 +78,7 @@ void ui::Menu::update() {
         setPosition(0, row);
 
         if (i == _currentIndex) {
-            print(menuSelectionIcon);
+            print(_isLoading ? menuLoadingIcon : menuSelectionIcon);
             scroll(*items[i], display::COLUMNS - 1);
         } else {
             print(" ");
@@ -88,6 +98,10 @@ void ui::Menu::_handleEvent(ui::Event event) {
     ui::Screen::_handleEvent(event);
 
     if (event.type == EventType::BUTTON_DOWN) {
+        if (_isLoading) {
+            return;
+        }
+
         switch (event.data.button) {
             case input::Button::BACK:
             {
@@ -174,7 +188,7 @@ void ui::ContextualMenu::update() {
         setPosition(display::COLUMNS - 1, 1);
     }
 
-    print(menuScrollableIcon);
+    print(_isLoading ? menuLoadingIcon : menuScrollableIcon);
 }
 
 void ui::ContextualMenu::_handleEvent(Event event) {
@@ -244,6 +258,10 @@ void ui::ConfirmationMenu::_handleEvent(ui::Event event) {
     ui::Menu::_handleEvent(event);
 
     if (event.type == EventType::BUTTON_DOWN) {
+        if (_isLoading) {
+            return;
+        }
+
         switch (event.data.button) {
             case input::Button::LEFT:
             {

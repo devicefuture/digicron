@@ -80,10 +80,15 @@ void mainMenu::MainMenuScreen::handleEvent(ui::Event event) {
             return;
         }
 
+        setIsLoading(true);
+        ui::renderCurrentScreen();
+
         apps::App* app = apps::registry[event.data.index - 1]; // TODO: Come up with better way to get app instance
 
         if (app) {
             app->launch();
         }
+
+        setIsLoading(false);
     }
 }
