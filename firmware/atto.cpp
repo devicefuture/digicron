@@ -457,7 +457,12 @@ void atto::AttoBindings::_read(catto_Context* context) {
         value.concat(c);
     }
 
-    catto_assignValue(context, valueArg, catto_asTypedString(value.c_str()));
+    catto_TypedValue result = catto_asTypedString(value.c_str());
+
+    catto_assignValue(context, valueArg, result);
+
+    catto_addTypedValueToGc(context, result);
+
 }
 
 void atto::AttoBindings::_write(catto_Context* context) {

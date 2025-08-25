@@ -30,7 +30,7 @@ namespace proc {
 
             Process();
 
-            ~Process();
+            virtual ~Process();
 
             virtual ProcessType getType() {return ProcessType::SYSTEM;}
             unsigned int getPid();
