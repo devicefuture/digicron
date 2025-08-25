@@ -5,6 +5,7 @@
 
 namespace ui {
     const unsigned int BUTTON_DEBOUNCE_DURATION = 25;
+    const unsigned int BACK_BUTTON_HOLD_TO_STOP_DURATION = 3000;
     const unsigned int SCROLL_DELAY = 1000;
     const unsigned int SCROLL_INTERVAL = 250;
 

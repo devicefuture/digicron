@@ -12,6 +12,7 @@ namespace apps {
             ~App();
 
             String getId();
+            String getName();
             String getDisplayName();
             virtual proc::Process* launch();
 

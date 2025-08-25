@@ -18,8 +18,12 @@ String apps::App::getId() {
     return _id;
 }
 
+String apps::App::getName() {
+    return _config->getStringOrDefault("App", "Name", _id);
+}
+
 String apps::App::getDisplayName() {
-    String defaultName = _config->getStringOrDefault("App", "Name", _id);
+    String defaultName = getName();
 
     defaultName.toUpperCase();
 
@@ -52,6 +56,8 @@ proc::Process* apps::AttoApp::launch() {
     auto process = new attoProc::AttoProcess(code, size);
 
     free(code);
+
+    process->setAssociatedApp(this);
 
     process->onStop = [](proc::Process* process) {
         if (primaryAppProcess == process) {

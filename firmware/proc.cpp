@@ -28,6 +28,14 @@ unsigned int proc::Process::getPid() {
     return _pid;
 }
 
+apps::App* proc::Process::getAssociatedApp() {
+    return _associatedApp;
+}
+
+void proc::Process::setAssociatedApp(apps::App* associatedApp) {
+    _associatedApp = associatedApp;
+}
+
 bool proc::Process::isRunning() {
     return _running;
 }

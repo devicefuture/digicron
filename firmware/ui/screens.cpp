@@ -9,6 +9,7 @@
 #include "screens.h"
 #include "../timing.h"
 #include "../home.h"
+#include "../appmanager.h"
 
 input::Button ui::lastButton;
 ui::Screen* ui::currentScreen = nullptr;
@@ -17,8 +18,9 @@ proc::Process* ui::foregroundProcess = nullptr;
 proc::Process* ui::lastNonHomeProcess = nullptr;
 dataTypes::List<ui::Screen> ui::screenStack;
 
-unsigned int lastButtonPressTime = 0;
-unsigned int lastButtonReleaseTime = 0;
+unsigned long lastButtonPressTime = 0;
+unsigned long lastButtonReleaseTime = 0;
+bool holdToStopTriggered = false;
 
 ui::Screen::Screen() {
     clear();
@@ -438,6 +440,20 @@ void ui::renderCurrentScreen() {
         }
 
         lastButton = currentButton;
+    }
+
+    if (
+        !holdToStopTriggered &&
+        currentButton == input::Button::BACK &&
+        timing::getCurrentTick() - lastButtonPressTime >= BACK_BUTTON_HOLD_TO_STOP_DURATION &&
+        currentScreen->ownerProcess &&
+        currentScreen->ownerProcess->getType() != proc::ProcessType::SYSTEM
+    ) {
+        holdToStopTriggered = true;
+
+        appManager::forceStopApp(currentScreen->ownerProcess);
+    } else if (currentButton != input::Button::BACK) {
+        holdToStopTriggered = false;
     }
 
     render:
