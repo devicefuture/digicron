@@ -76,6 +76,7 @@ void attoProc::AttoProcess::stop() {
             case CATTO_ERROR_STATE_INVALID_LIST_VALUE: message = "Invalid list value"; break;
             case CATTO_ERROR_STATE_CANNOT_ASSIGN_VALUE: message = "Expected variable name"; break;
             case CATTO_ERROR_STATE_UNKNOWN_FIELD: message = "Field is not present in list declaration"; break;
+            case CATTO_ERROR_STATE_OUT_OF_MEMORY: message = "Out of memory"; break;
 
             default: break;
         }

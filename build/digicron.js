@@ -5977,6 +5977,7 @@ function sendDisplayDataToSimulator(dataPtr,size) { renderDisplayData(new Uint8C
       setMainLoop(browserIterationFunc, fps, simulateInfiniteLoop);
     };
 
+
   function _fd_close(fd) {
   try {
   
@@ -6194,6 +6195,8 @@ var wasmImports = {
   /** @export */
   emscripten_set_main_loop: _emscripten_set_main_loop,
   /** @export */
+  exit: _exit,
+  /** @export */
   fd_close: _fd_close,
   /** @export */
   fd_read: _fd_read,
@@ -6209,8 +6212,8 @@ var ___wasm_call_ctors = createExportWrapper('__wasm_call_ctors', 0);
 var ___getTypeName = createExportWrapper('__getTypeName', 1);
 var _free = createExportWrapper('free', 1);
 var _malloc = createExportWrapper('malloc', 1);
-var _main = Module['_main'] = createExportWrapper('__main_argc_argv', 2);
 var _fflush = createExportWrapper('fflush', 1);
+var _main = Module['_main'] = createExportWrapper('__main_argc_argv', 2);
 var _strerror = createExportWrapper('strerror', 1);
 var _emscripten_stack_init = () => (_emscripten_stack_init = wasmExports['emscripten_stack_init'])();
 var _emscripten_stack_get_free = () => (_emscripten_stack_get_free = wasmExports['emscripten_stack_get_free'])();
@@ -6220,7 +6223,7 @@ var __emscripten_stack_restore = (a0) => (__emscripten_stack_restore = wasmExpor
 var __emscripten_stack_alloc = (a0) => (__emscripten_stack_alloc = wasmExports['_emscripten_stack_alloc'])(a0);
 var _emscripten_stack_get_current = () => (_emscripten_stack_get_current = wasmExports['emscripten_stack_get_current'])();
 var dynCall_jiji = Module['dynCall_jiji'] = createExportWrapper('dynCall_jiji', 5);
-var ___emscripten_embedded_file_data = Module['___emscripten_embedded_file_data'] = 90832;
+var ___emscripten_embedded_file_data = Module['___emscripten_embedded_file_data'] = 90880;
 
 // include: postamble.js
 // === Auto-generated postamble setup entry stuff ===
