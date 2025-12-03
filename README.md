@@ -33,7 +33,7 @@ To build the firmware and the simulator, run:
 ./build.sh --sim
 ```
 
-Then to run the simulator locally, start a web server in this directory. Run the following to start the web server at [localhost:8000](http://localhost:8000):
+Then to run the simulator locally, you need to start a web server in this directory. Run the following to start the web server at [localhost:8000](http://localhost:8000):
 
 ```bash
 python3 -m http.server
