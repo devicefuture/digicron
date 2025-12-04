@@ -370,7 +370,7 @@ void ui::TextInput::_updateItems() {
     addItem("56789");
     addItem("&<>^~|"); // TODO: Add ¬ symbol when supported by text renderer
     addItem("[]{}#\\`");
-    addItem("()\"@$"); // TODO: Add $ and € symbols when supported by text renderer
+    addItem("()\"@$"); // TODO: Add £ and € symbols when supported by text renderer
     addItem("-/+=*_%");
     addItem(".!?',:;");
 }
