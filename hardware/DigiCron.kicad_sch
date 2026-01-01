@@ -6208,6 +6208,10 @@
 		(uuid "4de7714a-0678-45c6-b9eb-7713157e71e6")
 	)
 	(no_connect
+		(at 81.28 106.68)
+		(uuid "56da0da0-63b7-4e14-907b-bd212a2f4296")
+	)
+	(no_connect
 		(at 40.64 109.22)
 		(uuid "58338318-57f4-47aa-b7fa-145551c66266")
 	)
@@ -6262,10 +6266,6 @@
 	(no_connect
 		(at 256.54 93.98)
 		(uuid "d06b7d90-57f9-43aa-9511-eb1e35db68be")
-	)
-	(no_connect
-		(at 40.64 63.5)
-		(uuid "d1e8dcc7-b36e-486c-8f44-07455cb45041")
 	)
 	(no_connect
 		(at 81.28 60.96)
@@ -6915,28 +6915,6 @@
 			)
 		)
 	)
-	(global_label "PIEZO_B"
-		(shape input)
-		(at 40.64 55.88 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "1db5e845-40a1-4e52-9787-32b34ee7c228")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 29.8534 55.88 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "HCMS_RESET"
 		(shape input)
 		(at 40.64 104.14 180)
@@ -6954,6 +6932,28 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "PIEZO_B"
+		(shape input)
+		(at 40.64 53.34 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "31d300c0-4ce9-4f0c-8721-00cd09597e12")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 29.8534 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 				(hide yes)
 			)
 		)
@@ -7231,28 +7231,6 @@
 			)
 		)
 	)
-	(global_label "VDIV"
-		(shape input)
-		(at 81.28 106.68 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "6e977d1c-af56-49f2-960a-c12f84a3abde")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 88.3172 106.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "HCMS_RESET"
 		(shape input)
 		(at 256.54 99.06 0)
@@ -7313,6 +7291,28 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "PIEZO_A"
+		(shape input)
+		(at 40.64 63.5 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "74e1a120-34d7-42a7-874d-007cc2f59681")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 30.0348 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 				(hide yes)
 			)
 		)
@@ -7441,28 +7441,6 @@
 				(font
 					(size 1.27 1.27)
 				)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "PIEZO_A"
-		(shape input)
-		(at 40.64 53.34 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "8b5ef567-1e58-41eb-a927-78335aab4952")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 30.0348 53.34 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
 				(hide yes)
 			)
 		)
@@ -7804,6 +7782,28 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "VDIV"
+		(shape input)
+		(at 40.64 55.88 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "f7cf3854-382d-4f88-8c2f-ed943bafa193")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 33.6028 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 				(hide yes)
 			)
 		)
