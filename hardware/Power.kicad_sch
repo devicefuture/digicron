@@ -11432,7 +11432,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 49.53 158.75 90)
+		(at 49.53 148.59 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -11441,7 +11441,7 @@
 		(fields_autoplaced yes)
 		(uuid "bc67d798-f205-4eff-8f9e-a40c95e29ff9")
 		(property "Reference" "#PWR032"
-			(at 55.88 158.75 0)
+			(at 55.88 148.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11450,7 +11450,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 52.705 158.7499 90)
+			(at 52.705 148.5899 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11459,7 +11459,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 49.53 158.75 0)
+			(at 49.53 148.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11468,7 +11468,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 49.53 158.75 0)
+			(at 49.53 148.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11477,7 +11477,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 49.53 158.75 0)
+			(at 49.53 148.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12301,7 +12301,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_JST:JST_PH_S2B-PH-SM4-TB_1x02-1MP_P2.00mm_Horizontal"
+		(property "Footprint" "Connector_Molex:Molex_PicoBlade_53261-0271_1x02-1MP_P1.25mm_Horizontal"
 			(at 32.258 153.924 0)
 			(effects
 				(font
@@ -12524,7 +12524,7 @@
 	)
 	(symbol
 		(lib_id "power:+3V3")
-		(at 49.53 148.59 270)
+		(at 49.53 158.75 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -12532,7 +12532,7 @@
 		(dnp no)
 		(uuid "f523b0ef-626c-4f48-bedd-3653e024fb66")
 		(property "Reference" "#PWR031"
-			(at 45.72 148.59 0)
+			(at 45.72 158.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12541,7 +12541,7 @@
 			)
 		)
 		(property "Value" "VBAT"
-			(at 55.626 148.59 90)
+			(at 55.626 158.75 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12549,7 +12549,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 49.53 148.59 0)
+			(at 49.53 158.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12558,7 +12558,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 49.53 148.59 0)
+			(at 49.53 158.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12567,7 +12567,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 49.53 148.59 0)
+			(at 49.53 158.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
