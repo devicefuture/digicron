@@ -7,7 +7,7 @@
 	(title_block
 		(title "DigiCron")
 		(date "2025-07-26")
-		(rev "1")
+		(rev "1.1")
 		(company "DeviceFuture")
 	)
 	(lib_symbols
