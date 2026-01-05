@@ -13,7 +13,7 @@ git clone --recurse-submodules https://github.com/devicefuture/digicron
 This is because this repo contains Git submodules which are used as libraries for the firmware and simulator.
 
 ## Building
-Before building the firmware for the first time, you will need to install the dev dependencies:
+Before building the firmware for the first time, you will need to install the development dependencies:
 
 ```bash
 ./build.sh --install-dev
