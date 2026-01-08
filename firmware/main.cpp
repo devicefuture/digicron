@@ -19,6 +19,7 @@
 #include "proc.h"
 #include "fs.h"
 #include "apps.h"
+#include "bootanimation.h"
 #include "_sysfs.h"
 
 #define BACK_BTN_PIN 6
@@ -33,16 +34,9 @@
 
 ui::Screen* startupScreen = new ui::Screen();
 
-ui::Icon* tmIcon = ui::constructIcon(
-    "###  "
-    " #   "
-    "     "
-    "## ##"
-    "# # #"
-);
-
 unsigned int displayMode = 0;
 long lastTick = 0;
+bool bootAnimationFinished = false;
 
 #ifndef DC_SIMULATOR
     BLEDis bledis;
@@ -60,8 +54,7 @@ void setup() {
 
     ui::currentScreen = startupScreen;
 
-    startupScreen->print(" device  future");
-    startupScreen->print(tmIcon);
+    bootAnimation::start(startupScreen);
 
     ui::renderCurrentScreen();
 
@@ -115,8 +108,14 @@ void loop() {
 
     lastTick = currentTick;
 
-    if (ui::currentScreen == startupScreen && timing::getCurrentTick() > 3000) {
-        home::homeScreen.open(true);
+    if (bootAnimationFinished) {
+        if (ui::currentScreen == startupScreen) {
+            home::homeScreen.open(true);
+        }
+    } else {
+        if (!bootAnimation::step() || input::getButtonStatus() == input::Button::BACK) {
+            bootAnimationFinished = true;
+        }
     }
 
     // #ifndef DC_SIMULATOR
