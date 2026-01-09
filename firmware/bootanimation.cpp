@@ -22,7 +22,7 @@ void bootAnimation::start(ui::Screen* screen) {
     lastUpdateTick = startTick - 10;
 
     for (unsigned int i = 0; i < 12; i++) {
-        animationTime[i] = 100 + (rand() % 200);
+        animationTime[i] = 1000 + (rand() % 2000);
     }
 
 }
@@ -38,7 +38,7 @@ bool bootAnimation::step() {
         bool finished = true;
 
         for (unsigned int i = 0; i < 12; i++) {
-            if (currentTick <= animationTime[i] * 10) {
+            if (currentTick <= animationTime[i]) {
                 text[i] = 97 + (rand() % 26);
                 finished = false;
             } else {
